@@ -1,0 +1,10 @@
+<%# SEO tags %>
+<meta name="description" content="<%= @site.description %>">
+
+<%= if @og do %>
+  <%= render("opengraph.html", %{og: @og}) %>
+<% end %>
+
+<%= if @breadcrumbs do %>
+  <%= render("breadcrumbs.html", %{breadcrumbs: @breadcrumbs}) %>
+<% end %>

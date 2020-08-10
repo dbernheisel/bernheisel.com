@@ -1,0 +1,30 @@
+<%# opengraph.html. eex template %>
+<meta property="og:site_title" content="<%= @og.site_title %>">
+<meta property="og:type" content="<%= @og.type %>">
+<meta property="og:article:section" content="<%= @og.article_section %>">
+
+<%= if @og.published_at do %>
+  <meta property="og:article:published_time" content="<%= @og.published_at %>">
+  <meta name="twitter:data1" content="Reading Time">
+  <meta name="twitter:label1" content="<%= @og.reading_time %>">
+  <meta name="twitter:data2" content="Published">
+  <meta name="twitter:label2" content="<%= @og.published_at %>">
+<% end %>
+
+<meta property="og:url" content="<%= @og.url %>">
+<meta property="og:title" content="<%= @og.title %>">
+<meta property="og:description" content="<%= @og.description %>">
+<meta property="twitter:site" content="<%= @og.site %>">
+
+<%= if @og.image_url do %>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:image:alt" content="<%= @og.image_alt %>">
+  <meta property="og:image" content="<%= @og.image_url %>">
+  <meta property="og:image:alt" content="<%= @og.image_alt %>">
+<% else %>
+  <meta name="twitter:card" content="summary">
+<% end %>
+
+<%= if @og.twitter_handle do %>
+  <meta name="twitter:creator" content="<%= @og.twitter_handle %>">
+<% end %>

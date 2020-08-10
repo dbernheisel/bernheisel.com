@@ -1,0 +1,32 @@
+<%# index.html.eex template %>
+
+<%= for post <- @posts do %>
+  <div id="post-<%= post.id %>" class="mb-8 pb-10 mt-0 border-b-2 border-dotted border-gray-300">
+    <h1 class="text-3xl font-semibold">
+      <%= link post.title,
+        to: Routes.blog_path(@conn, :show, post.id),
+        class: "transition-colors duration-150 border-transparent border-b-4 focus:border-brand-500 hover:border-accent-500" %>
+    </h1>
+
+    <div class="flex space-x-2 mt-1 mb-4 text-xs">
+      <div><%= Date.to_iso8601(post.date) %></div>
+      <%= if post.original_url do %>
+        <div>
+          <%= outbound_link "Original Publishing", style: "border-bottom-width: 1px", class: "hover:border-accent-500 transition-colors duration-150 ease-in-out", to: post.original_url %>
+        </div>
+      <% end %>
+      <div>
+        <%= post.reading_time %>m read
+      </div>
+      <%= if Enum.any?(post.tags) do %>
+        <div>
+          <%= Enum.join(post.tags, ", ") %>
+        </div>
+      <% end %>
+    </div>
+
+    <p class="leading-normal">
+      <%= raw(post.description) %>
+    </p>
+  </div>
+<% end %>

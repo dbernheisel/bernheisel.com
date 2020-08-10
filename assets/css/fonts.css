@@ -1,0 +1,84 @@
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/inter-v1-latin-regular.eot"); /* IE9 Compat Modes */
+  src: url("/fonts/inter-v1-latin-regular.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+       url("/fonts/Inter-Regular.woff2?v=3.13") format("woff2"),
+       url("/fonts/Inter-Regular.woff?v=3.13") format("woff"),
+       url("/fonts/inter-v1-latin-regular.ttf") format("truetype"), /* Safari, Android, iOS */
+       url("/fonts/inter-v1-latin-regular.svg#Inter") format("svg"); /* Legacy iOS */
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Light.woff2') format('woff2'),
+    url("/fonts/FiraCode-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Regular.woff2') format('woff2'),
+    url("/fonts/FiraCode-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Medium.woff2') format('woff2'),
+    url("/fonts/FiraCode-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-SemiBold.woff2') format('woff2'),
+    url("/fonts/FiraCode-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Bold.woff2') format('woff2'),
+    url("/fonts/FiraCode-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Inter var";
+    font-weight: 100 900;
+    font-style: normal;
+    font-named-instance: "Regular";
+    font-display: swap;
+    src: url("/fonts/Inter-roman.var.woff2?3.13") format("woff2");
+  }
+
+  @font-face {
+    font-family: "Inter var";
+    font-weight: 100 900;
+    font-style: italic;
+    font-named-instance: "Italic";
+    font-display: swap;
+    src: url("/fonts/Inter-italic.var.woff2?3.13") format("woff2");
+  }
+
+  @font-face {
+    font-family: 'Fira Code VF';
+    /* font-weight requires a range: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Fonts/Variable_Fonts_Guide#Using_a_variable_font_font-face_changes */
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/FiraCode-VF.woff2') format('woff2-variations'),
+        url('/fonts/FiraCode-VF.woff') format('woff-variations');
+  }
+}

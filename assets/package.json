@@ -1,0 +1,38 @@
+{
+  "repository": {},
+  "description": " ",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "webpack --mode production",
+    "watch": "NODE_ENV=prodution MIX_ENV=prod webpack --mode development --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.2.0",
+    "@tailwindcss/ui": "^0.5.0",
+    "alpinejs": "^2.5.0",
+    "highlight.js": "^10.1.2",
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_html": "file:../deps/phoenix_html",
+    "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "tailwindcss": "^1.6.2",
+    "topbar": "^0.1.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "copy-webpack-plugin": "^6.0.3",
+    "css-loader": "^4.2.1",
+    "hard-source-webpack-plugin": "^0.13.1",
+    "mini-css-extract-plugin": "^0.9.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "postcss": "^7.0.32",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^2.0.5",
+    "terser-webpack-plugin": "^4.0.0",
+    "webpack": "4.44.1",
+    "webpack-cli": "^3.3.2"
+  }
+}

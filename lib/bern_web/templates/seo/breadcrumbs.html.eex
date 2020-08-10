@@ -1,0 +1,4 @@
+<%# breadcrumbs.html.eex template %>
+<script type="application/ld+json">
+  <%= raw(Jason.encode!(@breadcrumbs)) %>
+</script>

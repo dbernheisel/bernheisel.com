@@ -1,0 +1,21 @@
+@media (prefers-color-scheme: dark) {
+  .prose strong {
+    @apply text-gray-50 !important;
+  }
+
+  .prose a {
+    @apply text-red-200;
+  }
+
+  .prose a:focus {
+    @apply text-red-200;
+  }
+
+  .prose a:visited {
+    @apply text-purple-200;
+  }
+
+  .prose a:hover {
+    @apply text-red-200;
+  }
+}
