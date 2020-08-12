@@ -8,4 +8,13 @@ defmodule BernWeb.RobotView do
     Disallow: /
     """
   end
+
+  def render("rss.xml", %{}) do
+    BernWeb.Rss.generate(%BernWeb.Rss{
+      title: "David Bernheisels' Blog RSS Feed",
+      author: "David Bernheisel",
+      description: "A blog about development",
+      posts: Bern.Blog.all_posts()
+    })
+  end
 end
