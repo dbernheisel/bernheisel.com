@@ -16,7 +16,8 @@ module.exports = (_env, options) => {
       ]
     },
     entry: {
-      app: ["./js/app.js", "./css/app.css"]
+      app: ["./js/app.js", "./css/app.css"],
+      vendor: ["./js/vendor.js"]
     },
     output: {
       filename: '[name].js',

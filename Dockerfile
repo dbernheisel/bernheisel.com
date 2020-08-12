@@ -28,7 +28,7 @@ COPY assets/package.json assets/yarn.lock ./assets/
 COPY --from=builder /app/deps/phoenix ./deps/phoenix
 COPY --from=builder /app/deps/phoenix_html ./deps/phoenix_html
 COPY --from=builder /app/deps/phoenix_live_view ./deps/phoenix_live_view
-RUN yarn --cwd ./assets install --no-progress
+RUN yarn --cwd ./assets install --no-progress --frozen-lockfile
 
 COPY assets ./assets
 RUN yarn --cwd ./assets run deploy

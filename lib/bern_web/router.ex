@@ -36,7 +36,20 @@ defmodule BernWeb.Router do
   end
 
   scope "/admin" do
-    pipe_through :browser
+    pipe_through [:browser, :check_auth]
     live_dashboard "/dashboard", metrics: BernWeb.Telemetry
+  end
+
+  def check_auth(conn, _opts) do
+    with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
+         true <- user == System.get_env("AUTH_USER"),
+         true <- pass == System.get_env("AUTH_PASS") do
+      conn
+    else
+      _ ->
+        conn
+        |> Plug.BasicAuth.request_basic_auth()
+        |> halt()
+    end
   end
 end

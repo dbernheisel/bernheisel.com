@@ -342,7 +342,9 @@ up front might not hurt so much because it's not built into the structure, but
 with 1.3 and presumably later, it may hurt more. Despite that, it's _totally_
 worth it.
 
-### Avoid the bloat<a name="bloated"></a>
+<a name="bloated"></a>
+
+### Avoid the bloat
 
 Above, I glossed-over what contexts help us achieve: making interfaces between
 your abstractions. A context (aka domain interface) will help organize actions.
@@ -461,7 +463,9 @@ need to organize yourself.
 [Chris gives some good examples of when umbrellas could be a good
 option](https://youtu.be/tMO28ar0lW8?t=27m54s)
 
-## Give It a Shot<a name="giveitago"></a>
+<a name="giveitago"></a>
+
+## Give It a Shot
 
 At thoughtbot, we pride ourselves in the practices of designing experiences, and
 _then_ developing; [that's what makes thoughtbot

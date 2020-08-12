@@ -3,8 +3,8 @@
   "description": " ",
   "license": "MIT",
   "scripts": {
-    "deploy": "webpack --mode production",
-    "watch": "NODE_ENV=prodution MIX_ENV=prod webpack --mode development --watch"
+    "deploy": "NODE_ENV=production MIX_ENV=prod webpack --mode production",
+    "watch": "webpack --mode development --watch"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.2.0",

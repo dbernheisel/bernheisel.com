@@ -1,6 +1,6 @@
 <%# footer.html. eex template %>
 
-<div class="bg-white dark:bg-gray-700">
+<div class="bg-brand-50 dark:bg-gray-700">
   <div class="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
     <div class="flex justify-center md:order-2">
       <%= outbound_link to: "https://twitter.com/bernheisel", class: "ml-6 text-gray-400 hover:text-gray-500" do %>

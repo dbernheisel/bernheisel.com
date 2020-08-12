@@ -7,6 +7,7 @@ defmodule BernWeb.Live.Page do
   end
   def mount(_params, _, socket), do: {:ok, redirect(socket, to: Routes.blog_path(socket, :index))}
 
+  @impl true
   def render(assigns) do
     BernWeb.PageView.render(assigns.page <> ".html", assigns)
   end

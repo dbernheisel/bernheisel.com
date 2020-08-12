@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=no"/>
     <%= BernWeb.SEO.meta(@conn, view_module(@conn), assigns) %>
     <link rel="canonical" href="https://www.bernheisel.com" />
-    <link rel="preload" as="font" href="/fonts/FiraCode-VF.woff2" crossorigin="anonymous" />
-    <link rel="preload" as="font" href="/fonts/Inter-roman.var.woff2?3.13" crossorigin="anonymous" />
+    <link rel="preload" as="font" href="<%= Routes.static_path(@conn, "/fonts/FiraCode-VF.woff2") %>" crossorigin="anonymous" />
+    <link rel="preload" as="font" href="<%= Routes.static_path(@conn, "/fonts/Inter-roman.var.woff2") %>" crossorigin="anonymous" />
     <%= render "_icons.html", assigns %>
     <%= csrf_meta_tag() %>
     <%= live_title_tag assigns[:page_title] || "Home", suffix: " · Bernheisel" %>
     <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/vendor.js") %>"></script>
   </head>
   <body class="dark:bg-gray-900 dark:text-gray-100">
     <%= render "nav.html", assigns %>

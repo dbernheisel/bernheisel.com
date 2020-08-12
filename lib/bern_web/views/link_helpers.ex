@@ -7,9 +7,7 @@ defmodule BernWeb.LinkHelpers do
     outbound_link(contents, opts)
   end
   def outbound_link(text, opts) do
-    {outbound, opts} = Keyword.pop(opts, :outbound)
-    more_opts = if outbound, do: [rel: "nofollow noopener"]
-    Phoenix.HTML.Link.link(text, opts)
+    Phoenix.HTML.Link.link(text, [rel: "nofollow noopener"] ++ opts)
   end
 
   @doc """
