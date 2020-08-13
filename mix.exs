@@ -36,6 +36,7 @@ defmodule Bern.MixProject do
   defp deps do
     [
       {:jason, "~> 1.0"},
+      {:earmark, "<= 1.4.6"},
       {:makeup_elixir, ">= 0.0.0"},
       {:nimble_publisher, "~> 0.1.0"},
       {:phoenix, "~> 1.5.4"},
