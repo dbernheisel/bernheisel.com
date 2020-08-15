@@ -23,7 +23,7 @@ belongs. A great example is a form, especially long-running or multi-step forms.
 
 Let me show you what I mean.
 
-<video controls="true" src="/video/long-form-demo.mp4" width="auto" height="auto" preload="auto" muted="true" title="Demo of Multi-step form"></video>
+<iframe width="334" height="720" src="https://www.youtube-nocookie.com/embed/D6tTsvCwlY0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>
 
 This is accomplished without any AJAX calls, no SPAs, and no page reloads.
 

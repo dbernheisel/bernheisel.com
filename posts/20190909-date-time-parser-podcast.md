@@ -19,4 +19,4 @@ we built.
 [Cory]: https://schmitty.me
 [DateTimeParser]: https://github.com/taxjar/date_time_parser
 
-<audio controls="true" src="/audio/EMx_068_David_Bernheisel.mp3" preload="auto"></audio>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fFEqMqBwTE4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>

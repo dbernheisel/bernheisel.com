@@ -1,5 +1,11 @@
+.prose pre {
+  @apply bg-gray-50;
+}
+
 .makeup .hll {background-color: #ffffcc}
-.makeup {}
+.makeup {
+  @apply font-mono;
+}
 .makeup .unselectable {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -8,19 +14,6 @@
   -ms-user-select: none;
   user-select: none;
 }
-
-/* .test { color: #fafafa */
-/*                #383a42 */
-/*                #686b77 */
-/*                #a0a1a7 */
-/*                #0184bb */
-/*                #4078f2 */
-/*                #a626a4 */
-/*                #50a14f */
-/*                #e45649 */
-/*                #c91243 */
-/*                #986801 */
-/*                #c18401 */
 
 .makeup .bp {color: #a626a4; } /* :name_builtin_pseudo */
 .makeup .c {color: #a0a1a7; } /* :comment */
@@ -191,9 +184,6 @@ hue-6:   #986801
 hue-6-2: #c18401
 
 */
-
-.hljs {
-}
 
 .hljs-comment,
 .hljs-quote {
