@@ -1,14 +1,24 @@
 <%# blog_index.html.leex template %>
 
 <%= for post <- @posts do %>
-  <div id="post-<%= post.id %>" class="border-b-2 border-dotted border-gray-300 last:border-b-0 mb-8 pb-10 mt-0 ">
-    <h1 class="text-3xl font-semibold">
+  <div id="post-<%= post.id %>" class="border-b-2 border-dotted border-gray-300 last:border-b-0 mb-8 pb-2">
+    <h1 class="text-3xl mb-4 font-semibold">
       <%= live_redirect post.title,
         to: Routes.blog_path(@socket, :show, post.id),
         class: "transition-colors duration-150 border-transparent border-b-4 focus:border-brand-500 hover:border-accent-500" %>
     </h1>
 
-    <div class="flex space-x-2 mt-1 mb-4 text-xs">
+    <p class="leading-normal">
+      <%= raw(post.description) %>
+    </p>
+
+    <p class="my-4">
+      <%= live_redirect "Read more...",
+        to: Routes.blog_path(@socket, :show, post.id),
+        class: "transition-colors duration-150 border-b-4 focus:border-brand-500 hover:border-accent-500" %>
+    </p>
+
+    <div class="flex space-x-2 mt-6 text-xs">
       <div><%= Date.to_iso8601(post.date) %></div>
       <%= if post.original_url do %>
         <div>
@@ -24,9 +34,5 @@
         </div>
       <% end %>
     </div>
-
-    <p class="leading-normal">
-      <%= raw(post.description) %>
-    </p>
   </div>
 <% end %>

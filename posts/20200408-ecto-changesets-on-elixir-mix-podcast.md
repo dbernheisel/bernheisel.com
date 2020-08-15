@@ -18,4 +18,4 @@ cover my [other blog post](https://bernheisel.com/blog/ecto_changeset_tips/)
 where I shared some tips and tricks for working with Changesets. We also cover
 Ecto.Multi, how to compose Changesets, using "embedded" schemas, and much more!
 
-<audio src="/audio/EMx_091_David_Bernheisel.mp3" preload="auto" controls="true"></audio>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Zp7CpJqQ6I0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>

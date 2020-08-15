@@ -1,13 +1,14 @@
-<%# blog_show.l eex template %>
+<%# blog_show.leex template %>
 <article>
   <h1 class="font-extrabold text-4xl">
     <%= @post.title %>
   </h1>
 
-  <div class="flex mt-2 space-x-4 mb-4 text-sm">
-    <div>
-      Published on <%= Date.to_iso8601(@post.date) %>
-    </div>
+  <p>
+    Published on <%= Date.to_iso8601(@post.date) %>
+  </p>
+
+  <div class="flex flex-wrap mt-2 space-x-4 mb-12 text-sm">
     <%= if @post.original_url do %>
       <div>
         <%= outbound_link "Original Publishing", class: "border-b-2 hover:border-accent-500 transition-colors duration-150 ease-in-out", to: @post.original_url %>
