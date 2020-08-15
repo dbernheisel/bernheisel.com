@@ -2,7 +2,7 @@
 @import "tailwindcss/components";
 
 @import "./base.css";
-/* @import "./fonts.css"; */
+@import "./fonts.css";
 @import "./syntax.css";
 @import "./dark.css";
 @import "./phoenix.css";
