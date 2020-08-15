@@ -1,4 +1,3 @@
-<link rel="manifest" href="/site.webmanifest">
 <meta name="msapplication-TileColor" content="#663399">
 <meta name="theme-color" content="#663399">
 <link rel="mask-icon" href="<%= Routes.static_path(@conn, "/images/safari-pinned-tab.svg") %>" color="#663399">

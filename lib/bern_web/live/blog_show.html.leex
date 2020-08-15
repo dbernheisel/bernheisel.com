@@ -1,5 +1,5 @@
 <%# blog_show.leex template %>
-<article id="post-@post.id" phx-hook="Highlight">
+<article id="post-<%= @post.id %>" phx-hook="Highlight">
   <h1 class="font-extrabold text-4xl">
     <%= @post.title %>
   </h1>

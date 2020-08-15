@@ -4,7 +4,7 @@ hooks.UserTimeZone = UserTimeZone
 
 hooks.Highlight = {
   mounted() {
-    window.highlightAll()
+    window.highlightAll(this.el)
   }
 }
 

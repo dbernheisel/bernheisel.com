@@ -21,8 +21,8 @@ hljs.registerLanguage('json', json);
 hljs.registerLanguage('diff', diff);
 hljs.registerLanguage('html', xml);
 
-window.highlightAll = function() {
-  document.querySelectorAll('pre code').forEach((block) => {
+window.highlightAll = function(where = document) {
+  where.querySelectorAll('pre code').forEach((block) => {
     const lang = block.getAttribute("class")
     if (lang !== "makeup elixir") {
       const { value: value } = hljs.highlight(lang, block.innerText);
