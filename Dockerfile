@@ -10,6 +10,9 @@ ENV LANG=C.UTF-8 \
     TERM=xterm \
     MIX_ENV=prod
 
+RUN apt-get update && apt-get install -y \
+      git
+
 RUN mix local.rebar --force && \
     mix local.hex --if-missing --force
 
