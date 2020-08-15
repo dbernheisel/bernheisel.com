@@ -4,9 +4,9 @@ defmodule BernWeb.SEO do
   use BernWeb, :view
   alias BernWeb.SEO.{Generic, Breadcrumbs, OpenGraph}
 
-  @default_assigns %{site: %Generic{}, breadcrumbs: nil, og: nil, google_event: nil}
+  @default_assigns %{site: %Generic{}, breadcrumbs: nil, og: nil}
 
-  def meta(conn, BernWeb.BlogView, %{post: post}) do
+  def meta(conn, BernWeb.Live.BlogShow, %{post: post}) do
     render(
       "meta.html",
       @default_assigns

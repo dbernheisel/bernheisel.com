@@ -29,8 +29,8 @@ defmodule BernWeb.Router do
     pipe_through :browser
 
     live "/", Live.Page, :show
-    get "/blog/:id", BlogController, :show
-    get "/blog", BlogController, :index
+    live "/blog", Live.BlogIndex, :index, as: :blog
+    live "/blog/:id", Live.BlogShow, :show, as: :blog
     live "/about", Live.Page, :show, as: :about, session: %{"page" => "about"}
     live "/projects", Live.Page, :show, as: :projects, session: %{"page" => "projects"}
   end

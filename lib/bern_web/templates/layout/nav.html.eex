@@ -1,7 +1,7 @@
 <%# nav.html template %>
-
 <% [route | _] = @conn.path_info %>
-<nav @navigate.window="open = false; current = $event.detail" class="dark:bg-gray-900 bg-brand-50 shadow" x-data="{current: '<%= route %>', open: false}" x-cloak>
+
+<nav @navigate="open = false; currentRoute = $event.detail" x-data="{currentRoute: '<%= route %>', open: false}" x-cloak>
   <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
     <div class="relative flex justify-between h-16">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -32,21 +32,29 @@
             class: "inline-flex items-center px-1 pt-1 border-b-4 text-sm font-medium leading-5 focus:outline-none transition duration-150 ease-in-out",
             "@click": "$dispatch('navigate', 'blog')",
             ":class": "{
-              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': current === 'blog',
-              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': current !== 'blog'
+              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': currentRoute === 'blog',
+              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': currentRoute !== 'blog'
             }" %>
           <%= active_link @conn, "Projects", to: Routes.projects_path(@conn, :show),
             "@click": "$dispatch('navigate', 'projects')",
             class: "inline-flex items-center px-1 pt-1 border-b-4 text-sm font-medium leading-5 focus:outline-none transition duration-150 ease-in-out",
             ":class": "{
-              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': current === 'projects',
-              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': current !== 'projects'
+              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': currentRoute === 'projects',
+              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': currentRoute !== 'projects'
             }" %>
+          <%# active_link @conn, "Components", to: Routes.components_path(@conn, :index),
+            "@click": "$dispatch('navigate', 'components')",
+            ":class": "{
+              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': currentRoute === 'components',
+              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': currentRoute !== 'components'
+            }",
+            class: "inline-flex items-center px-1 pt-1 border-b-4 text-sm font-medium leading-5 focus:outline-none transition duration-150 ease-in-out"
+          %>
           <%# active_link @conn, "About", to: Routes.about_path(@conn, :show),
             "@click": "$dispatch('navigate', 'about')",
             ":class": "{
-              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': current === 'about',
-              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': current !== 'about'
+              'border-brand-500 dark:text-gray-200 text-gray-900 focus:border-brand-700': currentRoute === 'about',
+              'border-transparent dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:focus:text-gray-200 focus:text-gray-700 focus:border-gray-300': currentRoute !== 'about'
             }",
             class: "inline-flex items-center px-1 pt-1 border-b-4 text-sm font-medium leading-5 focus:outline-none transition duration-150 ease-in-out"
           %>
@@ -74,24 +82,24 @@
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
         "@click": "$dispatch('navigate', 'blog')",
         ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': current === 'blog',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': current !== 'blog'
+          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'blog',
+          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'blog'
 }" %>
 
       <%= active_link @conn, "Projects", to: Routes.projects_path(@conn, :show),
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
         "@click": "$dispatch('navigate', 'projects')",
         ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': current === 'projects',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': current !== 'projects'
+          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'projects',
+          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'projects'
         }" %>
 
       <%# active_link @conn, "About", to: Routes.about_path(@conn, :show),
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
         "@click": "$dispatch('navigate', 'about')",
         ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': current === 'about',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': current !== 'about'
+          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'about',
+          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'about'
           }" %>
 
       <%= outbound_link "Utilities", to: "https://utils.zest.dev",

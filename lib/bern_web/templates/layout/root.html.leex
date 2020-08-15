@@ -10,6 +10,7 @@
     <link rel="preload" as="font" href="<%= Routes.static_path(@conn, "/fonts/Inter-roman.var.woff2") %>" crossorigin="anonymous" />
     <%= render "_icons.html", assigns %>
     <%= csrf_meta_tag() %>
+    <%= seo_tags(assigns) %>
     <%= live_title_tag assigns[:page_title] || "Home", suffix: " · Bernheisel" %>
     <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
