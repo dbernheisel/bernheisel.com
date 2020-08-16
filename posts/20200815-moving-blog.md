@@ -24,6 +24,10 @@ What I'm **giving up**:
 1. A mature asset-processing pipeline to [optimize
    images](https://developers.google.com/web/fundamentals/design-and-ux/responsive/images),
    especially for responsiveness.
+1. Easier scaling if traffic gets out of hand. It's fundamentally easier to
+   scale static content using a CDN service. But, given Elixir's web request
+   performance, I'm not too worried about this yet, and maybe I shouldn't be for
+   this little ol' blog.
 
 What I'm **gaining**:
 
