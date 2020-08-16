@@ -17,6 +17,11 @@
     <div>
       <%= @post.reading_time %>m read
     </div>
+    <%= if @readers > 1 do %>
+      <div>
+        <%= @readers %> current readers
+      </div>
+    <% end %>
     <%= if Enum.any?(@post.tags) do %>
       <div>
         <%= Enum.join(@post.tags, ", ") %>

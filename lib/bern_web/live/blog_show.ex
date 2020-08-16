@@ -13,11 +13,31 @@ defmodule BernWeb.Live.BlogShow do
       |> Enum.shuffle()
       |> Enum.take(2)
 
+    socket = socket |> assign(:post, post) |> track_users()
+
     {:ok,
       socket
-      |> assign(:post, post)
       |> assign(:live_seo, true)
       |> assign(:relevant_posts, relevant)
       |> assign(:page_title, post.title)}
+  end
+
+  defp track_users(socket) do
+    topic = "blogpost:#{socket.assigns.post.id}"
+    readers = topic |> BernWeb.Presence.list() |> map_size()
+    if connected?(socket) do
+      BernWeb.Endpoint.subscribe(topic)
+      BernWeb.Presence.track(self(), topic, socket.id, %{id: socket.id})
+    end
+
+    assign(socket, :readers, readers)
+  end
+
+  def handle_info(
+      %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
+      %{assigns: %{readers: count}} = socket
+    ) do
+    readers = count + map_size(joins) - map_size(leaves)
+    {:noreply, assign(socket, :readers, readers)}
   end
 end

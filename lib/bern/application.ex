@@ -12,6 +12,7 @@ defmodule Bern.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Bern.PubSub},
       # Start the Endpoint (http/https)
+      BernWeb.Presence,
       BernWeb.Endpoint
       # Start a worker by calling: Bern.Worker.start_link(arg)
       # {Bern.Worker, arg}
