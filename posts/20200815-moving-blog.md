@@ -399,5 +399,10 @@ would solve the issue of asset versioning.
 If I got anything wrong or missed something obvious (totally likely) then please
 tell me! [Hit me up on twitter @bernheisel](https://twitter.com/bernheisel)
 
+## Oh yeah, it's open source
+
+[Check out the source](https://github.com/dbernheisel/bernheisel.com). Lastly,
+this is hosted on [Linode](https://www.linode.com/?r=11f896e75a7bee1316e6a087df9fd77af1a71553).
+
 [gatsby-remark-vscode]: https://www.gatsbyjs.com/plugins/gatsby-remark-vscode/
 [phoenix-markdown]: https://github.com/boydm/phoenix_markdown
