@@ -9,6 +9,10 @@
 }
 ---
 
+I moved my blog. It's now powered by Phoenix LiveView. Let me tell you about the
+transition. I outline the features I lost, I gained, and some performance
+surprises along the way.
+
 What I'm **giving up**:
 
 1. Offline access
@@ -24,14 +28,14 @@ What I'm **giving up**:
 What I'm **gaining**:
 
 1. A tool-chain that I understand thoroughly and can contribute to; I actually
-   know Elixir and Phoenix.
+     know Elixir and Phoenix.
 1. The ability to show off LiveView-enabled components (stay tuned!)
 
 What I'm **not losing**:
 
-1.  A fast load time.
-1.  A reactive local development tool-chain. For example, when editing the post, I
-      can save the file and my dev server shows the changes almost immediately.
+1. A fast load time.
+1. A reactive local development tool-chain. For example, when editing the post, I
+     can save the file and my dev server shows the changes almost immediately.
 
 The "giving up" list doesn't bother me too much, at least not on my blog. If
 you're managing a huge static site with lots of pages; perhaps look elsewhere at
@@ -42,10 +46,10 @@ with optimized images, but as far as I know, you'll have to roll-your-own.
 I was initially worried that moving a static site to an Elixir-powered web
 application would have too many trade-offs, but I was wrong! Many static sites
 today don't offer pre-compiled syntax highlighting, but I was using one, so it's
-a loss for me. Losing the PWA and cached offline access doesn't bother me.
+a loss for me. Losing the PWA and cached offline access don't bother me.
 
-The "gaining" list is worth it to me, an Elixir developer, because it unlocks
-some potential for what I want to do. I'm thinking of collecting
+The "gaining" list is worth it to me, as an Elixir developer, because it unlocks
+some potential for what I want to do. I'm considering collecting
 LiveView-powered components, and how else would I be able to show them off
 without a LiveView site? So, the trade-off is totally worth it to me.
 
@@ -55,8 +59,9 @@ informal benchmarks.
 ## Let's look at the dev server
 
 Elixir and Phoenix offer live-reloading when assets change (ie, JavaScript and
-CSS), and code-reloading when Elixir code changes. In the case for blogs, what I
-did was use [NimblePublisher](https://github.com/dashbitco/nimble_publisher).
+CSS), and code-reloading when Elixir code changes. To make this reloading work
+in the context of a blog written with Markdown, I used
+[NimblePublisher](https://github.com/dashbitco/nimble_publisher).
 NimblePublisher is a small system that sets up compiling Markdown files into
 HTML at compile-time. Create a `/blog` folder, put your markdown in there, and
 configure Elixir to watch it for changes.
@@ -74,48 +79,50 @@ config :bern, BernWeb.Endpoint,
   ]
 ```
 
-Now, **a big plus for Elixir is the boot-up time**. Granted, if you haven't
+Now, **a big plus for Elixir is the boot-up time**. Granted if you haven't
 changed files that requires the entire Elixir project to re-compile, booting up
-the dev server _very quick_. How quick? **3600% times quicker**. But before you
+the dev server is _very quick_. How quick? **36 times quicker**. But before you
 run off to social media with this stat, just remember that it's not very
 scientific, nor is it always fair. It's not apples-to-apples.
 
 Let's say that I have inspiration one day and I want to write a blog post. I go
-to my code folder and start the dev server and that's it. I haven't changed
+to my blog folder, start the dev server, and start writing. I haven't changed
 anything; I just want to write a post.
 
-Here's the Elixir dev server:
+Here's the Elixir dev server running `iex -S mix phx.server`:
 
 ![Elixir Phoenix Boot Up](/images/elixir-dev-server-blog.png)
 
-Now the Gatsby dev server:
+Now the Gatsby dev server running `yarn run gatsby develop`:
 
 ![Gatsby Boot Up](/images/gatsby-dev-server-blog.png)
 
 If I'm reading this correctly, Gatsby took about **36 seconds** to boot. I
-hadn't changed anything in the project. For record, `yarn dev == yarn run gatsby
-develop`. In comparison, Elixir and Phoenix booted in **1 second**, and that
-_includes Webpack_; granted, nothing changed in the project and some of this is
-thanks to
+hadn't changed anything in the project! In comparison, Elixir and Phoenix booted
+in **1 second**, and that _includes Webpack_; granted, nothing changed in the
+project and some of this is thanks to
 [HardSourceWebpackPlugin](https://github.com/mzgoddard/hard-source-webpack-plugin);
 but even without that plugin, Elixir is still up and running and serving
 requests and whenever Webpack finishes it will live-reload with those compiled
 CSS and JS resources.
 
 Again, I'll repeat, this is not apples-to-apples. For example, I'm giving up
-compile-time syntax highlighting for non-Elixir code blocks.
+compile-time syntax highlighting for non-Elixir code blocks. Gatsby is likely
+recompiling everything without needing to, whereas Elixir is a compiled language
+that only recompiles what it needs to.
 
 ## Syntax Highlighting
 
 NimblePublisher also handles syntax-highlighting at compile-time, but
 unfortunately only when the language is Elixir or Erlang. Since I write about
-other languages too including Ruby, JavaScript, Bash, Vim, and more, I need
+other languages, including Ruby, JavaScript, Bash, Vim, and more, I need
 more syntax highlighting options. NimblePublisher is using
 [Makeup](https://github.com/tmbb/makeup/) for highlighting; so perhaps I can
-contribute by making more Makeup lexers. To cover the gap in the meantime, I'm
-going to syntax-highlight at runtime again; in other words, you visiting this
-page probably ran some JavaScript to highlight syntax for me! Since this blog is
-now powered with LiveView, I handled it in a hook.
+contribute by making more Makeup lexers.
+
+To cover the gap in the meantime, I'm going to syntax-highlight at runtime; in
+other words, you visiting this page ran some JavaScript to highlight syntax for
+me! Since this blog is now powered with LiveView, I handled it in a hook.
 
 Let's see how it works
 
@@ -152,7 +159,8 @@ import json from 'highlight.js/lib/languages/json';
 import diff from 'highlight.js/lib/languages/diff';
 import xml from 'highlight.js/lib/languages/xml';
 
-// Yeah, this isn't very sexy, but I'm trying to keep the bundle small.
+// Yeah, this isn't very sexy, but I'm trying to keep the bundle small
+// by only opting into languages I use in blog posts.
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('shell', shell);
 hljs.registerLanguage('bash', bash);
@@ -216,9 +224,8 @@ window.liveSocket.connect();
 
 Cool. That's not terrible, but still I would much-prefer ALL syntax highlighting
 happen at compile-time. It's not like this stuff changes in runtime so there's
-no reason for every visitor's browser to do syntax highlighting for my articles.
-Kudos to the Gatsby tool-chain for solving this problem via
-[gatsby-remark-vscode].
+no reason for every visitor's browser to do syntax highlighting for me. Kudos to
+the Gatsby tool-chain for solving this problem via [gatsby-remark-vscode].
 
 ## What about performance?
 
@@ -279,6 +286,10 @@ contrast isn't high enough in one spot. Really, the only difference is Gatsby's
 score of 95 on performance vs LiveView's score of 99 on performance, and the
 lack of PWA on LiveView. I don't really think these scores mean anything between
 the two sites; but take it as you will.
+
+Now, of course, if you check the score now, you'll see it's different because
+I've since added some web font preloading which _kills the score_. This only
+happens on the first load though, thankfully.
 
 ## Migrating to Phoenix LiveView from Gatsby
 
