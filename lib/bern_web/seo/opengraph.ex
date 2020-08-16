@@ -14,6 +14,9 @@ defmodule BernWeb.SEO.OpenGraph do
     - Events storing images
   """
 
+  alias BernWeb.SEO.Generic
+  @generic %Generic{}
+
   defstruct [
     :description,
     :expires_at,
@@ -26,7 +29,7 @@ defmodule BernWeb.SEO.OpenGraph do
     :url,
     article_section: "Software Development",
     site: "@bernheisel",
-    site_title: "David Bernheisel's Blog",
+    site_title: @generic.title,
     type: "website"
   ]
 
