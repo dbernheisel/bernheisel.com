@@ -10,8 +10,7 @@ defmodule BernWeb.SEO.OpenGraph do
   ## TODO
 
     - Tokenizer that turns HTML into sentences. re: https://github.com/wardbradt/HTMLST
-    - Organizations storing facebook IDs and twitter handles
-    - Events storing images
+    - Blog post header images
   """
 
   alias BernWeb.SEO.Generic
@@ -28,6 +27,7 @@ defmodule BernWeb.SEO.OpenGraph do
     :twitter_handle,
     :url,
     article_section: "Software Development",
+    # site = twitter handle representing the overall site.
     site: "@bernheisel",
     site_title: @generic.title,
     type: "website"
@@ -38,7 +38,7 @@ defmodule BernWeb.SEO.OpenGraph do
       url: Phoenix.Controller.current_url(conn),
       title: truncate(post.title, 70),
       type: "article",
-      published_at: format_date(post, :date),
+      published_at: format_date(post.date),
       reading_time: format_time(post.reading_time),
       description: String.trim(truncate(post.description, 200)),
     }
@@ -52,11 +52,7 @@ defmodule BernWeb.SEO.OpenGraph do
     end
   end
 
-  defp format_date(post, field) do
-    post
-    |> Map.get(field)
-    |> Date.to_iso8601()
-  end
+  defp format_date(date), do: Date.to_iso8601(date)
 
   defp format_time(length), do: "#{length} minutes"
 end
