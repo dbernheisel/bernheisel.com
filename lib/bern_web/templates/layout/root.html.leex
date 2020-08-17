@@ -17,6 +17,7 @@
     <script async defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/vendor.js") %>"></script>
     <%= if Application.get_env(:bern, :app_env) == :prod do %>
       <script async defer data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/index.js"></script>
+      <link rel="dns-prefetch" href="https://plausible.bernheisel.com" />
     <% end %>
   </head>
   <body class="dark:bg-gray-900 dark:text-gray-100">
