@@ -14,8 +14,10 @@
     <%= live_title_tag assigns[:page_title] || "Home", suffix: " · Bernheisel" %>
     <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-    <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/vendor.js") %>"></script>
-    <script async defer data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/index.js"></script>
+    <script async defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/vendor.js") %>"></script>
+    <%= if Application.get_env(:bern, :app_env) == :prod do %>
+      <script async defer data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/index.js"></script>
+    <% end %>
   </head>
   <body class="dark:bg-gray-900 dark:text-gray-100">
     <%= render "nav.html", assigns %>

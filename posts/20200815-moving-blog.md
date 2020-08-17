@@ -221,9 +221,9 @@ window.liveSocket.connect();
 
 
 <!-- lib/bern_web/live/blog_show.html.leex -->
-<article id="post-<%= @post.id %>" phx-hook="Highlight">
-  <%# ... %>
-</article>
+<div id="post-content-<%= @post.id %>" phx-hook="Highlight" phx-update="ignore">
+  <%= raw(@post.body) %>
+</div>
 ```
 
 Cool. That's not terrible, but still I would much-prefer ALL syntax highlighting

@@ -1,5 +1,5 @@
 <%# blog_show.leex template %>
-<article id="post-<%= @post.id %>" phx-hook="Highlight">
+<article id="post-<%= @post.id %>">
   <h1 class="font-extrabold text-4xl">
     <%= @post.title %>
   </h1>
@@ -29,7 +29,7 @@
     <% end %>
   </div>
 
-  <div class="mb-6 dark:prose-dark prose lg:prose-xl">
+  <div id="post-content-<%= @post.id %>" phx-hook="Highlight" class="mb-6 dark:prose-dark prose lg:prose-xl" phx-update="ignore">
     <%= raw(@post.body) %>
   </div>
 </article>
