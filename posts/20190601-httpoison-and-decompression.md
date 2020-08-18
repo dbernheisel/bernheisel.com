@@ -36,8 +36,8 @@ automatically.
 
 HTTP requests and responses have some headers that tell the client/server what
 format of content we're looking for. The ones we care about here is
-<b>[Accept-Encoding]</b> and <b>[Content-Encoding]</b>. There's another one
-that's related called <b>[Content-Type]</b>, but that's not exactly about
+**[Accept-Encoding]** and **[Content-Encoding]**. There's another one
+that's related called **[Content-Type]**, but that's not exactly about
 compression, but we'll get to this one later.
 
 Accept-Encoding is what the client will use to say "YO SERVER! I need some of
