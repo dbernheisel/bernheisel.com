@@ -21,7 +21,7 @@
         </button>
       </div>
 
-
+      <!-- Desktop Menu -->
       <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex-shrink-0 flex items-center">
           <p class="text-xl font-bold font-mono block lg:hidden w-auto select-none">Bernheisel</p>
@@ -75,9 +75,10 @@
     </div>
   </div>
 
+
+  <!-- Mobile Menu -->
   <div :class="{'block': open, 'hidden': !open}" x-cloak class="sm:hidden">
     <div class="pt-2 pb-4 space-y-1 border-b-4 dark:border-brand-700 border-transparent">
-
       <%= live_redirect "Blog", to: Routes.blog_path(@conn, :index),
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
         "@click": "$dispatch('navigate', 'blog')",

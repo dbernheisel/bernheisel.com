@@ -14,7 +14,9 @@ defmodule BernWeb.SEO.OpenGraph do
   """
 
   alias BernWeb.SEO.Generic
+  alias BernWeb.Router.Helpers, as: Routes
   @generic %Generic{}
+  @endpoint BernWeb.Endpoint
 
   defstruct [
     :description,
@@ -24,12 +26,13 @@ defmodule BernWeb.SEO.OpenGraph do
     :published_at,
     :reading_time,
     :title,
-    :twitter_handle,
     :url,
     article_section: "Software Development",
     # site = twitter handle representing the overall site.
+    locale: "en_US",
     site: "@bernheisel",
     site_title: @generic.title,
+    twitter_handle: "@bernheisel",
     type: "website"
   ]
 
@@ -42,6 +45,20 @@ defmodule BernWeb.SEO.OpenGraph do
       reading_time: format_time(post.reading_time),
       description: String.trim(truncate(post.description, 200)),
     }
+    |> put_image(post)
+  end
+
+  defp put_image(og, post) do
+    file = "/images/blog/#{post.id}.png"
+    exists? =
+      [Application.app_dir(:bern), "/priv/static", file]
+      |> Path.join()
+      |> File.exists?()
+    if exists? do
+      %{og | image_url: Routes.static_url(@endpoint, file), image_alt: post.title}
+    else
+      og
+    end
   end
 
   defp truncate(string, length) do

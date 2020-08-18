@@ -1,6 +1,7 @@
 <%# opengraph.html. eex template %>
 <meta property="og:site_title" content="<%= @og.site_title %>">
 <meta property="og:type" content="<%= @og.type %>">
+<meta property="og:locale" content="<%= @og.locale %>">
 <meta property="og:article:section" content="<%= @og.article_section %>">
 
 <%= if @og.published_at do %>
@@ -14,6 +15,7 @@
 <meta property="og:url" content="<%= @og.url %>">
 <meta property="og:title" content="<%= @og.title %>">
 <meta property="og:description" content="<%= @og.description %>">
+<meta property="twitter:title" content="<%= @og.title %>">
 <meta property="twitter:site" content="<%= @og.site %>">
 
 <%= if @og.image_url do %>
