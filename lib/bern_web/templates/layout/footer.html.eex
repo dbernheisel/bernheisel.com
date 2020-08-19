@@ -22,7 +22,14 @@
           <path d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1zM3 15a2 2 0 114 0 2 2 0 01-4 0z"></path>
         </svg>
       <% end %>
+      <%= outbound_link to: "https://plausible.io/bernheisel.com", title: "Plausible", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+        <span class="sr-only">Analytics</span>
+        <svg viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+          <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+      <% end %>
     </div>
+
     <div class="mt-8 md:mt-0 md:order-1">
       <p class="text-center text-base leading-6 text-gray-400">
         &copy; 2020 David Bernheisel
