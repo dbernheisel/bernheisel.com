@@ -34,6 +34,12 @@ What I'm **gaining**:
 1. A tool-chain that I understand thoroughly and can contribute to; I actually
      know Elixir and Phoenix.
 1. The ability to show off LiveView-enabled components (stay tuned!)
+1. The ability to send UI updates from the backend to the frontend efficiently.
+   If you didn't notice, and if there is more than 1 current reader on this
+   article, look underneath the title of this article. You should see "x current
+   readers". That's enabled by LiveView and reacts immediately. If there aren't
+   any other readers, then open a couple of tabs on this page, and watch the
+   number climb.
 
 What I'm **not losing**:
 
