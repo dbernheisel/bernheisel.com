@@ -19,7 +19,8 @@ defmodule BernWeb.Live.BlogShow do
       socket
       |> assign(:live_seo, true)
       |> assign(:relevant_posts, relevant)
-      |> assign(:page_title, post.title)}
+      |> assign(:page_title, post.title),
+      temporary_assigns: [relevant_posts: [], post: nil]}
   end
 
   defp track_users(socket) do
