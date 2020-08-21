@@ -1,8 +1,22 @@
 %{
   title: "Managing ElixirLS updates in Neovim with asdf and vim-plug",
-  tags: ["elixir", "vim"],
+  tags: ["vim", "elixir"],
   description: "How I manage ElixirLS, neovim, and coc.nvim with vim-plug."
 }
+---
+
+**Update 2020-08-20**
+
+Since [asdf removed their .tool-versions
+file](https://github.com/elixir-lsp/elixir-ls/pull/351) I needed to adjust the
+steps below. They renamed `.tool-versions` to `.release-tool-versions`, so we
+need to account for that in our vimscript.
+
+Also, if you're running Linux, then you might need to ensure you have [GCC
+version 9 installed](https://github.com/asdf-vm/asdf-erlang/wiki). The Erlang
+release that ElixirLS is using needs 9, and I found that my system had 10
+installed.
+
 ---
 
 [Kassio's Post] was inspirational, and I adapted from his setup. My setup is a
@@ -51,13 +65,15 @@ let g:ElixirLS = {}
 let ElixirLS.path = stdpath('config').'/plugged/elixir-ls'
 let ElixirLS.lsp = ElixirLS.path.'/release/language_server.sh'
 let ElixirLS.cmd = join([
+        \ 'cp .release-tool-versions .tool-versions &&',
         \ 'asdf install &&',
         \ 'mix do',
         \ 'local.hex --force --if-missing,',
         \ 'local.rebar --force,',
         \ 'deps.get,',
         \ 'compile,',
-        \ 'elixir_ls.release'
+        \ 'elixir_ls.release &&',
+        \ 'rm .tool-versions'
         \ ], ' ')
 
 function ElixirLS.on_stdout(_job_id, data, _event)
@@ -165,13 +181,15 @@ let g:ElixirLS = {}
 let ElixirLS.path = stdpath('config').'/plugged/elixir-ls'
 let ElixirLS.lsp = ElixirLS.path.'/release/language_server.sh'
 let ElixirLS.cmd = join([
+        \ 'cp .release-tool-versions .tool-versions &&',
         \ 'asdf install &&',
         \ 'mix do',
-        \   'local.hex --force --if-missing,',
-        \   'local.rebar --force,',
-        \   'deps.get,',
-        \   'compile,',
-        \   'elixir_ls.release'
+        \ 'local.hex --force --if-missing,',
+        \ 'local.rebar --force,',
+        \ 'deps.get,',
+        \ 'compile,',
+        \ 'elixir_ls.release &&',
+        \ 'rm .tool-versions'
         \ ], ' ')
 ```
 
@@ -184,7 +202,10 @@ It's not necessary; you can totally just concat some strings together. The end
 result of this join is:
 
 ```shell
-$ asdf install && mix do local.hex --force --if-missing, local.rebar --force, deps.get, compile, elixir_ls.release
+$ cp .release-tool-versions .tool-versions && \
+    asdf install && \
+    mix do local.hex --force --if-missing, local.rebar --force, deps.get, compile, elixir_ls.release && \
+    rm .tool-versions
 ```
 
 Since I'm using [asdf] and [so are the ElixirLS
@@ -266,8 +287,10 @@ Here's the complete command that ends up being sent:
 ```shell
 $ cd {the-path} && \
     git pull && \
+    cp .release-tool-versions .tool-versions && \
     asdf install && \
-    mix do local.hex --force --if-missing, local.rebar --force, deps.get, compile, elixir_ls.release
+    mix do local.hex --force --if-missing, local.rebar --force, deps.get, compile, elixir_ls.release && \
+    rm .tool-versions
 ```
 
 **If you're only using this via vim-plug**, then vim-plug will take care of the
