@@ -3,8 +3,8 @@
   tags: ["elixir"],
   original_url: "https://robots.thoughtbot.com/simple-phoenix-text-inputs-with-formulator",
   description: """
-  Ugh... three lines for a simple text input for a form in Phoenix? How about one
-  with Formulator?
+  Ugh... three lines for a simple text input for a form in Phoenix? How about
+  one with Formulator?
   """
 }
 ---
@@ -51,7 +51,7 @@ back-end, or they want to give more flexibility to designers later, or they just
 don't want to start from scratch again when they start another application.
 (It's hard to find that balance sometimes, isn't it?)
 
-Enter: [Formulator](https://hexdocs.pm/formulator)
+Enter: [Formulator](https://hexdocs.pm/formulator/index.html)
 
 Formulator brings some simplicity to making form inputs for Phoenix, while still
 giving the developer some customization options.

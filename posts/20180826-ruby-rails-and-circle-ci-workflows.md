@@ -29,9 +29,9 @@ Today, I want to talk about my tool of choice for Continuous Integration.
 [reading the manual]: https://en.wikipedia.org/wiki/RTFM
 [how to rebase]: https://git-scm.com/docs/git-rebase
 [request cycle]: https://www.rubypigeon.com/posts/examining-internals-of-rails-request-response-cycle/
-[OpenStruct works]: https://medium.com/@farsi_mehdi/openstruct-in-ruby-ab6ba3aff9a4
-[database views]: https://www.postgresql.org/docs/current/static/tutorial-views.html
-[triggers]: https://www.postgresql.org/docs/10/static/sql-createtrigger.html
+[OpenStruct works]: https://medium.com/rubycademy/openstruct-in-ruby-ab6ba3aff9a4
+[database views]: https://www.postgresql.org/docs/current/tutorial-views.html
+[triggers]: https://www.postgresql.org/docs/10/sql-createtrigger.html
 
 ## CircleCI 2.0
 
@@ -165,13 +165,13 @@ because of an older node-based asset pipeline; CircleCI's Ruby image
 [Dockerfile] includes Node 8.x. I can't run `npm install` under Node 8.x.
 That's OK though, because we can separate them with containers.
 
-[CircleCI docker images]: https://circleci.com/docs/2.0/circleci-images
+[CircleCI docker images]: https://circleci.com/docs/2.0/circleci-images/
 [Dockerfile]: https://github.com/CircleCI-Public/circleci-dockerfiles/blob/16a3d488ce42027c38f6ef5f419e2eaf9df2f35b/ruby/images/2.5.1-stretch/node/Dockerfile#L36
 [Dockerize]: https://github.com/jwilder/dockerize
 [xvfb]: https://packages.debian.org/stretch/xvfb
 [chromedriver]: http://chromedriver.chromium.org/
 [rbenv]: https://github.com/rbenv/rbenv
-[nvm]: https://github.com/creationix/nvm
+[nvm]: https://github.com/nvm-sh/nvm
 [asdf]: https://github.com/asdf-vm/asdf
 
 ## Let's try this out
@@ -494,7 +494,7 @@ the essentials.
 
 [@bernheisel]: https://twitter.com/bernheisel
 [Travis CI]: https://travis-ci.org/
-[GitLab]: https://about.gitlab.com/features/gitlab-ci-cd/
+[GitLab]: https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/
 [Google Cloud Build]: https://cloud.google.com/cloud-build/
 
 ---

@@ -49,6 +49,7 @@ defmodule Bern.MixProject do
       {:timex, "~> 3.6"},
       # Test
       {:floki, ">= 0.0.0", only: :test},
+      {:finch, "~> 0.3", only: :test},
       # Dev
       {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]

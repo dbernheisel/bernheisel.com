@@ -49,7 +49,7 @@ If you don't know what a context is:
 - or [read Martin Fowler's explanation of Bounded
   Context](https://martinfowler.com/bliki/BoundedContext.html)
 - or [read the Phoenix 1.3 release
-  post](http://phoenixframework.org/blog/phoenix-1-3-0-released)
+  post](https://www.phoenixframework.org/blog/phoenix-1-3-0-released)
 - or read my tldr version:
 
   > A context is a module that defines the interface between a set of

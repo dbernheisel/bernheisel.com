@@ -479,7 +479,7 @@ client, you probably didn't have to worry about any of this :)
 [brotli]: https://github.com/google/brotli
 [HTTPoison]: https://github.com/edgurgel/httpoison
 [Tesla]: https://github.com/teamon/tesla
-[Mint]: https://github.com/ericmj/mint
+[Mint]: https://github.com/elixir-mint/mint
 [Gun]: https://github.com/ninenines/gun
 [hackney]: https://github.com/benoitc/hackney
 [hex.pm]: https://hex.pm/packages
