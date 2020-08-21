@@ -20,7 +20,7 @@ I've written a couple LiveView applications now,
    SendGrid. I hope to open-source this soon when it's ready.
 1. Another private work-related project.
 
-[Elixir Regex Tester]: https://elixir-utilities.herokuapp.com
+[Elixir Regex Tester]: https://utils.zest.dev/regex
 [Phoenix Live Dashboard]: https://github.com/phoenixframework/phoenix_live_dashboard
 
 Everytime I build one, I learn something new and find a new pattern, and some

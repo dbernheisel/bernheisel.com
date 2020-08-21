@@ -209,7 +209,7 @@ $ cp .release-tool-versions .tool-versions && \
 ```
 
 Since I'm using [asdf] and [so are the ElixirLS
-developers](https://github.com/elixir-lsp/elixir-ls/blob/master/.tool-versions)
+developers](https://github.com/elixir-lsp/elixir-ls/blob/master/.release-tool-versions)
 I want to make sure I'm using the ElixirLS developers' tools so I know for sure
 I won't run into trouble while developing; I want my ElixirLS to be stable since
 it's such an important tool for me.
@@ -400,7 +400,7 @@ Have any vim and Elixir tips of your own? TWEEEEEEEET at me [@bernheisel]
 [vim-plug]: https://github.com/junegunn/vim-plug
 [ElixirLS]: https://github.com/elixir-lsp/elixir-ls
 [coc.nvim]: https://github.com/neoclide/coc.nvim
-[coc-elixir]: https://github.com/amiralies/coc-elixir
+[coc-elixir]: https://github.com/elixir-lsp/coc-elixir
 [coc-diagnostic]: https://github.com/iamcco/coc-diagnostic
 [mix do]: https://hexdocs.pm/mix/Mix.Tasks.Do.html
 [@bernheisel]: https://twitter.com/bernheisel

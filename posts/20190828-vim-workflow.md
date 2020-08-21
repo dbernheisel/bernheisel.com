@@ -68,7 +68,7 @@ buffer; I can have more terminal buffers, but the first one I open is what
 vim-test will use going forward.
 
 [thoughtbot dotfiles]: https://github.com/thoughtbot/dotfiles
-[vim-test]: https://github.com/janko/vim-test
+[vim-test]: https://github.com/vim-test/vim-test
 [neoterm]: https://github.com/kassio/neoterm
 
 Here's how I configure vim-test with neoterm. (my [dotfiles] for reference)

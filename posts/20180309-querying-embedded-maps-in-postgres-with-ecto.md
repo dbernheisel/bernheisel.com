@@ -229,8 +229,8 @@ of maps or structs, then check out Jon's post [Why Ecto's Way of
 Storing Embedded Lists of Maps Makes Querying Hard][Jons_post].
 
 [fragment_link]: https://hexdocs.pm/ecto/Ecto.Query.html#module-fragments
-[psql_json]: https://www.postgresql.org/docs/current/static/functions-json.html
+[psql_json]: https://www.postgresql.org/docs/current/functions-json.html
 [mdn_responsive_images]: https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images
 [ecto]: https://hexdocs.pm/ecto
 [sample_repo]: https://github.com/dbernheisel/sample_json_ecto_queries
-[Jons_post]: https://robots.thoughtbot.com/why-ecto-s-way-of-storing-embedded-lists-of-maps-makes-querying-hard
+[Jons_post]: https://thoughtbot.com/blog/why-ecto-s-way-of-storing-embedded-lists-of-maps-makes-querying-hard

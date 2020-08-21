@@ -118,7 +118,7 @@ This can be optimized more, but this is where I'm finished since it achieves my 
 
 So far, we just have a script that we have to manually kick off in order for it to work. I am still too lazy and instead want my $2000 computer to do the work for me. I was tempted to just use cron to have this script run automatically every 5 minutes, but I thought that was wasteful, since it's probable that this script will fail most times it's launched. I read around and found Mac's tool called launchd, which watches for events, and then launches actions.
 
-I'm unfamiliar with plists still, so I really just piggybacked on the [backs of other giants](http://rajeev.name/2008/09/01/automated-osx-backups-with-launchd-and-rsync/). Step 3 on this page shows me how to do this (btw, this  guy solves the same problem here, but does it differently; check his solution out if you're interested). Summed up, create a plist, place it in your ~/Library/LaunchAgents folder (tilde represents your home folder), and you're done!
+I'm unfamiliar with plists still, so I really just piggybacked on the backs of other giants. Step 3 on this page shows me how to do this (btw, this  guy solves the same problem here, but does it differently; check his solution out if you're interested). Summed up, create a plist, place it in your ~/Library/LaunchAgents folder (tilde represents your home folder), and you're done!
 
 The important bits of the .plist file are the
 - Program
@@ -139,9 +139,9 @@ Now you should have a fully working solution.
 
 ## Making it look *slightly* better
 
-I'm not _quite_ finished yet. I wanted to have my lock folder be pretty with an icon, so I went back to my BASH script and added a couple lines to set the folder icon. I found the commands here [Stack Exchange](http://apple.stackexchange.com/questions/6901/changing-a-file-or-folder-icon-using-the-terminal).
+I'm not _quite_ finished yet. I wanted to have my lock folder be pretty with an icon, so I went back to my BASH script and added a couple lines to set the folder icon. I found the commands here [Stack Exchange](https://apple.stackexchange.com/questions/6901/how-can-i-change-a-file-or-folder-icon-using-the-terminal).
 
-First, grab an icon you want. I supplied one already, but you might have a different preference. I found mine by googling, and you might find it helpful to google with "filetype:png" so you find an icon with transparency. Then go to http://iconverticons.com/online/ and convert it to Mac-compatible .icns.
+First, grab an icon you want. I supplied one already, but you might have a different preference. I found mine by googling, and you might find it helpful to google with "filetype:png" so you find an icon with transparency. Then go to https://iconverticons.com/online/ and convert it to Mac-compatible .icns.
 
 Second, create a new temporary folder. We're going to apply this icon to it so we can grab a file we need from it once it's set. Then, right-click the folder, and drag-and-drop the .icns file to the Icon in the top left.
 

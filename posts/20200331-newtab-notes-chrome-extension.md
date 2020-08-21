@@ -36,7 +36,7 @@ practice using those frameworks so I can understand them more. It's all about
 the repetition for learning.
 
 Since I know nothing about Chrome Extension development, I [found an existing
-extension](https://github.com/intrvertmichael/MarkdownTab) that was pretty close
+extension](https://github.com/intrvertmichael/markdown-tab) that was pretty close
 to what I wanted. I forked it and started customizing it for my own wants.
 Fiddling around with the code made me understand more of what makes it
 Chrome-specific, which isn't too much, and the rest was just
