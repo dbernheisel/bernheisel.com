@@ -1,6 +1,7 @@
 %{
   title: "Nostalgia, Fun, and Programming",
   tags: ["elixir", "gaming"],
+  published: false,
   description: """
   When we recognize music, movies, old photos, or video games of the past, it
   has a powerful effect: nostalgia. It's a pattern of the past that we remember
@@ -19,15 +20,15 @@
 
 <!-- speaking head -->
 
-When we recognize music, movies, old photos, or video games of the past, it has
-a powerful effect: nostalgia. It's a pattern of the past that we remember
-fondly.
+When we recognize music, movies, old photos, or video games of the past, it
+sometimes has a powerful effect: nostalgia. It's a pattern of the past that we
+remember fondly.
 
-When we write code, we recall patterns of the past to consider as tools to help
-solve today's problem.
+When we write code, we also recall patterns of the past to consider as tools to
+help solve today's problem.
 
-I'd like to explore the connection between software development and nostalgia,
-and have some fun while we're exploring the theory.
+I'd like to have some fun exploring the connection between software development
+and nostalgia.
 
 ## What is Nostalgia
 
@@ -37,13 +38,13 @@ pain. It was invented in 1688, when Swiss soldiers would miss home so much,
 that they would mentally break down, and no longer be able to 'be a soldier';
 they longed for who they used to be.
 
-Nostalgia today is much less than a medical condition, and now considered
-a temporary emotion, usually triggered by some sense, like sight or sound. The
-word is no longer associated with the negative effects to the person; in fact
-quite the opposite; it now means "fondly remembering the past".
+The condition of 'nostalgia' evolved into much less than a medical condition,
+and more as a temporary emotion. The word is no longer associated with the
+negative effects to the person; in fact quite the opposite: it now means "fondly
+remembering the past".
 
-Inducing nostalgia can boost psychological well-being; increase feelings of
-self-esteem and **social belonging**, encourage psychological growth. Nostalgia
+Inducing nostalgia can boost psychological well-being, increase feelings of
+self-esteem, **social belonging**, and encourage psychological growth. Nostalgia
 can be a restorative way of coping with negative stress.
 
 Marketing knows about nostalgia; it's a powerful selling tool. There are 11
@@ -66,11 +67,10 @@ Curve](https://en.wikipedia.org/wiki/Reminiscence_bump).
 Our autobiographical memory -- that is, our psychological history of ourselves
 -- on average shows that most of our memories are formed between the ages of
 10-30 years old. Younger than 10 is considered childhood amnesia; greater than
-that is considered too recent. For the life of me, I can't remember what being
-6 was like; I remember snippets like riding my bike around the neighborhood in
-odd moments of self-reflection. Likewise, I couldn't tell you what I did
-2 years ago that affected my life profoundly. It's unconsciously regarded as
-too recent to be formative of "who I am."
+that is considered too recent. For the life of me, I can't remember what being 6
+was like. Likewise, I couldn't tell you what I did 2 years ago that affected my
+life profoundly. It's unconsciously regarded as too recent to be formative of
+"who I am."
 
 Our young adulthood is where we develop our self-identity; it's when we
 discover who we are and want to be. We'll come back around to that bit. For me,
@@ -105,7 +105,7 @@ recognizable video game character of all time. Made by a company formed in
 
 Video games are a source of nostalgia for many people. They're fun. They're
 a way to escape the stress of the day. Many video games, such as Final Fantasy,
-are epic stories that we can get lost within; just like books but these are
+are epic stories that we can get lost within; just like books, but these are
 interactive! Others, like classic Mario, have very little story and just focus
 on addictive game mechanics.
 
@@ -128,16 +128,18 @@ And later Raph Koster:
 > The idea was, games are systems built to help us learn patterns, and fun is
 > a neurochemical reward to encourage us to keep trying.
 
-These games teach us patterns, and then delightfully introduce variations on
-them, which keeps us learning. We see new situations as the game progresses
-and have new ways to apply the learned patterns to them; or perhaps combine
-patterns.
+These games _are built to teach us patterns_, and then delightfully introduce
+variations on them, which keeps us learning. We see new situations as the game
+progresses and have new ways to apply the learned patterns to them; or perhaps
+combine patterns.
 
 Let's look at an example.
 
-<!-- Super Mario Bros - Level One -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JpJ_vzdMkyw?start=4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>
 
-In the original Super Mario Bros, we know that Mario moves right to advance to the goal; we can tell because he's on the left side of the screen, and you can't go left; you must go right.
+In the original Super Mario Bros, we know that Mario moves right to advance to
+the goal; we can tell because he's on the left side of the screen-- you can't
+go left; you must go right.
 
 The game introduces a pattern by establishing if you touch the Goombas, you
 die. Noted-- don't touch bad guys.
@@ -145,18 +147,24 @@ die. Noted-- don't touch bad guys.
 Let's try pushing one of the buttons on the gamepad. Turns out Mario can jump!
 Let's avoid those bad guys. Noted-- I can move right and jump
 
-There are blocks now. Looks like if I jump into them, I might get something. If I jump on top, it acts as a platform.
+There are blocks now. Looks like if I jump into them, I might get something. If
+I jump on top, it acts as a platform.
 
 It introduces a pattern by establishing if you touch the mushroom, you grow.
 Noted-- there are power-ups that make me stronger
 
-You experiment with two elements: Getting a mushroom, and then touching the enemy. Turns out that's a mistake and now you shrink back down. Noted-- can't kill bad guys by only being big.
+You experiment with two elements: Getting a mushroom, and then touching the
+enemy. Turns out that's a mistake and now you shrink back down. Noted-- can't
+kill bad guys by only being big, and when I'm big and get hurt, I become small.
 
-You experiment with two more elements: jump on the enemy's heads!. Noted-- bad guys can be jumped on.
+You experiment with two more elements: jump on the enemy's heads!. Noted-- bad
+guys can be jumped on.
 
-Now we're at a pit. Probably not safe to go in there, but maybe the screen will move down and reveal a new area. Let's try. Noted-- can't go down pits.
+Now we're at a pit. Probably not safe to go in there, but maybe the screen will
+move down and reveal a new area. Let's try. Noted-- can't go down pits.
 
-These are universal patterns now in games. We know instinctively that we just don't touch enemies, and we should jump over pits.
+These are universal patterns now in games. We know instinctively that we just
+don't touch enemies, and we should jump over pits.
 
 <!-- video of jumping over pits -->
 
@@ -166,15 +174,16 @@ Earlier we talked about nostalgia. Remember, nostalgia is fondly
 **remembering** the past. It's remembering a pattern that may be long gone from
 our current life.
 
-Like nostalgia, video games also has some psychological benefits. "Theory of
-Fun" includes [a study from 2011 released by East Carolina
+Like nostalgia, video games also has psychological benefits. "Theory of Fun"
+includes [a study from 2011 released by East Carolina
 University](https://news.ecu.edu/2011/02/16/study-casual-video-games-demonstrate-ability-to-reduce-depression-and-anxiety/),
 that found that casual gamers who played in 30 minute periods showed an 87%
 improvement in cognitive response time, reduced depression symptoms by 57%, and
 215% increase in executive functioning. That's incredible!
 
 I'm starting to get the idea that nostalgia and video games are good news for
-our brains and well-being. This isn't limited to video games either; although I'm focusing on them; these taught patterns also exist in music and movies.
+our brains and well-being. This isn't limited to video games either; although
+I'm focusing on them; these taught patterns also exist in music and movies.
 
 Thinking about pop music, almost every song on the radio has a recognizable
 pattern, whether you've picked it out or not:
@@ -188,10 +197,9 @@ pattern, whether you've picked it out or not:
 - Chorus
 - Outro
 
-If we analyzed the notes themselves, there are patterns of notes that musicians
+If we analyzed the musical notes, there are patterns of notes that musicians
 know sound good together called scales. Notes played that are not on the given
-scale will create a harsh sound creating dissonance; an out-of-tune guitar, for
-example.
+scale will create a dissonant sound; an out-of-tune guitar, for example.
 
 Likewise, movies and books typically follow a pattern:
 
@@ -200,15 +208,34 @@ Likewise, movies and books typically follow a pattern:
 - Climax and Falling
 - Denouement (lessons learned)
 
+![Tic Tac Toe](/images/tictactoe.png)
+
 Consider Tic-Tac-Toe; it's definitely a game, but the pattern is easily
 perceived and there is no continuing variation. Mastery of Tie-Tac-Toe is
-quick. Alas, there is a point where patterns become boring and no longer fun.
+quick.
+
+Consider Korean dramas; usually a love story between a jerk guy and a shy girl.
+A series of events leads to the shy girl turning away from jerk guy, almost
+falling in love with another fella but then jerk guy gets hit by a car **BAM**
+now he has amnesia. This turns jerk guy into nice guy. Shy girl now likes nice
+guy. They get together, and then **OH NOEES** nice guy remembers stuff and now
+he's a mostly-jerk-but-now-somehow-ok-guy. Seriously, every k-drama is this in a
+nutshell. Predictable.
+
+Alas, there is a point where patterns become boring and no longer fun.
 
 > Delight tends to wear thin very quickly. Real fun comes from challenges that
 > are always at the margin of our ability. When the balance is really perfect,
 > people often zone out.
 
+There has to be variance in the patterns to stay interesting. Games do this by
+having multiple stages or areas, power-ups, faster cars, etc. Music does this
+with different instruments, tempos, singers, etc. Movies does this new
+characters, settings, twists, etc.
+
 ## Micro-lifecycles
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pDHBqK8gc_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>
 
 <!-- Tron "The Grid" -->
 
@@ -225,13 +252,15 @@ Software developers are players in the game of software.
 
 People are amazing pattern-matchers. They look for patterns in everything;
 sometimes even finding patterns where there wasn't supposed to be, like a cloud
-formation. In software, patterns that emerge are often collected into groups.
-At the macro-level, these patterns are called architectures, such as MVC
+formation. In software, patterns that emerge are often collected into groups. At
+the macro-level, these patterns are called architectures, such as MVC
 (Model-View-Controller) common in backend frameworks, or MVVM
 (Model-View-ViewModel) common in frontend frameworks, or REST (Representational
 state transfer) common in web communication.
 
-At the micro-level, it looks like, well... a game. This micro-lifecycle is how every game works. Let's look at the event loop of a game from the perspective of a gamer:
+At the micro-level, it looks like **spoilers** a game. This micro-lifecycle is
+how every game works. Let's look at the event loop of a game from the
+perspective of a gamer:
 
 ```
 +----------------------------------------------------------+
@@ -288,7 +317,7 @@ This looks like test-driven development!
 - And adjust according to the feedback we experience.
 
 Software developers and gamers experience the same micro-lifecycles! But let's
-call it what it is: it's a pattern at the micro level.
+call it what it is: it's a rapid pattern.
 
 Software development revolves around languages, architectures, and frameworks.
 These are all codified patterns with dissertations, white-papers, systems, and
@@ -303,7 +332,7 @@ of frameworks that are aimed to be productive.
 
 It wasn't always like this though. Let's talk about JavaScript.
 
-<!-- image of blurry islands -->
+![Chaos](/images/blog/nostalgia-chaos-islands.png)
 
 Back in the early 2000s, the web looked entirely different. JavaScript, believe
 it or not, wasn't as widely used as it is today. It was a mess; different
@@ -314,24 +343,34 @@ west; only those willing to leave the comforts of what they knew and explore the
 unknown would be able to move the language and its ecosystem forward and help
 define it.
 
+![jQuery Island](/images/blog/nostalgia-jquery-islands.png)
+
 2006 came around and so did a little library called jQuery, which codified how
 to do basic actions in JavaScript. It standardized, unofficially, how to access
 elements on the page, how to handle events, how to animate. It was an amazing
 contribution to the JavaScript community. It's still used today! jQuery
 inspired browser makers and some of those behaviors were codified into the
-language properly, and some of those apis are integrated into the browsers now
+language properly, and some of those APIs are integrated into the browsers now
 and work natively without the library.
 
+![Angular Island](/images/blog/nostalgia-angular-islands.png)
+
 Several years later in 2010, Google released a framework called Angular (known
-as AngularJS now). This was a full framework that applied the MVC and MVVM
+as AngularJS now). This was a full framework that applied the MVC and/or MVVM
 architecture to JavaScript.
+
+![React Island](/images/blog/nostalgia-react-islands.png)
 
 Years later in 2013, another library called React was released. Together with
 other libraries like React Router, Redux and more, it essentially formed a new
 framework.
 
+![Ember Island](/images/blog/nostalgia-ember-islands.png)
+
 Shortly after in 2014, Vue was released, picking up some loved patterns from
 both Angular and React.
+
+![Vue Island](/images/blog/nostalgia-vue-islands.png)
 
 These islands of patterns are where developers congregated. Like little
 nation-states, they liked their leaders, disliked their leaders, stagnated,
@@ -347,28 +386,36 @@ I think these patterns determine how much fun we're going to have programming.
 
 Let's talk about a software language called Elixir.
 
-[Elixir](https://elixir-lang.org/) is a relatively new functional language.
+[Elixir](https://elixir-lang.org/) is a relatively new (born ~2011) functional
+language.
 
 > Elixir is a dynamic, functional language designed for building scalable and
 > maintainable applications.
 
-> Elixir leverages the Erlang VM, known for running low-latency, distributed
-> and fault-tolerant systems, while also being successfully used in web
-> development, embedded software, data ingestion, and multimedia processing
-> domains.
+> Elixir leverages the Erlang VM, known for running low-latency, distributed and
+> fault-tolerant systems, while also being successfully used in web development,
+> embedded software, data ingestion, and multimedia processing domains.
 
 Elixir is beloved by developers, [particularly seasoned
 developers](https://elixirsurvey.typeform.com/report/yYmJv1/OcCCilUmDn8lBpgP),
 and I want to explore why. In fact, Elixir is the entire motivation for me to
 produce this content.
 
-[Twitter images of liking Elixir]
+![I'm more and more impressed by the BEAM the more I learn about Elixir, Erlang, and OTP](/images/elixir-twitter-like-1.png)
+![So this Elixir thing...I think I'm a way bigger fan than I thought I'd be](/images/elixir-twitter-like-2.png)
+![I'm reading the Elixir Phoenix documentation and one thing I can tell is it is
+pure engineering poetry. What a great piece of knowledge](/images/elixir-twitter-like-3.png)
+![Elixir is my new go to for backend development...you will quickly see why](/images/elixir-twitter-like-4.png)
+![Last time I wrote Elixir for work was over 3 years ago. I'm so excited to get
+back to it.](/images/elixir-twitter-like-5.png)
+![With OTP for distributed and fault-tolerant systems, Phoenix, LiveView, and
+now JIT, there's less and less that isn't a joy to write in Elixir](/images/elixir-twitter-like-6.png)
 
-> The Vault team [at Heroku] doing Elixir is only three engineers. Most of
-> their apps are used internally, so they are generally not worried about
-> performance. They continue using Elixir because they **feel productive and
-> happy with it**. They have also found it is an easier language to maintain
-> compared to their previous experiences.
+> The Vault team [at Heroku] doing Elixir is only three engineers. Most of their
+> apps are used internally, so they are generally not worried about performance.
+> They continue using Elixir because they **feel productive and happy with it**.
+> They have also found it is an easier language to maintain compared to their
+> previous experiences.
 
 -- ["PaaS with Elixir at Heroku"](https://elixir-lang.org/blog/2020/09/24/paas-with-elixir-at-Heroku/)
 
@@ -406,7 +453,8 @@ position of the next function `String.trim/1`. The result of that function is
 then passed into the first position of the next function `String.replace(...,
 "My", "Your")` and so on until the end when we have the result `"YOUR STRING"`.
 
-Elixir developers reading this are probably already bored. We've seen this pattern a million times. But stick with me!
+Elixir developers reading this are probably already bored. We've seen this
+pattern a million times. But stick with me!
 
 It doesn't have to be all about transformation either. If at any point, we
 wanted to see what the data was between any of those functions, we could also
@@ -439,11 +487,10 @@ Move the `IO.inspect` down a little bit...
 It's a simple and effective way to see the state of your string as it's passed
 through the pipeline.
 
-The pipeline pattern is everywhere in Elixir, and it makes it clear how the
-data is being operated upon. We can see instantly that it's being trimmed,
-we're replacing a word, and upcasing the string. There's no need to name
-interstitial stages of the string while it's being operated upon. Opposed to
-this:
+The pipeline pattern is everywhere in Elixir, and it makes it clear how the data
+is being operated upon. We can see instantly that it's being trimmed, we're
+replacing a word, and upcasing the string. There's no need to name interstitial
+stages of the string while it's being operated upon. Opposed to this:
 
 ```elixir
 trimmed_string = String.trim("My String")
@@ -461,9 +508,12 @@ The pipeline operator `|>` is not in every language, nor does it need to be in
 order to write your code towards data transformation pipelines, but because the
 operator exists, it steers developers to work in such a pattern.
 
-Another form of a data pipeline is using the `with` macro. You may have noticed in our simple example about that a string is passed in and out of all the functions; there wasn't a great way to check the output if it was successful; `with` helps with that. Let's look at that in our next pattern:
+Another form of a data pipeline is using the `with` macro. You may have noticed
+in our simple example about that a string is passed in and out of all the
+functions; there wasn't a great way to check the output if it was successful;
+`with` helps with that. Let's look at that in our next pattern:
 
-## Monads (Maybe, Tuple Metadata)
+## Monads
 
 Ok, before I lose you, we're not going to explore what monads are; it doesn't
 matter. But, their effect is powerful and I want to explore a pattern that they
@@ -489,7 +539,11 @@ end
 In Elixir, we're pattern-matching on the result of `this_might_work()`, and
 that function returns a maybe monad. The monad in this case is a 2-item tuple.
 The tuple begins with either `:ok` or `:error` which is metadata about the
-accompanied data.
+accompanied data. `{METADATA, DATA}`
+
+If the returned tuple's first element is `:ok`, then bind the data to
+`success_data` and move on. Likewise, if it's `:error`, then bind the
+unsuccessful data to `data_about_error` and move on.
 
 This is a pervasive pattern in Elixir. I bet that 100% of Elixir codebases out
 there have this pattern in it. It's extremely effective in how to route the
@@ -520,12 +574,13 @@ the `with` macro. Inside the `with` statement:
   and go!
 
 If they don't have one of the above items, then the pipeline will stop and
-return the first encountered error.
+return the first encountered error. **SPOILERS** the ice cream machine was
+broken, so we're going to get an error when ordering a milkshake.
 
 The maybe monad is extremely effective in crafting how to route data in
 pipelines.
 
-## Happy-path
+## Happy Path
 
 ![Railway Happy/Unhappy path](/images/railway-happy.png)
 
@@ -577,12 +632,16 @@ many developers, the first goal is to make it work, then make it fast, then
 make it beautiful. With the solution consolidated at the top of the function,
 any readers know what makes it work and where to handle error cases.
 
-Focusing on the solution is important; developers tend to think of what can go
-wrong first, and develop for those first. This leads to "gold-plating" your
-code before it often sees any real usage. More importantly, this way of
-thinking infects other areas of your psyche. It leads to anxiety!
+Elixir isn't perfect in this in all cases; it's possible in any language to
+obfuscate a function's happy path, but again the tool is here which helps
+visually organize the happy path.
 
-## Totality (Typespecs)
+Focusing on the solution is important; developers tend to think of what can go
+wrong and develop for those first. This leads to "gold-plating" your code before
+it often sees any real usage. More importantly, this way of thinking infects
+other areas of your psyche. It leads to anxiety!
+
+## Totality
 
 Total functions are functions that give you a valid return value for every
 combination of valid arguments. Total functions are really about communication.
@@ -600,9 +659,11 @@ Developers annotate their code with docs and types to communicate to other
 developers what the expected input and output should be, and state guarantees
 on how it should work.
 
-A basic example: `String.upcase` expects an input string and outputs a string.
-It will always succeed if you give it that input, and will always return to you
-a string. It does not lie to you; it's total.
+A basic example:
+[`String.upcase`](https://hexdocs.pm/elixir/String.html#upcase/2) expects an
+input string and outputs a string. It will always succeed if you give it that
+input, and will always return to you a string. It does not lie to you; it's
+total.
 
 Here's another example:
 
@@ -646,6 +707,7 @@ HeroAction.fight_criminal(batman, criminal)
 The guarantee of this code is that you're able to hand it anything that matches
 the type of `hero` and `baddie`, and you will always get an `{:ok, slogan}` in
 return. There are no other possible way this could fail; it's a total function.
+The heroes always win and they take every opportunity to say their slogan.
 
 Additionally, if you're using an ElixirLS-enabled editor, you can get some
 hints while developing:
@@ -654,8 +716,8 @@ hints while developing:
 
 Communicating with each other is an important part of developing software.
 Rarely is software developed by one and only one person, and even if developed
-solo, you have your future and past selves to communicate with. Documentation
-such typespecs assist you with creating total functions that let you compose
+solo, you have your future and past selves to communicate with. Documenting such
+typespecs assist you with creating total functions that let you compose
 functions safely. That leads us to our final pattern we'll explore today.
 
 ## Composition
@@ -671,29 +733,45 @@ paradigms in how to solve a problem depending on its scale.
 
 -- [Scott Wlaschin: Functional Programming Design Patterns]
 
+![Turtles all the way down](/images/turtles-tiling.png)
+
 This is comforting, because when we already have a business problem we're
 trying to solve; we don't need a language problem or tooling problem clouding
 our judgment. Our brain can focus on one thing at a time and "zone out" on
 solving the business problem with our familiar and patterned toolset.
 
+In gaming, it's important to not frustrate the player with too much difficulty
+too soon. You have to give the player tools to solve the presented problems
+first. One they've mastered the tools, then you can make them apply their
+newfound knowledge to the new problems. Likewise, we want Elixir (our tool) to
+not be one of the problems as we solve the main problem (the business).
+Otherwise they will give up and tell all their friends "this game sux."
+
 ## Understood
 
-These patterns are pervasive in almost all Elixir codebases I've seen, and because those patterns are common, developers have a good way to communicate with each other which is the ultimate goal.
+These patterns are pervasive in almost all Elixir codebases I've seen, and
+because those patterns are common, developers have a good way to communicate
+with each other which is the ultimate goal.
 
 We explored nostalgia, which established the positive effect it has on the
 person. These patterns of our past remind us of who we used to be or some
-aspect of how we identify ourselves.
+aspect of how we identify ourselves. Most importantly, **nostalgia increases our
+sense of belonging and encourages growth**.
 
-The [Theory of Fun] explains that fun is the emotional response to learning; the
-reward for continuing to learn. What people learn are patterns in a variety of
-settings: adult life, child life, competitions, making mistakes, and video
-games which is what we explored.
+The [Theory of Fun] explains that **fun is the emotional response to learning**;
+the reward for continuing to learn. What people learn are patterns in a variety
+of settings: school, childhood, adulthood, that one time at the bar where I
+talked too much, competitions, and (like we explored) video games. **We
+oftentimes have fun when seeing patterns reoccur**.
 
 Software development is chock-full of patterns. Developers apply patterns
 constantly to problems they encounter when trying to build something. I focused
 on Elixir here, but this is true for many languages and frameworks; some maybe
-truer than others.
+more true than others. **Elixir has excellent patterns, and developers that
+share the same patterns understand each other, which is all we really want in
+the end anyway -- to be understood.**
 
+[The soliders who died of homesickness]: https://theconversation.com/the-soldiers-who-died-of-homesickness-65910
 [Cameron Price: Micropatterns]: https://www.youtube.com/watch?v=9uvp4h7gXHg
 [Scott Wlaschin: Functional Programming Design Patterns]: https://www.youtube.com/watch?v=srQt1NAHYC0
 [Reminiscence Bump]: https://en.wikipedia.org/wiki/Reminiscence_bump

@@ -52,6 +52,17 @@ module.exports = {
           'pre code::after': {content: ''},
         },
       },
+      print: {
+        css: {
+          color: theme('colors.black'),
+          h1: { color: theme('colors.black') },
+          h2: { color: theme('colors.black') },
+          h3: { color: theme('colors.black') },
+          h4: { color: theme('colors.black') },
+          h5: { color: theme('colors.black') },
+          h6: { color: theme('colors.black') }
+        }
+      },
       dark: {
         css: {
           'blockquote': {
@@ -131,6 +142,9 @@ module.exports = {
           '800': '#05505c',
           '900': '#014451'
         },
+      },
+      screens: {
+        'print': {'raw': 'print'}
       }
     },
   },

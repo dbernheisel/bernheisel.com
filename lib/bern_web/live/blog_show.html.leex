@@ -29,13 +29,14 @@
     <% end %>
   </div>
 
-  <div id="post-content-<%= @post.id %>" phx-hook="Highlight" class="mb-6 dark:prose-dark prose lg:prose-xl" phx-update="ignore">
+  <div id="post-content-<%= @post.id %>" phx-hook="Highlight" class="mb-6 print:prose-print dark:prose-dark prose lg:prose-xl" phx-update="ignore">
     <%= raw(@post.body) %>
   </div>
 </article>
 
 <%= if Enum.any?(@relevant_posts) do %>
 
+<div class="block print:hidden">
   <hr class="my-8">
 
   <h3 class="text-lg font-medium">Other articles that may interest you</h3>
@@ -51,4 +52,5 @@
       </div>
     <% end %>
   </div>
+</div>
 <% end %>

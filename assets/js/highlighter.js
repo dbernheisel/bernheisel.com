@@ -24,7 +24,7 @@ hljs.registerLanguage('html', xml);
 window.highlightAll = function(where = document) {
   where.querySelectorAll('pre code').forEach((block) => {
     const lang = block.getAttribute("class")
-    if (lang !== "makeup elixir") {
+    if (lang && lang !== "makeup elixir") {
       const { value: value } = hljs.highlight(lang, block.innerText);
       block.innerHTML = value;
     }

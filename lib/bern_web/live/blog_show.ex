@@ -1,9 +1,18 @@
 defmodule BernWeb.Live.BlogShow do
   use BernWeb, :live_view
 
+  def mount(%{"id" => id, "preview" => "true"}, _session, socket) do
+    id
+    |> Bern.Blog.get_post_preview_by_id!()
+    |> show(socket)
+  end
   def mount(%{"id" => id}, _session, socket) do
-    post = Bern.Blog.get_post_by_id!(id)
+    id
+    |> Bern.Blog.get_post_by_id!()
+    |> show(socket)
+  end
 
+  def show(post, socket) do
     relevant =
       post.tags
       |> Enum.shuffle()
