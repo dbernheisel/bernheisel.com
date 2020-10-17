@@ -14,16 +14,23 @@ defmodule Bern.Blog do
 
   # The @posts variable is first defined by NimblePublisher.
   # Let's further modify it by sorting all posts by descending date.
-  @posts Enum.sort_by(@posts, & &1.date, {:desc, Date})
+  @published_posts @posts |> Enum.sort_by(& &1.date, {:desc, Date}) |> Enum.filter(& &1.published)
+  @all_posts Enum.sort_by(@posts, & &1.date, {:desc, Date})
 
   # Let's also get all tags
   @tags @posts |> Enum.flat_map(& &1.tags) |> Enum.uniq() |> Enum.sort()
 
   # And finally export them
-  def all_posts, do: @posts
+  def all_posts, do: @all_posts
+  def published_posts, do: @published_posts
   def all_tags, do: @tags
 
   def get_post_by_id!(id) do
+    Enum.find(published_posts(), &(&1.id == id)) ||
+      raise NotFoundError, "post with id=#{id} not found"
+  end
+
+  def get_post_preview_by_id!(id) do
     Enum.find(all_posts(), &(&1.id == id)) ||
       raise NotFoundError, "post with id=#{id} not found"
   end

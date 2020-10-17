@@ -23,7 +23,14 @@ config :bern, BernWeb.Endpoint,
   secret_key_base: "na+Mru8FGRc3ZJqrkXDJPqTs7RKeIynpJBteUKicIm498dIxe+Nn7G4THVH7W2fc",
   render_errors: [view: BernWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Bern.PubSub,
-  live_view: [signing_salt: "KtGkqxBX"]
+  live_view: [signing_salt: "KtGkqxBX"],
+  rss_root: %URI{
+    authority: "bernheisel.com",
+    host: "bernheisel.com",
+    scheme: "https",
+    port: 443,
+    path: nil
+  }
 
 # Configures Elixir's Logger
 config :logger, :console,

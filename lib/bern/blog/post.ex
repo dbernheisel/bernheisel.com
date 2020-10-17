@@ -1,6 +1,6 @@
 defmodule Bern.Blog.Post do
   @enforce_keys [:id, :title, :body, :description, :reading_time, :tags, :date]
-  defstruct [:id, :title, :body, :description, :original_url, :reading_time, :tags, :date]
+  defstruct [:id, :title, :body, :description, :original_url, :reading_time, :tags, :date, published: true]
 
   def build(filename, attrs, body) do
     [
