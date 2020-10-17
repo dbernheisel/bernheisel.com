@@ -786,6 +786,11 @@ I'll leave you with a quote:
 
 ---
 
+Want to learn more about this topic? Check out these inspiring talks:
+
+- [Garrett Smith: The Timeless Way of Building Erlang Apps]
+- [Cameron Price: Micropatterns]
+
 Special thanks to [Quinn Wilton] for proofreading!
 
 [The soliders who died of homesickness]: https://theconversation.com/the-soldiers-who-died-of-homesickness-65910
@@ -799,3 +804,4 @@ Special thanks to [Quinn Wilton] for proofreading!
 [Elixir Case Study at Heroku]: https://elixir-lang.org/blog/2020/09/24/paas-with-elixir-at-Heroku/
 [A Pattern Language]: https://en.wikipedia.org/wiki/A_Pattern_Language
 [Quinn Wilton]: http://quinnwilton.com/
+[Garrett Smith: The Timeless Way of Building Erlang Apps]: https://www.youtube.com/watch?v=UUvU8cjCIcs
