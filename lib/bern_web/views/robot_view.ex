@@ -16,7 +16,7 @@ defmodule BernWeb.RobotView do
       title: @generic.title,
       author: "David Bernheisel",
       description: @generic.description,
-      posts: Bern.Blog.all_posts()
+      posts: Bern.Blog.published_posts()
     })
   end
 end

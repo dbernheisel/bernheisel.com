@@ -2,7 +2,7 @@ defmodule BernWeb.Live.BlogIndex do
   use BernWeb, :live_view
 
   def mount(_params, _session, socket) do
-    posts = Bern.Blog.all_posts()
+    posts = Bern.Blog.published_posts()
     {:ok,
       socket
       |> assign(:posts, posts)
