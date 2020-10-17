@@ -524,7 +524,7 @@ Not to say that Elixir has complete support for academic and mathematical
 monads like Haskell, but the Elixir community's code style leans towards using
 monads, perhaps without even knowing it.
 
-The best and smallest example I can think of for monads is the Maybe Monad:
+The best and smallest example I can think of for monads is the Result Monad:
 
 ```elixir
 case this_might_work() do
@@ -537,7 +537,7 @@ end
 ```
 
 In Elixir, we're pattern-matching on the result of `this_might_work()`, and
-that function returns a maybe monad. The monad in this case is a 2-item tuple.
+that function returns a result monad. The monad in this case is a 2-item tuple.
 The tuple begins with either `:ok` or `:error` which is metadata about the
 accompanied data. `{METADATA, DATA}`
 
@@ -564,8 +564,8 @@ else
 end
 ```
 
-Look! We're combining two patterns now: a pipeline and maybe monads. Here, we
-are chaining several maybe monads together to form a pipeline with the help of
+Look! We're combining two patterns now: a pipeline and result monads. Here, we
+are chaining several result monads together to form a pipeline with the help of
 the `with` macro. Inside the `with` statement:
 
 - order a burger. If you get a burger, then continue
@@ -577,7 +577,7 @@ If they don't have one of the above items, then the pipeline will stop and
 return the first encountered error. **SPOILERS** the ice cream machine was
 broken, so we're going to get an error when ordering a milkshake.
 
-The maybe monad is extremely effective in crafting how to route data in
+The result monad is extremely effective in crafting how to route data in
 pipelines.
 
 ## Happy Path
@@ -742,7 +742,7 @@ solving the business problem with our familiar and patterned toolset.
 
 In gaming, it's important to not frustrate the player with too much difficulty
 too soon. You have to give the player tools to solve the presented problems
-first. One they've mastered the tools, then you can make them apply their
+first. Once they've mastered the tools, then you can make them apply their
 newfound knowledge to the new problems. Likewise, we want Elixir (our tool) to
 not be one of the problems as we solve the main problem (the business).
 Otherwise they will give up and tell all their friends "this game sux."
@@ -771,6 +771,23 @@ more true than others. **Elixir has excellent patterns, and developers that
 share the same patterns understand each other, which is all we really want in
 the end anyway -- to be understood.**
 
+I'll leave you with a quote:
+
+> To [find good patterns] we must rely on feelings more than intellect.
+>
+> To work our way towards a shared language once again, we must first learn how
+> to discover patterns which are deep, and capable of generating life.
+>
+> The specific patterns, out of which a building or a town is made, may be alive
+> or dead. To the extent they are alive, they let our inner forces loose, and,
+> set us free; but when they are dead they keep us locked in inner conflict.
+
+-- Christopher Alexandar (author of [A Pattern Language])
+
+---
+
+Special thanks to [Quinn Wilton] for proofreading!
+
 [The soliders who died of homesickness]: https://theconversation.com/the-soldiers-who-died-of-homesickness-65910
 [Cameron Price: Micropatterns]: https://www.youtube.com/watch?v=9uvp4h7gXHg
 [Scott Wlaschin: Functional Programming Design Patterns]: https://www.youtube.com/watch?v=srQt1NAHYC0
@@ -780,4 +797,5 @@ the end anyway -- to be understood.**
 [Elixir]: https://elixir-lang.org/
 [Elixir Ecosystem Survey 2020]: https://elixirsurvey.typeform.com/report/yYmJv1/OcCCilUmDn8lBpgP
 [Elixir Case Study at Heroku]: https://elixir-lang.org/blog/2020/09/24/paas-with-elixir-at-Heroku/
-
+[A Pattern Language]: https://en.wikipedia.org/wiki/A_Pattern_Language
+[Quinn Wilton]: http://quinnwilton.com/
