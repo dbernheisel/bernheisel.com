@@ -82,7 +82,7 @@ defmodule Mix.Tasks.ValidateUrls do
     end
   end
 
-  @ignore ~w[https://youtu.be #]
+  @ignore ["https://youtu.be", "#", "https://www.linode.com/?r="]
   defp get_external_urls(%{id: id, body: body}, table_pid) do
     body
     |> Floki.parse_fragment!()

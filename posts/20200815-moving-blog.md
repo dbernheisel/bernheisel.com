@@ -127,7 +127,7 @@ NimblePublisher also handles syntax-highlighting at compile-time, but
 unfortunately only when the language is Elixir or Erlang. Since I write about
 other languages, including Ruby, JavaScript, Bash, Vim, and more, I need
 more syntax highlighting options. NimblePublisher is using
-[Makeup](https://github.com/tmbb/makeup/) for highlighting; so perhaps I can
+[Makeup](https://github.com/elixir-makeup/makeup) for highlighting; so perhaps I can
 contribute by making more Makeup lexers.
 
 To cover the gap in the meantime, I'm going to syntax-highlight at runtime; in

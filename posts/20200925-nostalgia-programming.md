@@ -397,7 +397,7 @@ language.
 > embedded software, data ingestion, and multimedia processing domains.
 
 Elixir is beloved by developers, [particularly seasoned
-developers](https://elixirsurvey.typeform.com/report/yYmJv1/OcCCilUmDn8lBpgP),
+developers](https://github.com/hugobarauna/elixir-ecosystem-2020-reponses-data),
 and I want to explore why. In fact, Elixir is the entire motivation for me to
 produce this content.
 
