@@ -42,7 +42,7 @@ splits/buffers. Generally I adhere to this practice:
      or an i3 split.
 
 [neovim]: https://neovim.io
-[ArchLinux]: https://www.archlinux.org
+[ArchLinux]: https://archlinux.org/
 [i3]: https://github.com/Airblader/i3
 [kitty]: https://sw.kovidgoyal.net/kitty/
 [Plug]: https://github.com/junegunn/vim-plug
