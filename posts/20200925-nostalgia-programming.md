@@ -518,7 +518,8 @@ functions; there wasn't a great way to check the output if it was successful;
 Ok, before I lose you, we're not going to explore what monads are; it doesn't
 matter. But, their effect is powerful and I want to explore a pattern that they
 enable. If you don't know what a monad is, that's totally fine. Here's a simple
-definition: A monad is a unit of data and metadata about the data.
+definition: A monad is a unit of data and metadata (for the developer) about the
+data.
 
 Not to say that Elixir has complete support for academic and mathematical
 monads like Haskell, but the Elixir community's code style leans towards using
@@ -736,7 +737,7 @@ paradigms in how to solve a problem depending on its scale.
 ![Turtles all the way down](/images/turtles-tiling.png)
 
 This is comforting, because when we already have a business problem we're
-trying to solve; we don't need a language problem or tooling problem clouding
+trying to solve, we don't need a language problem or tooling problem clouding
 our judgment. Our brain can focus on one thing at a time and "zone out" on
 solving the business problem with our familiar and patterned toolset.
 
@@ -749,20 +750,20 @@ Otherwise they will give up and tell all their friends "this game sux."
 
 ## Understood
 
-These patterns are pervasive in almost all Elixir codebases I've seen, and
-because those patterns are common, developers have a good way to communicate
-with each other which is the ultimate goal.
+These patterns are pervasive in all Elixir codebases I've seen, and because
+those patterns are common, developers have a good way to communicate with each
+other which is the ultimate goal.
 
-We explored nostalgia, which established the positive effect it has on the
-person. These patterns of our past remind us of who we used to be or some
-aspect of how we identify ourselves. Most importantly, **nostalgia increases our
-sense of belonging and encourages growth**.
+Nostalgia has a positive effect on the person. These patterns of our past remind
+us of who we used to be or some aspect of how we identify ourselves. Most
+importantly, **nostalgia increases our sense of belonging and encourages
+growth**.
 
 The [Theory of Fun] explains that **fun is the emotional response to learning**;
 the reward for continuing to learn. What people learn are patterns in a variety
 of settings: school, childhood, adulthood, that one time at the bar where I
-talked too much, competitions, and (like we explored) video games. **We
-oftentimes have fun when seeing patterns reoccur**.
+talked too much, competitions, and (like we explored) video games. **We often
+have fun when seeing patterns reoccur**.
 
 Software development is chock-full of patterns. Developers apply patterns
 constantly to problems they encounter when trying to build something. I focused

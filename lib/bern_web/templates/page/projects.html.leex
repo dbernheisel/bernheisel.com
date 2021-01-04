@@ -24,10 +24,21 @@
     </div>
     <p>Major functions:</p>
     <ul>
-      <li>LiveView-powered Regex visualizer.</li>
-      <li>See the raw result and the visualized result</li>
-      <li>You can permalink regexes to share with others</li>
-      <li>Cheatsheet and recipes</li>
+      <li>LiveView-powered HTTP Sink. Echo out to screen HTTP requests to a specified URL</li>
+      <li>LiveView-powered Regex visualizer.
+        <ul>
+          <li>See the raw result and the visualized result</li>
+          <li>You can permalink regexes to share with others</li>
+          <li>Cheatsheet and recipes</li>
+        </ul>
+      </li>
+      <li>LiveView-powered Generater differ.
+        <ul>
+          <li>Stream the git diff between different versions or different flags provided to generators</li>
+          <li>If the diff isn't already calculated, then queue the diff in a worker queue</li>
+          <li>When working the diff, stream the console output to the user waiting for the diff</li>
+        </ul>
+      </li>
     </ul>
     <%= img_tag Routes.static_path(@socket, "/images/utilities_sample.png"), class: "p-3 rounded-lg bg-gray-100", alt: "Elixir Utilities sample screenshot" %>
   </article>
