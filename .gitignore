@@ -34,3 +34,6 @@ npm-debug.log
 /priv/static/
 
 /releases
+
+# We use npm
+/assets/yarn.lock
