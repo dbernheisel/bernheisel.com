@@ -1,6 +1,7 @@
 %{
   title: "Nostalgia, Fun, and Programming",
   tags: ["elixir", "gaming"],
+  discussion_url: "https://github.com/dbernheisel/bernheisel.com/discussions/3",
   description: """
   When we recognize music, movies, old photos, or video games of the past, it
   has a powerful effect: nostalgia. It's a pattern of the past that we remember

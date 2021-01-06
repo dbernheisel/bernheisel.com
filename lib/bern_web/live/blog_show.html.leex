@@ -34,6 +34,18 @@
   </div>
 </article>
 
+<div class="block print:hidden">
+  <hr class="my-8">
+  <h3 class="text-lg font-bold">What do you think of what I said?</h3>
+  <div class="mt-4 mb-10">
+    Share with me your thoughts. You can <%= outbound_link "tweet me at @bernheisel", to: "https://twitter.com/bernheisel", class: "link" %>
+    <%= if @post.discussion_url do %>
+      or <%= outbound_link "leave a comment at GitHub", class: "link", to: @post.discussion_url %>
+    <% end %>.
+  </div>
+
+</div>
+
 <%= if Enum.any?(@relevant_posts) do %>
 
 <div class="block print:hidden">
