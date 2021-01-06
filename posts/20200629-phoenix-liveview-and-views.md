@@ -1,6 +1,7 @@
 %{
   title: "Phoenix LiveView and Views",
   tags: ["elixir", "phoenix"],
+  discussion_url: "https://github.com/dbernheisel/bernheisel.com/discussions/6",
   description: """
   Every time I build a LiveView application, I learn something new and find a
   new pattern, and some concept finally _clicks_. Today, that concept that

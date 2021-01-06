@@ -1,5 +1,6 @@
 %{
   title: "Moving the blog to Elixir and Phoenix LiveView",
+  discussion_url: "https://github.com/dbernheisel/bernheisel.com/discussions/4",
   tags: ["elixir", "phoenix"],
   description: """
   I moved my blog. It's now powered by Phoenix LiveView. Let me tell you about

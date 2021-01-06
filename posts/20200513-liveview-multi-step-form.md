@@ -1,5 +1,6 @@
 %{
   title: "Phoenix LiveView: Multi-step forms",
+  discussion_url: "https://github.com/dbernheisel/bernheisel.com/discussions/7",
   tags: ["elixir", "ecto", "phoenix"],
   description: """
   Big forms are a pain to manage-- even harder to manage when you need to change
