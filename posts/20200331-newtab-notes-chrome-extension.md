@@ -57,6 +57,6 @@ and packaging it with Webpack-- just like I do with my Elixir project.
 Maybe one day I can make it more like [vimwiki] which offers multi-page
 linking, but for now it's fine.
 
-[`manifest.json`]: https://developer.chrome.com/docs/extensions/mv2/manifest
-[`chrome.storage.sync`]: https://developer.chrome.com/docs/extensions/reference/storage
+[`manifest.json`]: https://developer.chrome.com/docs/extensions/mv2/manifest/
+[`chrome.storage.sync`]: https://developer.chrome.com/docs/extensions/reference/storage/
 [vimwiki]: https://github.com/vimwiki/vimwiki

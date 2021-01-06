@@ -1,0 +1,2 @@
+#!/bin/sh
+PORT=4000 SECRET_KEY_BASE=$(mix phx.gen.secret) ./releases/bin/bern start
