@@ -8,6 +8,7 @@ defmodule Bern.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
+      Bern.Cache,
       BernWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Bern.PubSub},

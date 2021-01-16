@@ -8,7 +8,8 @@
 import Config
 
 config :bern,
-  app_env: Mix.env()
+  app_env: Mix.env(),
+  ecto_repos: [Bern.Cache]
 
 config :mime, :types, %{
   "application/xml" => ["xml"],

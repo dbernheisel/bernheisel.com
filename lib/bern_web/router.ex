@@ -9,6 +9,7 @@ defmodule BernWeb.Router do
     plug :put_root_layout, {BernWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :put_ip_into_session
   end
 
   pipeline :robots do
@@ -33,6 +34,8 @@ defmodule BernWeb.Router do
     live "/blog/:id", Live.BlogShow, :show, as: :blog
     live "/about", Live.Page, :show, as: :about, session: %{"page" => "about"}
     live "/projects", Live.Page, :show, as: :projects, session: %{"page" => "projects"}
+
+    live "/lambda2021", LambdaLive, :show, as: :lambda
   end
 
   scope "/admin" do
@@ -52,4 +55,9 @@ defmodule BernWeb.Router do
         |> halt()
     end
   end
+
+  defp put_ip_into_session(conn, _opts) do
+    Plug.Conn.put_session(conn, :ip, to_string(:inet_parse.ntoa(conn.remote_ip)))
+  end
+
 end

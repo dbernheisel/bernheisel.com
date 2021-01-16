@@ -150,7 +150,11 @@ module.exports = {
     },
   },
   variants: {
-    borderWidth: ['responsive', 'last']
+    extend: {
+      borderWidth: ['responsive', 'last'],
+      opacity: ['disabled'],
+      cursor: ['disabled'],
+    }
   },
   plugins: [
     require('@tailwindcss/typography')

@@ -37,9 +37,12 @@ defmodule Bern.MixProject do
     [
       {:jason, "~> 1.0"},
       {:earmark, github: "dbernheisel/earmark", branch: "db-inline-code-smartypants", override: true},
+      {:ecto, "~> 3.5.0"},
+      {:etso, "~> 0.1.2"},
       {:makeup_elixir, ">= 0.0.0"},
       {:nimble_publisher, "~> 0.1.0"},
       {:phoenix, "~> 1.5.4"},
+      {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_dashboard, "~> 0.2"},
       {:phoenix_live_view, "~> 0.15"},
