@@ -1,7 +1,6 @@
 defmodule BernWeb.LambdaLive do
   use BernWeb, :live_view
-  alias Bern.{Cache, LambdaTopic, LambdaTopicVote}
-  import Ecto.Query
+  alias Bern.{LambdaTopic, LambdaTopicVote}
 
   @max_votes 3
 
@@ -21,40 +20,126 @@ defmodule BernWeb.LambdaLive do
 
   def render(assigns) do
     ~L"""
-    Your IP: <%= @ip %><br>
-    Available Topic Votes: <%= length(@my_votes) %>/<%= @max_votes %><br>
-    Attendees: <%= @attendees_count %>
-    <br>
-    <br>
-    Topics:
-    <ul>
-    <%= for topic <- @topics do %>
-      <li id="<%= topic.id %>">
-        <%= if topic.covered do %>
-          <strike><%= topic.topic %></strike> (covered)
-        <% else %>
-          <%= topic.topic %> <%= topic.votes_count %>
-          <%= if topic.id in @my_votes do %>
-            <button id="<%= topic.id %>-downvote" phx-click="downvote" phx-value-id="<%= topic.id %>">Remove vote</button>
+    <div class="flex flex-row mb-8 space-x-2">
+      <div class="flex w-1/3 flex-col">
+        <div class="bg-brand-100 shadow sm:rounded-lg">
+          <div class="px-3 py-4 sm:p-2 ">
+            <dl class="grid grid-cols-2 gap-1">
+              <dt class="text-sm font-medium text-gray-500">
+                Your IP
+              </dt>
+              <dd class="text-sm text-gray-900">
+                <%= @ip %>
+              </dd>
+
+              <dt class="text-sm font-medium text-gray-500">
+                Available Votes
+              </dt>
+              <dd class="text-sm text-gray-900">
+                <%= length(@my_votes) %>/<%= @max_votes %>
+              </dd>
+
+              <dt class="text-sm font-medium text-gray-500">
+                # Attendees
+              </dt>
+              <dd class="text-sm text-gray-900">
+                <%= @attendees_count %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="px-2 bg-white text-sm text-gray-500">
+              Suggested Topics
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="grid grid-flow-row grid-cols-1 grid-rows-max gap-2">
+          <%= for topic <- @topics do %>
+            <div id="<%= topic.id %>" class="bg-gray-100 shadow sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-4">
+                <div class="flex space-x-2">
+                  <div class="flex-initial">
+                  <%= cond do %>
+                    <% topic.id not in @my_votes && @max_votes > length(@my_votes) -> %>
+                      <%# Eligible vote %>
+                      <button id="<%= topic.id %>-upvote" phx-click="upvote" phx-value-id="<%= topic.id %>">
+                        <svg class="w-6 h-6 hover:text-green-500 transition-colors duration-150" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+                          </path>
+                        </svg>
+                        <span class="sr-only">Upvote</span>
+                      </button>
+                    <% topic.id in @my_votes -> %>
+                      <%# Already voted %>
+                      <button id="<%= topic.id %>-downvote" phx-click="downvote" phx-value-id="<%= topic.id %>">
+                        <svg class="w-6 h-6 text-green-500 transform hover:rotate-180 hover:text-red-500 transition ease-out duration-300" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+                          </path>
+                        </svg>
+                        <span class="sr-only">Remove upvote</span>
+                      </button>
+                    <% length(@my_votes) >= @max_votes -> %>
+                      <%# Exceeding votes %>
+                      <svg class="w-6 h-6 text-gray-300 cursor-not-allowed" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+                        </path>
+                      </svg>
+                    <% topic.covered -> %>
+                      <% nil %>
+                  <% end %>
+                  <div class="text-xs text-center">
+                    <%= topic.votes_count %>
+                  </div>
+                </div>
+                <div class="flex overflow-x-auto">
+                  <div class="w-full">
+                    <%= if topic.covered do %>
+                      <strike><%= topic.topic %></strike> (covered)
+                    <% else %>
+                      <%= topic.topic %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <% end %>
 
-          <%= if topic.id not in @my_votes && @max_votes > length(@my_votes) do %>
-            <button id="<%= topic.id %>-upvote" phx-click="upvote" phx-value-id="<%= topic.id %>">Upvote</button>
-          <% end %>
-        <% end %>
-      </li>
-    <% end %>
-    </ul>
+          <%= f = form_for @proposed_topic, "#", [class: "transition-transform duration-300 bg-gray-100 shadow sm:rounded-lg", phx_change: :validate, phx_submit: :submit_topic] %>
+            <div class="px-2 py-3">
+              <div>
+                <%= text_input f, :topic,
+                  placeholder: "Propose a topic...",
+                  autocomplete: "off",
+                  class: "p-2 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                <%= error_tag f, :topic %>
+              </div>
 
-    <%= f = form_for @proposed_topic, "#", [phx_change: :validate, phx_submit: :submit_topic] %>
-      <%= text_input f, :topic,
-        placeholder: "Propose a topic...",
-        autocomplete: "off",
-        class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" %>
-      <%= error_tag f, :topic %>
+              <%= submit "Submit Topic", class: "mt-2 relative inline-flex items-center px-4 py-1 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" %>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
 
-      <%= submit "Submit Topic", class: "relative inline-flex items-center px-4 py-1 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" %>
-    </form>
+      <div class="w-2/3">
+        Sup
+      </div>
+    </div>
     """
   end
 
@@ -94,6 +179,14 @@ defmodule BernWeb.LambdaLive do
     {:noreply, assign(socket, topics: get_topics(), my_votes: get_my_votes(socket.assigns.ip))}
   end
 
+  def handle_info(
+      %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
+      %{assigns: %{attendees_count: count}} = socket
+    ) do
+    attendees = count + map_size(joins) - map_size(leaves)
+    {:noreply, assign(socket, :attendees_count, attendees)}
+  end
+
   defp get_my_votes(ip), do: LambdaTopicVote.for(ip: ip) |> Enum.map(& &1.topic_id)
 
   defp track_attendees(socket) do
@@ -107,13 +200,5 @@ defmodule BernWeb.LambdaLive do
     end
 
     assign(socket, :attendees_count, attendees_count)
-  end
-
-  def handle_info(
-      %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
-      %{assigns: %{attendees_count: count}} = socket
-    ) do
-    attendees = count + map_size(joins) - map_size(leaves)
-    {:noreply, assign(socket, :attendees_count, attendees)}
   end
 end

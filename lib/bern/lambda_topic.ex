@@ -1,6 +1,6 @@
 defmodule Bern.LambdaTopic do
   use Ecto.Schema
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
   alias Bern.{Cache, LambdaTopicVote}
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -14,11 +14,13 @@ defmodule Bern.LambdaTopic do
     field :votes_count, :integer, default: 0, virtual: true
   end
 
+  @one_kb 1024
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, ~w[suggested_at topic]a)
     |> validate_required(~w[topic suggested_at]a)
     |> unsafe_validate_unique(:topic, Cache, message: "is already a topic")
+    |> validate_length(:topic, max: @one_kb)
   end
 
   def all() do
