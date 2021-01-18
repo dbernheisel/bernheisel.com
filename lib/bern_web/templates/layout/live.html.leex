@@ -1,7 +1,7 @@
 <main role="main">
   <%= if @flash["info"] do %>
     <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
-      <div class="w-full max-w-sm bg-white rounded-lg shadow-lg pointer-events-auto">
+      <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
         <div class="overflow-hidden rounded-lg shadow-xs">
           <div class="p-4">
             <div class="flex items-start">
@@ -11,10 +11,10 @@
                 </svg>
               </div>
               <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-gray-900 leading-5">
+                <p class="text-sm font-bold dark:text-gray-200 text-gray-900 leading-5">
                   Success!
                 </p>
-                <p class="mt-1 text-sm text-gray-500 leading-5">
+                <p class="mt-1 text-sm dark:text-gray-100 text-gray-500 leading-5">
                   <%= live_flash(@flash, :info) %>
                 </p>
               </div>
@@ -34,7 +34,7 @@
 
   <%= if @flash["error"] do %>
     <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
-      <div class="w-full max-w-sm bg-white rounded-lg shadow-lg pointer-events-auto">
+      <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
         <div class="overflow-hidden rounded-lg shadow-xs">
           <div class="p-4">
             <div class="flex items-start">
@@ -44,10 +44,10 @@
                 </svg>
               </div>
               <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-gray-900 leading-5">
+                <p class="text-sm font-bold dark:text-gray-200 text-gray-900 leading-5">
                   Error!
                 </p>
-                <p class="mt-1 text-sm text-gray-500 leading-5">
+                <p class="mt-1 text-sm dark:text-gray-100 text-gray-500 leading-5">
                   <%= live_flash(@flash, :error) %>
                 </p>
               </div>
