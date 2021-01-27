@@ -1,0 +1,8 @@
+<%# _thinking_elixir_icons.html. eex template %>
+<meta name="msapplication-TileColor" content="#603cba">
+<meta name="theme-color" content="#ffffff">
+<link rel="mask-icon" href="<%= Routes.static_path(@conn, "/images/thinking-elixir/safari-pinned-tab.svg") %>" color="#5bbad5">
+<link rel="manifest" href="<%= Routes.robot_path(@conn, :site_webmanifest) %>" %>
+<link rel="apple-touch-icon" type="image/png" href="<%= Routes.static_path(@conn, "/images/thinking-elixir/apple-touch-icon.png") %>">
+<link rel="icon" type="image/png" sizes="16x16" href="<%= Routes.static_path(@conn, "/images/thinking-elixir/favicon-16x16.png") %>">
+<link rel="icon" type="image/png" sizes="32x32" href="<%= Routes.static_path(@conn, "/images/thinking-elixir/favicon-32x32.png") %>">

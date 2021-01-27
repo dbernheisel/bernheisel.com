@@ -6,5 +6,6 @@
 @import "./syntax.css";
 @import "./dark.css";
 @import "./phoenix.css";
+@import "./editor.css";
 
 @import "tailwindcss/utilities";

@@ -32,7 +32,7 @@
 
     <div class="mt-8 md:mt-0 md:order-1">
       <p class="text-center text-base leading-6 text-gray-400">
-      &copy; 2021 David Bernheisel<span class="hidden print:inline"> bernheisel.com</span>
+      &copy; 2021 <%= assigns[:who] || "David Bernheisel" %><span class="hidden print:inline"> bernheisel.com</span>
       </p>
     </div>
   </div>

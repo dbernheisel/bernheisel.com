@@ -32,7 +32,24 @@ defmodule Bern.LambdaTopic do
     |> Enum.sort_by(& &1.votes_count, :desc)
   end
 
-  def approve(topic) do
+  def trash(topic_id) when is_binary(topic_id) do
+    __MODULE__
+    |> Cache.get!(topic_id)
+    |> Cache.delete()
+    |> case do
+      {:ok, topic} ->
+        Phoenix.PubSub.broadcast(Bern.PubSub, "lambda", [:topic, :delete, topic])
+      error ->
+        error
+    end
+  end
+
+  def approve(topic_id) when is_binary(topic_id) do
+    __MODULE__
+    |> Cache.get!(topic_id)
+    |> approve()
+  end
+  def approve(%__MODULE__{} = topic) do
     topic
     |> cast(%{approved: true}, ~w[approved]a)
     |> Cache.update()
@@ -44,6 +61,11 @@ defmodule Bern.LambdaTopic do
     end
   end
 
+  def cover(topic_id) when is_binary(topic_id) do
+    __MODULE__
+    |> Cache.get!(topic_id)
+    |> cover()
+  end
   def cover(topic) do
     topic
     |> cast(%{covered: true}, ~w[covered]a)

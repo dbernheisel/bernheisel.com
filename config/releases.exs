@@ -1,6 +1,8 @@
 import Config
 
 host = System.get_env("HOST")
+System.fetch_env!("AUTH_USER")
+System.fetch_env!("AUTH_PASS")
 
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||

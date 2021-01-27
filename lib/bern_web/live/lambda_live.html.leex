@@ -46,7 +46,7 @@
             <div class="flex space-x-2">
               <div class="flex-initial">
               <%= cond do %>
-                <% topic.id not in @my_votes && @max_votes > length(@my_votes) -> %>
+                <% topic.id not in @my_votes && @max_votes > length(@my_votes) && !topic.covered -> %>
                   <%# Eligible vote %>
                   <button id="<%= topic.id %>-upvote" phx-click="upvote" phx-value-id="<%= topic.id %>">
                     <svg class="w-6 h-6 hover:text-green-500 transition-colors duration-150" fill="none" stroke="currentColor"
@@ -115,6 +115,6 @@
   </div>
 
   <div class="w-2/3">
-    Sup
+    <%= @notes %>
   </div>
 </div>

@@ -34,19 +34,29 @@ defmodule BernWeb.Router do
     live "/blog/:id", Live.BlogShow, :show, as: :blog
     live "/about", Live.Page, :show, as: :about, session: %{"page" => "about"}
     live "/projects", Live.Page, :show, as: :projects, session: %{"page" => "projects"}
-
-    live "/lambda2021", LambdaLive, :show, as: :lambda
   end
 
-  scope "/admin" do
-    pipe_through [:browser, :check_auth]
+  pipeline :lambda do
+    plug :put_root_layout, "lambda.html"
+  end
+
+  scope "/", BernWeb do
+    pipe_through [:browser, :lambda]
+
+    live "/lambda2021", LambdaLive, :index, as: :lambda
+  end
+
+  scope "/admin", BernWeb.Admin, as: :admin do
+    pipe_through [:browser, :check_auth, :lambda]
     live_dashboard "/dashboard", metrics: BernWeb.Telemetry
+
+    live "/lambda2021", LambdaLive, :index, as: :lambda
   end
 
   def check_auth(conn, _opts) do
     with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
-         true <- user == System.get_env("AUTH_USER"),
-         true <- pass == System.get_env("AUTH_PASS") do
+         true <- user == System.get_env("AUTH_USER", "admin"),
+         true <- pass == System.get_env("AUTH_PASS", "admin") do
       conn
     else
       _ ->

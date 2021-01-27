@@ -11,12 +11,14 @@ defmodule BernWeb.LambdaLive do
       |> assign(:topics, get_topics())
       |> assign(:my_votes, get_my_votes(ip))
       |> assign(:max_votes, @max_votes)
+      |> assign(:notes, "")
+      |> assign(:page_title, "Thinking |> Elixir LIVE at Lambda Days 2021")
       |> assign(:proposed_topic, LambdaTopic.changeset(%{}))
       |> track_attendees()
     }
   end
 
-  defp get_topics(), do: LambdaTopic.all()
+  defp get_topics(), do: LambdaTopic.all() |> Enum.filter(& &1.approved)
 
   def handle_event("validate", %{"lambda_topic" => %{"topic" => topic}}, socket) do
     {:noreply, assign(socket, :proposed_topic, LambdaTopic.changeset(%{topic: topic}))}

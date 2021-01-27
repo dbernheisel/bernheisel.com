@@ -1,0 +1,80 @@
+.editor {
+  @apply relative;
+}
+
+.editor__menubar { @apply mb-3; }
+.menubar__button { @apply p-1; }
+.menubar__button.is-active { @apply bg-gray-300; }
+
+.editor__content p { @apply mx-0 mt-1 mb-4; }
+
+.editor__content a { @apply text-blue-700 no-underline; }
+
+.editor__content blockquote {
+  @apply pl-8 my-8 text-gray-500 border-l-2;
+}
+
+.editor__content h1,
+.editor__content h2,
+.editor__content h3,
+.editor__content h4,
+.editor__content h5,
+.editor__content h6 {
+  @apply font-semibold leading-5 p-0
+}
+
+.editor__content h1 {
+  @apply pb-2 mt-6 mb-3 text-2xl;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.editor__content h1:first-child { @apply mt-2; }
+.editor__content h2:first-child { @apply mt-2; }
+.editor__content h3:first-child { @apply mt-2; }
+
+.editor__content h2 { @apply my-3 text-xl; }
+.editor__content h3 { @apply my-3 text-lg; }
+.editor__content h4 { @apply my-3 text-base; }
+.editor__content h5 { @apply my-2 text-sm; }
+.editor__content h6 { @apply my-2 text-sm; }
+
+.editor__content hr { @apply my-4; }
+
+.editor__content ul, .editor__content ol {
+  @apply mt-1 mb-4 ml-8 mr-0;
+}
+
+.editor__content ul { list-style-type: disc; }
+.editor__content ul ul { list-style-type: circle; }
+.editor__content ul ul ul { list-style-type: square; }
+.editor__content ul ul ul ul { list-style-type: disc; }
+.editor__content ul ul ul ul ul { list-style-type: circle; }
+.editor__content ul ul ul ul ul ul { list-style-type: square; }
+.editor__content ul ul ul ul ul ul ul { list-style-type: disc; }
+
+.editor__content ol { list-style-type: decimal; }
+.editor__content ol ol { list-style-type: upper-alpha; }
+.editor__content ol ol ol { list-style-type: upper-roman; }
+.editor__content ol ol ol ol { list-style-type: lower-alpha; }
+.editor__content ol ol ol ol ol { list-style-type: lower-roman; }
+.editor__content ol ol ol ol ol ol { list-style-type: lower-greek; }
+.editor__content ol ol ol ol ol ol ol { list-style-type: decimal; }
+
+.editor__content li { @apply mb-2; }
+.editor__content li p { @apply m-0; }
+.editor__content li:not(:last-of-type) ul { @apply mb-0; }
+
+.editor__content pre {
+  @apply px-4 py-2 m-4 overflow-auto text-gray-600 whitespace-pre rounded-sm bg-gray-50;
+}
+
+.editor__content pre code {
+  @apply p-0 m-0 whitespace-pre bg-transparent border-none;
+}
+
+.ProseMirror { @apply px-2 py-1 border-gray-300 rounded-md; }
+
+.ProseMirror-focused {
+  @apply border-blue-300 outline-none ring-2;
+}
