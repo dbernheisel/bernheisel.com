@@ -12,10 +12,7 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "tiptap": "^1.32.0",
-    "tiptap-extensions": "^1.35.0",
-    "topbar": "^0.1.4",
-    "vue": "^2.6.12"
+    "topbar": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -35,9 +32,6 @@
     "prettier": "^2.2.1",
     "tailwindcss": "^2.0.2",
     "terser-webpack-plugin": "^4.0.0",
-    "vue-loader": "^15.9.6",
-    "vue-style-loader": "^4.1.2",
-    "vue-template-compiler": "^2.6.12",
     "webpack": "4.44.1",
     "webpack-cli": "^3.3.2"
   }

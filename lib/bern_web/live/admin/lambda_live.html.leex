@@ -1,5 +1,5 @@
 <div class="flex flex-row mb-8 space-x-2">
-  <div class="flex w-1/3 flex-col">
+  <div class="flex flex-col">
     <div class="dark:bg-gray-700 bg-brand-100 shadow sm:rounded-lg">
       <div class="px-3 py-4 sm:p-2 ">
         <dl class="grid grid-cols-2 gap-1">
@@ -32,7 +32,7 @@
     </div>
 
     <div>
-      <div class="grid grid-flow-row grid-cols-1 grid-rows-max gap-2">
+      <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-max gap-2">
       <%= for topic <- @topics do %>
         <div id="<%= topic.id %>" class="dark:bg-gray-600 bg-gray-100 shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-4">
@@ -81,12 +81,6 @@
       </div>
       <% end %>
       </div>
-    </div>
-  </div>
-
-  <div class="w-2/3">
-    <div id="note-editor" phx-hook="Editor" phx-update="ignore">
-      <div data-mount data-initial-version="<%= @notes_version %>" data-initial-value="<%= @notes && Jason.encode!(@notes) %>" class="container flex h-screen m-4"></div>
     </div>
   </div>
 </div>

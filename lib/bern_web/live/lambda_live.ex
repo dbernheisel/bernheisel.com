@@ -12,7 +12,7 @@ defmodule BernWeb.LambdaLive do
       |> assign(:my_votes, get_my_votes(ip))
       |> assign(:max_votes, @max_votes)
       |> assign(:notes, "")
-      |> assign(:page_title, "Thinking |> Elixir LIVE at Lambda Days 2021")
+      |> assign(:page_title, "Thinking Elixir LIVE at Lambda Days 2021")
       |> assign(:proposed_topic, LambdaTopic.changeset(%{}))
       |> track_attendees()
     }
