@@ -27,6 +27,6 @@
       <%= @inner_content %>
     </div>
 
-    <%= render "footer.html", Map.put(assigns, :who, "Thinking Elixir and David Bernheisel") %>
+    <%= render "footer.html", assigns |> Map.put(:who, "Thinking Elixir and David Bernheisel") |> Map.put(:twitter, "https://twitter.com/thinkingelixir") %>
   </body>
 </html>

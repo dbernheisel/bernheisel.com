@@ -1,7 +1,7 @@
 <%# lambda-nav.html.l eex template %>
 <% [route | _] = @conn.path_info %>
 
-<nav @navigate="open = false; currentRoute = $event.detail" x-data="{currentRoute: '<%= route %>', open: false}" x-cloak class="print:hidden">
+<nav @navigate="open = false; currentRoute = $event.detail" x-data="{currentRoute: '<%= route %>', open: false}" x-cloak class="print:hidden ">
   <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
     <div class="relative flex justify-between h-16">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -23,8 +23,8 @@
 
       <!-- Desktop Menu -->
       <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex-shrink-0 flex items-center">
-          <img class="h-12" src="https://thinkingelixir.com/wp-content/uploads/2019/03/thinking-elixir-logo2-110px.png" />
+        <div class="mt-2 p-1 flex-shrink-0 flex items-center rounded-lg bg-white px-4">
+          <img class="h-10" src="https://thinkingelixir.com/wp-content/uploads/2019/03/thinking-elixir-logo2-110px.png" />
         </div>
         <div class="hidden sm:ml-6 sm:flex space-x-8">
           <%= outbound_link "Visit Thinking Elixir", to: "https://www.thinkingelixir.com",
@@ -53,33 +53,16 @@
   <!-- Mobile Menu -->
   <div :class="{'block': open, 'hidden': !open}" x-cloak class="sm:hidden">
     <div class="pt-2 pb-4 space-y-1 border-b-4 dark:border-brand-700 border-transparent">
-      <%= live_redirect "Blog", to: Routes.blog_path(@conn, :index),
+      <%= outbound_link "Visit Thinking Elixir", to: "https://www.thinkingelixir.com",
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
-        "@click": "$dispatch('navigate', 'blog')",
-        ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'blog',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'blog'
-}" %>
+        target: "_blank"
+        %>
 
-      <%= live_redirect "Projects", to: Routes.projects_path(@conn, :show),
+
+      <%= outbound_link "Back to Lambda Days 2021", to: "https://www.lambdadays.org/lambdadays2021",
         class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
-        "@click": "$dispatch('navigate', 'projects')",
-        ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'projects',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'projects'
-        }" %>
-
-      <%# live_redirect "About", to: Routes.about_path(@conn, :show),
-        class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out",
-        "@click": "$dispatch('navigate', 'about')",
-        ":class": "{
-          'border-brand-500 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-gray-700 focus:text-brand-800 dark:focus:bg-gray-800 dark:focus:border-brand-300 focus:bg-brand-100 focus:border-brand-700': currentRoute === 'about',
-          'border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300': currentRoute !== 'about'
-          }" %>
-
-      <%= outbound_link "Utilities", to: "https://utils.zest.dev",
-        class: "block pl-3 pr-4 py-2 border-l-4 text-base font-medium focus:outline-none transition duration-150 ease-in-out border-transparent text-gray-600 dark:text-gray-300 dark:hover:text-gray-200 hover:text-gray-800 dark:hover:bg-gray-900 hover:bg-gray-50 hover:border-gray-300 dark:focus:text-gray-200 dark:focus:bg-gray-800 dark:focus:border-gray-700 focus:text-gray-800 dark:focus:bg-gray-900 focus:bg-gray-50 focus:border-gray-300"
-      %>
+        target: "_blank"
+        %>
     </div>
   </div>
 </nav>

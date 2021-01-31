@@ -1,117 +1,145 @@
-<div class="flex flex-row mb-8 space-x-2">
-  <div class="flex flex-col">
-    <div class="dark:bg-gray-700 bg-brand-100 shadow sm:rounded-lg">
-      <div class="px-3 py-4 sm:p-2 ">
-        <dl class="grid grid-cols-2 gap-1">
-          <dt class="dark:text-gray-300 text-sm font-medium text-gray-500">
-            Your IP
-          </dt>
-          <dd class="dark:text-gray-200 text-sm text-gray-900">
-            <%= @ip %>
-          </dd>
+<div class="flex flex-col mb-8">
+  <div class="dark:bg-gray-700 bg-brand-100 shadow rounded-lg">
+    <div class="px-3 py-4 sm:p-2 ">
+      <dl class="grid grid-cols-2 gap-1">
+        <dt class="dark:text-gray-300 text-sm font-medium text-gray-500">
+          Available Votes
+        </dt>
+        <dd class="dark:text-gray-200 text-sm text-gray-900">
+          <%= length(@my_votes) %>/<%= @max_votes %>
+        </dd>
 
-          <dt class="dark:text-gray-300 text-sm font-medium text-gray-500">
-            Available Votes
-          </dt>
-          <dd class="dark:text-gray-200 text-sm text-gray-900">
-            <%= length(@my_votes) %>/<%= @max_votes %>
-          </dd>
-
-          <dt class="dark:text-gray-300 text-sm font-medium text-gray-500">
-            # Attendees
-          </dt>
-          <dd class="dark:text-gray-200 text-sm text-gray-900">
-            <%= @attendees_count %>
-          </dd>
-        </dl>
-      </div>
+        <dt class="dark:text-gray-300 text-sm font-medium text-gray-500">
+          # Attendees
+        </dt>
+        <dd class="dark:text-gray-200 text-sm text-gray-900">
+          <%= @attendees_count %>
+        </dd>
+      </dl>
     </div>
+  </div>
 
-    <div class="relative my-6">
-      <div class="absolute inset-0 flex items-center" aria-hidden="true">
-        <div class="w-full border-t border-gray-300"></div>
-      </div>
-      <div class="relative flex justify-center">
-        <span class="px-2 dark:bg-gray-900 bg-white text-sm dark:text-gray-100 text-gray-500">
-          Suggested Topics
-        </span>
-      </div>
+  <div class="relative my-6">
+    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+      <div class="w-full border-t border-gray-300"></div>
     </div>
+    <div class="relative flex justify-center">
+      <span class="px-2 dark:bg-gray-900 bg-white text-sm dark:text-gray-100 text-gray-500">
+        Suggested Topics
+      </span>
+    </div>
+  </div>
 
-    <div>
-      <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-max gap-2">
-      <%= for topic <- @topics do %>
-        <div id="<%= topic.id %>" class="dark:bg-gray-600 bg-gray-100 shadow sm:rounded-lg">
-          <div class="px-4 py-5 sm:p-4">
-            <div class="flex space-x-2">
-              <div class="flex-initial">
-              <%= cond do %>
-                <% topic.id not in @my_votes && @max_votes > length(@my_votes) && !topic.covered -> %>
-                  <%# Eligible vote %>
-                  <button id="<%= topic.id %>-upvote" phx-click="upvote" phx-value-id="<%= topic.id %>">
-                    <svg class="w-6 h-6 hover:text-green-500 transition-colors duration-150" fill="none" stroke="currentColor"
-                      viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
-                      </path>
-                    </svg>
-                    <span class="sr-only">Upvote</span>
-                  </button>
-                <% topic.id in @my_votes -> %>
-                  <%# Already voted %>
-                  <button id="<%= topic.id %>-downvote" phx-click="downvote" phx-value-id="<%= topic.id %>">
-                    <svg class="w-6 h-6 text-green-500 transform hover:rotate-180 hover:text-red-500 transition ease-out duration-300" fill="none" stroke="currentColor"
-                      viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
-                      </path>
-                    </svg>
-                    <span class="sr-only">Remove upvote</span>
-                  </button>
-                <% length(@my_votes) >= @max_votes -> %>
-                  <%# Exceeding votes %>
-                  <svg class="w-6 h-6 text-gray-300 cursor-not-allowed" fill="none" stroke="currentColor"
+  <div>
+    <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-max gap-2">
+    <%= for topic <- Enum.reject(@topics, & &1.covered) do %>
+      <div id="topic-<%= topic.id %>" class="max-h-64 overflow-auto dark:bg-gray-600 bg-gray-100 shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-4">
+          <div class="flex space-x-2">
+            <div class="flex-initial">
+            <%= cond do %>
+              <% topic.id not in @my_votes && @max_votes > length(@my_votes) && !topic.covered -> %>
+                <%# Eligible vote %>
+                <button id="topic-<%= topic.id %>-upvote" phx-click="upvote" phx-value-id="<%= topic.id %>">
+                  <svg class="w-6 h-6 hover:text-green-500 transition-colors duration-150" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
                     </path>
                   </svg>
-                <% topic.covered -> %>
-                  <% nil %>
+                  <span class="sr-only">Upvote</span>
+                </button>
+                <div class="text-xs text-center">
+                  <%= topic.votes_count %>
+                </div>
+              <% topic.id in @my_votes -> %>
+                <%# Already voted %>
+                <button id="<%= topic.id %>-downvote" phx-click="downvote" phx-value-id="<%= topic.id %>">
+                  <svg class="w-6 h-6 text-green-500 transform hover:rotate-180 hover:text-red-500 transition ease-out duration-300" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+                    </path>
+                  </svg>
+                  <span class="sr-only">Remove upvote</span>
+                </button>
+                <div class="text-xs text-center">
+                  <%= topic.votes_count %>
+                </div>
+              <% length(@my_votes) >= @max_votes -> %>
+                <%# Exceeding votes %>
+                <svg class="w-6 h-6 text-gray-300 cursor-not-allowed" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z">
+                  </path>
+                </svg>
+                <div class="text-xs text-center">
+                  <%= topic.votes_count %>
+                </div>
+              <% topic.covered -> %>
+                <% nil %>
+            <% end %>
+          </div>
+          <div class="flex">
+            <div class="w-full">
+              <%= if topic.covered do %>
+                (covered) <pre class="font-sans line-through"><%= topic.topic %></pre>
+              <% else %>
+                <pre class="font-sans"><%= topic.topic %></pre>
               <% end %>
-              <div class="text-xs text-center">
-                <%= topic.votes_count %>
-              </div>
-            </div>
-            <div class="flex overflow-x-auto">
-              <div class="w-full">
-                <%= if topic.covered do %>
-                  <strike><%= topic.topic %></strike> (covered)
-                <% else %>
-                  <%= topic.topic %>
-                <% end %>
-              </div>
             </div>
           </div>
         </div>
-      </div>
-      <% end %>
-
-      <%= f = form_for @proposed_topic, "#", [class: "transition-transform duration-300 dark:bg-gray-600 bg-gray-100 shadow sm:rounded-lg text-gray-800", phx_change: :validate, phx_submit: :submit_topic] %>
-        <div class="px-2 py-3">
-          <div>
-            <%= textarea f, :topic,
-              placeholder: "Propose a topic...",
-              lines: 3,
-              autocomplete: "off",
-              class: "p-2 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-            <%= error_tag f, :topic %>
-          </div>
-
-          <%= submit "Submit Topic", class: "mt-2 relative inline-flex items-center px-4 py-1 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" %>
-        </div>
-      </form>
       </div>
     </div>
+    <% end %>
+
+    <%= f = form_for @proposed_topic, "#", [id: "submitTopic", class: "transition-transform duration-300 dark:bg-gray-600 bg-gray-100 shadow rounded-lg text-gray-800", phx_hook: "CtrlEnterSubmit", phx_change: :validate, phx_submit: :submit_topic] %>
+      <div class="px-2 py-3">
+        <div>
+          <%= textarea f, :topic,
+            placeholder: "Propose a topic...",
+            rows: 6,
+            autocomplete: "off",
+            class: "p-2 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+          <%= error_tag f, :topic %>
+        </div>
+
+        <%= submit "Submit Topic", class: "mt-2 relative inline-flex items-center px-4 py-1 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" %>
+      </div>
+    </form>
+    </div>
+  </div>
+
+  <div class="relative my-6">
+    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+      <div class="w-full border-t border-gray-300"></div>
+    </div>
+    <div class="relative flex justify-center">
+      <span class="px-2 dark:bg-gray-900 bg-white text-sm dark:text-gray-100 text-gray-500">
+        Covered Topics
+      </span>
+    </div>
+  </div>
+
+  <div>
+    <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-max gap-2">
+    <% covered = Enum.filter(@topics, & &1.covered) %>
+    <%= for topic <- covered do %>
+      <div id="topic-<%= topic.id %>" class="max-h-64 overflow-auto dark:bg-gray-600 bg-gray-100 shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-4">
+          <div class="flex">
+            <div class="w-full">
+              (covered) <pre class="font-sans"><%= topic.topic %></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    </div>
+    <%= if covered == [] do %>
+      Nothing covered yet.
+    <% end %>
   </div>
 </div>

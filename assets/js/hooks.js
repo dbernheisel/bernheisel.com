@@ -8,4 +8,19 @@ hooks.Highlight = {
   }
 }
 
+hooks.CtrlEnterSubmit = {
+  mounted() {
+    const inputs = this.el.querySelectorAll("textarea,input")
+    if (inputs.length) {
+      inputs.forEach(ta => {
+        ta.addEventListener("keydown", function(e) {
+          if(e.keyCode == 13 && e.ctrlKey) {
+            this.form.dispatchEvent(new Event("submit", { "bubbles": true }))
+          }
+        })
+      })
+    }
+  }
+}
+
 export default hooks
