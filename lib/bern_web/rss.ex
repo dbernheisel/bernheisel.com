@@ -1,6 +1,5 @@
 defmodule BernWeb.Rss do
-  @moduledoc """
-  """
+  @moduledoc "RSS Generator"
   alias BernWeb.Router.Helpers, as: Routes
   @endpoint BernWeb.Endpoint
 

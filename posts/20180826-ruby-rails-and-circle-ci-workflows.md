@@ -495,7 +495,7 @@ the essentials.
 [@bernheisel]: https://twitter.com/bernheisel
 [Travis CI]: https://travis-ci.org/
 [GitLab]: https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/
-[Google Cloud Build]: https://cloud.google.com/cloud-build/
+[Google Cloud Build]: https://cloud.google.com/build/
 
 ---
 
