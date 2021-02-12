@@ -661,7 +661,7 @@ developers what the expected input and output should be, and state guarantees
 on how it should work.
 
 A basic example:
-[String.upcase](https://hexdocs.pm/elixir/String.html#upcase/2) expects an
+[`String.upcase`](https://hexdocs.pm/elixir/String.html#upcase/2) expects an
 input string and outputs a string. It will always succeed if you give it that
 input, and will always return to you a string. It does not lie to you; it's
 total.

@@ -3,19 +3,19 @@
     @apply text-gray-50 !important;
   }
 
-  .link, .prose a {
+  .link, .prose a, .prose a code {
     @apply text-red-200;
   }
 
-  .link:focus, .prose a:focus {
+  .link:focus, .prose a:focus, .prose a:focus code {
     @apply text-red-200;
   }
 
-  .link:visited, .prose a:visited {
+  .link:visited, .prose a:visited, .prose a:visited code {
     @apply text-purple-200;
   }
 
-  .link:hover, .prose a:hover {
+  .link:hover, .prose a:hover, .prose a:hover code {
     @apply text-red-200;
   }
 }
