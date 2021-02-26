@@ -15,6 +15,13 @@ defmodule BernWeb.RobotController do
     [size: "192x192", density: "3.0"]
   ]
 
+
+  def sitemap(conn, _params) do
+    conn
+    |> put_resp_content_type("text/xml")
+    |> render("sitemap.xml", posts: Bern.Blog.published_posts())
+  end
+
   def site_webmanifest(conn, _params) do
     json(conn, %{
       name: "bernheisel.com",
@@ -42,6 +49,6 @@ defmodule BernWeb.RobotController do
   def rss(conn, _params) do
     conn
     |> put_resp_content_type("application/xml")
-    |> render("rss.xml", %{conn: conn})
+    |> render("rss.xml", %{})
   end
 end

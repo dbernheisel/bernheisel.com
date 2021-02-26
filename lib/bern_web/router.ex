@@ -18,7 +18,7 @@ defmodule BernWeb.Router do
   scope "/", BernWeb, log: false do
     pipe_through [:robots]
 
-    get "/sitemap.xml", SitemapController, :index
+    get "/sitemap.xml", RobotController, :sitemap
     get "/robots.txt", RobotController, :robots
     get "/rss.xml", RobotController, :rss
     get "/site.webmanifest", RobotController, :site_webmanifest
