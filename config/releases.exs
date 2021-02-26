@@ -2,7 +2,7 @@ import Config
 
 System.get_env("AUTH_USER") ||
   System.get_env("AUTH_PASS") ||
-    raise "environment variable AUTH_USER and/or AUTH_PASS is missing."
+  raise "environment variable AUTH_USER and/or AUTH_PASS is missing."
 
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||

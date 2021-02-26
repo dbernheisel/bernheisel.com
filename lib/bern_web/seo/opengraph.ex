@@ -43,17 +43,19 @@ defmodule BernWeb.SEO.OpenGraph do
       type: "article",
       published_at: format_date(post.date),
       reading_time: format_time(post.reading_time),
-      description: String.trim(truncate(post.description, 200)),
+      description: String.trim(truncate(post.description, 200))
     }
     |> put_image(post)
   end
 
   defp put_image(og, post) do
     file = "/images/blog/#{post.id}.png"
+
     exists? =
       [Application.app_dir(:bern), "/priv/static", file]
       |> Path.join()
       |> File.exists?()
+
     if exists? do
       %{og | image_url: Routes.static_url(@endpoint, file), image_alt: post.title}
     else

@@ -36,7 +36,8 @@ defmodule Bern.MixProject do
   defp deps do
     [
       {:jason, "~> 1.0"},
-      {:earmark, github: "dbernheisel/earmark", branch: "db-inline-code-smartypants", override: true},
+      {:earmark,
+       github: "dbernheisel/earmark", branch: "db-inline-code-smartypants", override: true},
       {:makeup_elixir, ">= 0.0.0"},
       {:nimble_publisher, "~> 0.1.0"},
       {:phoenix, "~> 1.5.4"},

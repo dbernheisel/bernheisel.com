@@ -17,11 +17,9 @@ defmodule BernWeb.SEO.Breadcrumbs do
 
   defmodule BreadcrumbList do
     @derive Jason.Encoder
-    defstruct [
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: []
-    ]
+    defstruct "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: []
   end
 
   defmodule BreadcrumbItem do

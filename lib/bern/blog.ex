@@ -42,4 +42,3 @@ defmodule Bern.Blog do
     end
   end
 end
-

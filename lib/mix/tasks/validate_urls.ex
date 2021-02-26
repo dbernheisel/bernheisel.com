@@ -4,6 +4,7 @@ defmodule Mix.Tasks.ValidateUrls do
   @shortdoc "Verify that URLs are live"
   def run(_opts) do
     urls_table = :ets.new(:external_links, [:set])
+
     Finch.start_link(
       name: UrlValidator,
       pools: %{
@@ -12,7 +13,7 @@ defmodule Mix.Tasks.ValidateUrls do
     )
 
     Bern.Blog.all_posts()
-    |> Stream.each(& get_external_urls(&1, urls_table))
+    |> Stream.each(&get_external_urls(&1, urls_table))
     |> Stream.run()
 
     Stream.resource(
@@ -20,8 +21,10 @@ defmodule Mix.Tasks.ValidateUrls do
       fn
         :"$end_of_table" ->
           {:halt, nil}
+
         previous_key ->
           next_key = :ets.next(urls_table, previous_key)
+
           case check_live(previous_key, urls_table) do
             {:ok, _url} -> {[], next_key}
             error -> {[error], next_key}
@@ -46,11 +49,13 @@ defmodule Mix.Tasks.ValidateUrls do
           printable_limit: :infinity
         )
         |> Mix.Shell.IO.error()
+
         exit({:shutdown, 1})
     end
   end
 
   defp check_live(:"$end_of_table", _urls_table), do: nil
+
   defp check_live(url, urls_table) do
     Mix.Shell.IO.info("Checking #{url}")
     [{_, blog_ids}] = :ets.lookup(urls_table, url)
@@ -88,13 +93,15 @@ defmodule Mix.Tasks.ValidateUrls do
     |> Floki.parse_fragment!()
     |> Floki.find("a[href]")
     |> Floki.attribute("href")
-    |> Enum.reject(& String.starts_with?(&1, @ignore))
+    |> Enum.reject(&String.starts_with?(&1, @ignore))
     |> Enum.uniq()
     |> Enum.each(fn url ->
       case :ets.lookup(table_pid, url) do
-        [] -> :ets.insert(table_pid, {url, [id]})
+        [] ->
+          :ets.insert(table_pid, {url, [id]})
+
         [{url, ids}] ->
-          :ets.insert(table_pid, {url, [id  | ids]})
+          :ets.insert(table_pid, {url, [id | ids]})
       end
     end)
   end

@@ -5,8 +5,6 @@ defmodule BernWeb.SEO.Generic do
   https://support.google.com/webmasters/answer/7451184?hl=en
   """
 
-  defstruct [
-    description: "A blog about development",
-    title: "David Bernheisel's Blog"
-  ]
+  defstruct description: "A blog about development",
+            title: "David Bernheisel's Blog"
 end

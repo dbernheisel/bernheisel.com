@@ -15,6 +15,7 @@ defmodule BernWeb.Rss do
   def open(output, rss, opts) do
     todayer = Keyword.get(opts, :todayer, &Date.utc_today/0)
     year = todayer.().year
+
     [
       """
       <?xml version="1.0" encoding="UTF-8"?>
@@ -41,6 +42,7 @@ defmodule BernWeb.Rss do
 
   def post_date([post | _]), do: post_date(post)
   def post_date([]), do: nil
+
   def post_date(%{date: date}) do
     {:ok, ndt} = NaiveDateTime.new(date, ~T[00:00:00])
     ndt |> DateTime.from_naive!("America/New_York") |> Timex.format!("{RFC1123}")

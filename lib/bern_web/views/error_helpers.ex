@@ -22,7 +22,7 @@ defmodule BernWeb.ErrorHelpers do
       token = "%{#{key}}"
 
       case String.contains?(msg, token) do
-        true  -> String.replace(msg, token, to_string(value), global: false)
+        true -> String.replace(msg, token, to_string(value), global: false)
         false -> msg
       end
     end)

@@ -14,6 +14,7 @@ defmodule BernWeb.SEO do
       |> put_breadcrumbs(conn, post)
     )
   end
+
   def meta(_, _, _), do: render("meta.html", @default_assigns)
 
   def put_opengraph_tags(assigns, conn, event),

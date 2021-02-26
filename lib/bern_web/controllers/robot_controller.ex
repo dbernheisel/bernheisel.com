@@ -15,7 +15,6 @@ defmodule BernWeb.RobotController do
     [size: "192x192", density: "3.0"]
   ]
 
-
   def sitemap(conn, _params) do
     conn
     |> put_resp_content_type("text/xml")
@@ -26,14 +25,15 @@ defmodule BernWeb.RobotController do
     json(conn, %{
       name: "bernheisel.com",
       short_name: "Bernheisel",
-      icons: for [size: size, density: density] <- @sizes do
-        %{
-          src: Routes.static_path(conn, "/images/android-chrome-#{size}.png"),
-          sizes: size,
-          density: density,
-          type: "image/png"
-        }
-      end,
+      icons:
+        for [size: size, density: density] <- @sizes do
+          %{
+            src: Routes.static_path(conn, "/images/android-chrome-#{size}.png"),
+            sizes: size,
+            density: density,
+            type: "image/png"
+          }
+        end,
       theme_color: "#663399",
       display: "minimal-ui",
       background_color: "#ffffff"
