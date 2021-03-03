@@ -1,7 +1,7 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  darkMode: false,
+  darkMode: 'class',
   purge: [
     "../lib/bern_web/live/**/*.ex",
     "../lib/bern_web/live/**/*.leex",
@@ -12,12 +12,6 @@ module.exports = {
     "./js/**/*.js"
   ],
   theme: {
-    screens: {
-      sm: "640px",
-      md: "768px",
-      lg: "1024px",
-      "dark": {"raw": "(prefers-color-scheme: dark)"}
-    },
     extend: {
       fontFamily: {
         sans: ['Inter var', 'Inter', ...defaultTheme.fontFamily.sans],
@@ -150,7 +144,10 @@ module.exports = {
     },
   },
   variants: {
-    borderWidth: ['responsive', 'last']
+    extend: {
+      borderWidth: ['responsive', 'last'],
+      typography: ['dark']
+    }
   },
   plugins: [
     require('@tailwindcss/typography')

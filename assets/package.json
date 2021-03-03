@@ -7,31 +7,29 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
-    "alpinejs": "^2.8.0",
-    "highlight.js": "^10.5.0",
+    "alpinejs": "^2.x",
+    "highlight.js": "^10.x",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "topbar": "^0.1.4"
+    "topbar": "^1.x"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@tailwindcss/typography": "^0.3.0",
-    "autoprefixer": "^10.1.0",
-    "babel-loader": "^8.2.2",
-    "copy-webpack-plugin": "^6.0.3",
-    "css-loader": "^4.2.1",
-    "hard-source-webpack-plugin": "^0.13.1",
-    "mini-css-extract-plugin": "^0.9.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.1",
-    "postcss": "^8.2.2",
-    "postcss-import": "^14.0.0",
-    "postcss-loader": "^4.1.0",
-    "prettier": "^2.2.1",
-    "tailwindcss": "^2.0.2",
-    "terser-webpack-plugin": "^4.0.0",
-    "webpack": "4.44.1",
-    "webpack-cli": "^3.3.2"
+    "@babel/core": "^7.x",
+    "@babel/preset-env": "^7.x",
+    "@tailwindcss/typography": "^0.4.0",
+    "autoprefixer": "^10.x",
+    "babel-loader": "^8.x",
+    "copy-webpack-plugin": "^7.x",
+    "css-loader": "^5.x",
+    "css-minimizer-webpack-plugin": "^1.x",
+    "mini-css-extract-plugin": "^1.x",
+    "postcss": "^8.x",
+    "postcss-import": "^14.x",
+    "postcss-loader": "^5.x",
+    "prettier": "^2.x",
+    "tailwindcss": "^2.x",
+    "webpack": "^5.x",
+    "webpack-cli": "^4.x"
   }
 }

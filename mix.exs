@@ -48,10 +48,9 @@ defmodule Bern.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:timex, "~> 3.6"},
-      # Test
-      {:floki, ">= 0.0.0", only: :test},
-      {:finch, "~> 0.3", only: :test},
-      # Dev
+      # Dev / Test
+      {:floki, ">= 0.0.0", only: [:dev, :test]},
+      {:finch, "~> 0.3", only: [:dev, :test]},
       {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]
   end

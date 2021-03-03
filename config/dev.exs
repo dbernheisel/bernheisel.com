@@ -14,9 +14,10 @@ config :bern, BernWeb.Endpoint,
   watchers: [
     node: [
       "node_modules/webpack/bin/webpack.js",
+      "watch",
       "--mode",
       "development",
-      "--watch-stdin",
+      "--watch-options-stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]

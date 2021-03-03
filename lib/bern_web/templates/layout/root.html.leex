@@ -20,8 +20,15 @@
       <script async defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/plausible.exclusions.js"></script>
       <link rel="dns-prefetch" href="https://plausible.bernheisel.com" />
     <% end %>
+    <script>
+      if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark")
+      } else {
+        document.documentElement.classList.remove("dark")
+      }
+    </script>
   </head>
-  <body class="dark:bg-gray-900 dark:text-gray-100">
+  <body class="antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100 dark:bg-gray-900 dark:text-gray-100">
     <%= render "nav.html", assigns %>
 
     <div class="container mt-6 mx-auto px-4 sm:px-6 lg:px-8">
