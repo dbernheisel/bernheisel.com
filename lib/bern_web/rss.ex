@@ -1,7 +1,9 @@
 defmodule BernWeb.Rss do
   @moduledoc "RSS Generator"
   alias BernWeb.Router.Helpers, as: Routes
-  @endpoint BernWeb.Endpoint
+
+  # This is undocumented, but makes path helpers work at compile-time
+  @endpoint %Plug.Conn{private: %{phoenix_router_url: URI.parse("https://bernheisel.com")}}
 
   defstruct [:title, :author, :description, :posts, language: "en-US"]
 
@@ -45,7 +47,10 @@ defmodule BernWeb.Rss do
 
   def post_date(%{date: date}) do
     {:ok, ndt} = NaiveDateTime.new(date, ~T[00:00:00])
-    ndt |> DateTime.from_naive!("America/New_York") |> Timex.format!("{RFC1123}")
+
+    ndt
+    |> DateTime.from_naive!("America/New_York")
+    |> Calendar.strftime("%a, %d %b %Y %H:%M:%S %z")
   end
 
   def add_posts(output, rss) do

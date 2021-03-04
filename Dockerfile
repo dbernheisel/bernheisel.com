@@ -1,6 +1,6 @@
 ## SYSTEM
 
-FROM hexpm/elixir:1.10.3-erlang-23.0.3-ubuntu-focal-20200703 AS builder
+FROM hexpm/elixir:1.11.3-erlang-23.2.4-ubuntu-focal-20201008 AS builder
 
 ENV LANG=C.UTF-8 \
     LANGUAGE=C:en \
@@ -33,7 +33,7 @@ RUN mix do deps.get, deps.compile
 
 ## FRONTEND
 
-FROM node:12.18.3-alpine AS frontend
+FROM node:14.14.0-alpine AS frontend
 
 RUN mkdir -p /home/user/app
 WORKDIR /home/user/app

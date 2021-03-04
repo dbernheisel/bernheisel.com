@@ -1,6 +1,5 @@
 defmodule Bern.Blog do
-  @moduledoc """
-  """
+  @moduledoc "Blog API"
 
   use NimblePublisher,
     build: Bern.Blog.Post,

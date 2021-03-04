@@ -1,11 +1,8 @@
 defmodule BernWeb.RobotController do
   use BernWeb, :controller
 
-  def robots(conn, _params) do
-    conn
-    |> put_resp_content_type("text")
-    |> render("robots.txt", %{env: Application.get_env(:bern, :app_env)})
-  end
+  # This is undocumented, but makes path helpers work at compile-time
+  @endpoint %Plug.Conn{private: %{phoenix_static_url: URI.parse("https://bernheisel.com")}}
 
   @sizes [
     [size: "36x36", density: "0.75"],
@@ -15,29 +12,31 @@ defmodule BernWeb.RobotController do
     [size: "192x192", density: "3.0"]
   ]
 
-  def sitemap(conn, _params) do
+  @manifest %{
+    name: "bernheisel.com",
+    short_name: "Bernheisel",
+    icons:
+      for [size: size, density: density] <- @sizes do
+        %{
+          src: Routes.static_url(@endpoint, "/images/android-chrome-#{size}.png"),
+          sizes: size,
+          density: density,
+          type: "image/png"
+        }
+      end,
+    theme_color: "#663399",
+    display: "minimal-ui",
+    background_color: "#ffffff"
+  }
+
+  def robots(conn, _params) do
     conn
-    |> put_resp_content_type("text/xml")
-    |> render("sitemap.xml", posts: Bern.Blog.published_posts())
+    |> put_resp_content_type("text/plain")
+    |> render("robots.txt", %{env: Application.get_env(:bern, :app_env)})
   end
 
   def site_webmanifest(conn, _params) do
-    json(conn, %{
-      name: "bernheisel.com",
-      short_name: "Bernheisel",
-      icons:
-        for [size: size, density: density] <- @sizes do
-          %{
-            src: Routes.static_path(conn, "/images/android-chrome-#{size}.png"),
-            sizes: size,
-            density: density,
-            type: "image/png"
-          }
-        end,
-      theme_color: "#663399",
-      display: "minimal-ui",
-      background_color: "#ffffff"
-    })
+    json(conn, @manifest)
   end
 
   def browserconfig(conn, _params) do
@@ -50,5 +49,11 @@ defmodule BernWeb.RobotController do
     conn
     |> put_resp_content_type("application/xml")
     |> render("rss.xml", %{})
+  end
+
+  def sitemap(conn, _params) do
+    conn
+    |> put_resp_content_type("application/xml")
+    |> render("sitemap.xml", posts: Bern.Blog.published_posts())
   end
 end

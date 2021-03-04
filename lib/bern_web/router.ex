@@ -12,7 +12,7 @@ defmodule BernWeb.Router do
   end
 
   pipeline :robots do
-    plug :accepts, ["xml", "json", "webmanifest"]
+    plug :accepts, ~w[json txt xml webmanifest]
   end
 
   scope "/", BernWeb, log: false do

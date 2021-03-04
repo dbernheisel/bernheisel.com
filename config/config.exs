@@ -15,7 +15,8 @@ config :mime, :types, %{
   "application/manifest+json" => ["webmanifest"]
 }
 
-config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+config :tz, reject_time_zone_periods_before_year: 2000
 
 # Configures the endpoint
 config :bern, BernWeb.Endpoint,
@@ -23,14 +24,7 @@ config :bern, BernWeb.Endpoint,
   secret_key_base: "na+Mru8FGRc3ZJqrkXDJPqTs7RKeIynpJBteUKicIm498dIxe+Nn7G4THVH7W2fc",
   render_errors: [view: BernWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Bern.PubSub,
-  live_view: [signing_salt: "KtGkqxBX"],
-  rss_root: %URI{
-    authority: "bernheisel.com",
-    host: "bernheisel.com",
-    scheme: "https",
-    port: 443,
-    path: nil
-  }
+  live_view: [signing_salt: "KtGkqxBX"]
 
 # Configures Elixir's Logger
 config :logger, :console,

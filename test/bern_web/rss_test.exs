@@ -36,20 +36,20 @@ defmodule BernWeb.RssTest do
              <?xml version="1.0" encoding="UTF-8"?>
              <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
              <channel>
-             <atom:link href="http://localhost:4002/rss.xml" rel="self" type="application/rss+xml" />
+             <atom:link href="https://bernheisel.com/rss.xml" rel="self" type="application/rss+xml" />
              <title><![CDATA[My Blog]]></title>
              <language>en-US</language>
              <description><![CDATA[Bloggin the blog stuff]]></description>
              <pubDate>Thu, 02 Jan 2020 00:00:00 -0500</pubDate>
-             <link>http://localhost:4002/</link>
+             <link>https://bernheisel.com/</link>
              <copyright>Copyright 2020 FooBear</copyright>
              <generator>Artisinally Crafted by Yours Truly</generator>
              <item>
              <title><![CDATA[Foo Title]]></title>
              <dc:creator>FooBear</dc:creator>
              <description><![CDATA[Warning, this is only a test]]></description>
-             <link>http://localhost:4002/blog/foo-id</link>
-             <guid isPermaLink="true">http://localhost:4002/blog/foo-id</guid>
+             <link>https://bernheisel.com/blog/foo-id</link>
+             <guid isPermaLink="true">https://bernheisel.com/blog/foo-id</guid>
              <pubDate>Thu, 02 Jan 2020 00:00:00 -0500</pubDate>
              <content:encoded><![CDATA[<p>Some words</p>]]></content:encoded>
              </item>
@@ -57,8 +57,8 @@ defmodule BernWeb.RssTest do
              <title><![CDATA[Bar Title]]></title>
              <dc:creator>FooBear</dc:creator>
              <description><![CDATA[Warning, this is only a test]]></description>
-             <link>http://localhost:4002/blog/bar-id</link>
-             <guid isPermaLink="true">http://localhost:4002/blog/bar-id</guid>
+             <link>https://bernheisel.com/blog/bar-id</link>
+             <guid isPermaLink="true">https://bernheisel.com/blog/bar-id</guid>
              <pubDate>Wed, 01 Jan 2020 00:00:00 -0500</pubDate>
              <content:encoded><![CDATA[<p>Some words</p>]]></content:encoded>
              </item>

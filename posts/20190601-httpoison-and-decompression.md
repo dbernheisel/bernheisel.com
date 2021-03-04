@@ -418,14 +418,15 @@ defmodule MyApp.HTTPClient do
 
   defp parse_charset(nil), do: nil
   defp parse_charset(content_type) do
-    with {:ok, _, _, %{"charset" => charset}} <- Plug.Conn.Utils.content_type(content_type) do
-      cond do
-        charset =~ ~r/utf-?8/ -> :utf8
-        charset =~ ~r/iso-?8859-?1/ -> :latin1
-        true -> charset
-      end
-    else
-      _ -> nil
+    case Plug.Conn.Utils.content_type(content_type) do
+      {:ok, _, _, %{"charset" => charset}} ->
+        cond do
+          charset =~ ~r/utf-?8/ -> :utf8
+          charset =~ ~r/iso-?8859-?1/ -> :latin1
+          true -> charset
+        end
+      _ ->
+        nil
     end
   end
 
