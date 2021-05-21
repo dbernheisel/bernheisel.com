@@ -1,5 +1,6 @@
 <%# SEO tags %>
 <meta name="description" content="<%= @site.description %>">
+<link rel="canonical" href="<%= @canonical_url %>">
 
 <%= if @og do %>
   <%= render("opengraph.html", %{og: @og}) %>
