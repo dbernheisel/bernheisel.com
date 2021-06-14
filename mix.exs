@@ -48,7 +48,7 @@ defmodule Bern.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
-      {:tz, "~> 0.12.0"},
+      {:tz, "~> 0.12"},
       # Dev / Test
       {:floki, ">= 0.0.0", only: [:dev, :test]},
       {:finch, "~> 0.3", only: [:dev, :test]},
