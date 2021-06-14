@@ -2,6 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   darkMode: 'class',
+  mode: 'jit',
   purge: [
     "../lib/bern_web/live/**/*.ex",
     "../lib/bern_web/live/**/*.leex",
