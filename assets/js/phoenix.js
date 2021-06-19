@@ -14,7 +14,9 @@ window.liveSocket = new LiveSocket("/live", Socket, {
   },
   dom: {
     onBeforeElUpdated(from, to) {
-      if(from.__x) window.Alpine.clone(from.__x, to)
+      if(from.nodeType === 1 && from._x_dataStack) {
+        window.Alpine.clone(from, to)
+      }
     }
   }
 });
