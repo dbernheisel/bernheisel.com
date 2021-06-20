@@ -11,9 +11,9 @@
 
 # Table of Contents
 
-- How to migrate Mix Release projects
-- How to check for locks in a query
-- Basics of an Ecto migration
+- [How to migrate Mix Release projects](#how-to-migrate-mix-release-projects)
+- [How to check for locks in a query](#how-to-inspect-locks-in-a-query)
+- [Anatomy of an Ecto migration](#anatomy-of-an-ecto-migration)
 - Safeguards in the database
 - Scenarios
   - Removing a column
@@ -31,7 +31,7 @@
 
 ---
 
-# How do I migrate my Mix Release projects?
+# How to migrate Mix Release projects
 
 TODO
 
@@ -40,23 +40,106 @@ See also:
 - https://hexdocs.pm/ecto_sql/Ecto.Migrator.html
 - https://hexdocs.pm/phoenix/releases.html
 
-# How to check for locks in a query
+# How to inspect locks in a query
 
 ```sql
 BEGIN;
+  -- Put your actions in here. For example, validating a constraint
+  ALTER TABLE addresses VALIDATE CONSTRAINT "my_table_locking_constraint";
 
--- Put your actions in here. For example, validating a constraint
-ALTER TABLE addresses VALIDATE CONSTRAINT "my_table_locking_constraint";
-
-SELECT locktype, relation::regclass, mode, transactionid AS tid, virtualtransaction AS vtid, pid, granted FROM pg_locks;
+  -- end your transaction with a SELECT on pg_locks so you can see the locks
+  -- that occurred during the transaction
+  SELECT locktype, relation::regclass, mode, transactionid AS tid, virtualtransaction AS vtid, pid, granted FROM pg_locks;
 COMMIT;
 ```
 
 
-# Basics of an Ecto migration
+# Anatomy of an Ecto migration
+
+By default, Ecto will run the migration in a transaction:
+
+```sql
+BEGIN
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
+  -- my migration
+COMMIT;
+```
+
+Since Elixir excels at distributed deployments, where multiple nodes are
+connected to the same database and could try to run migrations at all once, Ecto
+has a way to ensure that only one node is migrating a time.
+
+By default, Ecto will acquire a `SHARE UPDATE EXCLUSIVE` lock on the
+`schema_migrations` table, which means it will allow concurrent reads `SHARE` on
+the table schema, but block writes to it `UPDATE EXCLUSIVE`. This means that
+other concurrent processes cannot mutate the table while the lock is occurring;
+effectively blocking other migrations from committing at the same time.
+
+If the migration fails, the transaction is rolled back and no changes actually
+occur in the database. In most scenarios, these are great defaults.
 
 
+## Options
 
+**`@disable_ddl_transaction`**
+
+By default, Ecto will run migrations in a transaction.
+
+```sql
+BEGIN;
+  -- my migration
+COMMIT;
+```
+
+This helps assure that if failures occur during the migration, it does not leave
+your database in an incomplete and confusing state.
+
+There are some scenarios where you may not want a migration to occur in a
+transaction, such as data migrations or when running a schema migration that can
+work asynchronously.
+
+**`@disable_migration_lock`**
+
+By default, Ecto will acquire a lock on the "schema_migrations" table during
+migration transaction:
+
+```sql
+LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+```
+
+You want this lock for most migrations, because running multiple migrations at
+once concurrently could result in unpredictable results.
+
+However, for some scenarios, such as `CREATE INDEX CONCURRENTLY` we don't need
+to wait on the index to finish creating because Postgres will do that
+asynchronously, so we can skip the lock for this migration and allow other
+migrations to continue.
+
+You can skip this lock in Ecto by setting the module attribute
+`@disable_migration_lock true` in your migration. In the context of Ecto
+migrations, we need a way to release the lock. Since Ecto is usually running a
+migration in a transaction, the lock would only be effective during the
+transaction and is unlocked when the transaction is committed or rolled back.
+For this reason, whenever `@disable_migration_lock true` is set, you should also
+set `@disable_ddl_transaction false`, or else your `schema_migrations` table may
+stay locked and prevent future migrations!
+
+**Transaction Callbacks**
+
+If the migration is occurring within a transaction, we might appreciate hooks
+before and after our migrations. (This was introduced in Ecto 3.0.3)
+
+```sql
+BEGIN;
+  -- after_begin hook
+  -- my migration
+  -- before_commit hook
+COMMIT;
+```
+
+You can use these hooks by defining `after_begin/0` and or `before_commit/0` in
+your migration. A good use case for this is setting migration lock timeouts as
+safeguards (see [next section](#safeguards-in-the-database))
 
 
 # Safeguards in the database
