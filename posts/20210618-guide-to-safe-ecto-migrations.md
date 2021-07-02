@@ -11,9 +11,9 @@
 
 # Table of Contents
 
+- [Anatomy of an Ecto migration](#anatomy-of-an-ecto-migration)
 - [How to migrate Mix Release projects](#how-to-migrate-mix-release-projects)
 - [How to check for locks in a query](#how-to-inspect-locks-in-a-query)
-- [Anatomy of an Ecto migration](#anatomy-of-an-ecto-migration)
 - Safeguards in the database
 - Scenarios
   - Removing a column
@@ -31,32 +31,116 @@
 
 ---
 
-# How to migrate Mix Release projects
+Not long ago, deploying and managing Elixir projects was not as straight-forward
+as we can enjoy today; some would say it was downright painful. Thankfully,
+since Elixir 1.9, Mix now ships with tools to help us developers assemble
+applications for deployment. How you get that binary to its destination it still
+entirely up to you, but now it's a simpler and common task!
 
-TODO
+Before the wider adoption of pre-compiled releases (thanks to [Mix Release] and
+before Mix was [Distillery]), it was more common to install Elixir (and
+therefore mix), copy your code, and use `mix` to start your application _on the
+target servers_. Along with starting your application, another common operation
+is to create and migrate databases. Push your code, run `mix ecto.migrate && mix
+phx.server` and you're done! Just like you would in development and tests.
 
-See also:
+However, now that it's more common to run compiled Mix releases, which implies
+that your application cannot rely on the `Mix` module being present and no
+longer need the `mix` binary on the target server, developers need another way
+to manage the application's database.
 
-- https://hexdocs.pm/ecto_sql/Ecto.Migrator.html
-- https://hexdocs.pm/phoenix/releases.html
+This guide should help you:
 
-# How to inspect locks in a query
+1. Understand an Ecto migration
+1. Migrate and rollback the database using Mix releases
+1. Avoid pitfalls during migrations
 
-```sql
-BEGIN;
-  -- Put your actions in here. For example, validating a constraint
-  ALTER TABLE addresses VALIDATE CONSTRAINT "my_table_locking_constraint";
+Ok! Let's go
 
-  -- end your transaction with a SELECT on pg_locks so you can see the locks
-  -- that occurred during the transaction
-  SELECT locktype, relation::regclass, mode, transactionid AS tid, virtualtransaction AS vtid, pid, granted FROM pg_locks;
-COMMIT;
-```
+![Ready for an adventure](/images/ready-for-an-adventure.gif)
+
+[Mix Release]: https://hexdocs.pm/mix/1.9.0/Mix.Release.html
+[Distillery]: https://hexdocs.pm/distillery
+
 
 
 # Anatomy of an Ecto migration
 
+To generate a migration, we'll use `mix`:
+
+```shell
+mix ecto.gen.migration create_test_table
+```
+
+This command will generate file in `priv/repo/migrations` given the repo name of
+`Repo`. If you named it `MyRepo` the file would be in `priv/my_repo/migrations`.
+
+Let's look at that file:
+
+```elixir
+defmodule MyApp.Repo.Migrations.CreateTestTable do
+  use Ecto.Migration
+
+  def change do
+
+  end
+end
+```
+
+Let's do something with this migration; how about create a table about tracking
+weather?
+
+```elixir
+defmodule MyApp.Repo.Migrations.CreateTestTable do
+  use Ecto.Migration
+
+  def change do
+    create table("test") do
+      add :city,    :string, size: 40
+      add :temp_lo, :integer
+      add :temp_hi, :integer
+      add :prcp,    :float
+
+      timestamps()
+    end
+  end
+end
+```
+
+Now that we have a migration, let's run it!
+
+```shell
+❯ mix ecto.migrate                                                                           main
+21:26:18.992 [info]  == Running 20210702012346 MyApp.Repo.Migrations.CreateTestTable.change/0 forward
+21:26:18.994 [info]  create table test
+21:26:19.004 [info]  == Migrated 20210702012346 in 0.0s
+```
+
+Ok! Done right? No, let's zoom on this migration. By default, Ecto will not log
+the raw sql. Let's look at what actually runs. First, I'll rollback, and then
+re-migrate but with an additional flag `--log-sql`.
+
+```shell
+❯ mix ecto.rollback
+21:29:32.287 [info]  == Running 20210702012346 Petal.Repo.Migrations.CreateTestTable.change/0 backward
+21:29:32.289 [info]  drop table test
+21:29:32.292 [info]  == Migrated 20210702012346 in 0.0s
+
+❯ mix ecto.migrate --log-sql                                                                 main
+21:29:36.461 [info]  == Running 20210702012346 Petal.Repo.Migrations.CreateTestTable.change/0 forward
+21:29:36.462 [info]  create table test
+21:29:36.466 [debug] QUERY OK db=3.2ms
+CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id")) []
+21:29:36.467 [info]  == Migrated 20210702012346 in 0.0s
+```
+
+Hmmm. Ecto is cheating the logs a bit here; yes, we do see the raw SQL for _our
+own migration_, but we're not seeing the SQL that Ecto is actually running for
+the entire migration.
+
+
 By default, Ecto will run the migration in a transaction:
+
 
 ```sql
 BEGIN
@@ -78,6 +162,7 @@ effectively blocking other migrations from committing at the same time.
 If the migration fails, the transaction is rolled back and no changes actually
 occur in the database. In most scenarios, these are great defaults.
 
+[Ecto.Migration]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html
 
 ## Options
 
@@ -140,6 +225,66 @@ COMMIT;
 You can use these hooks by defining `after_begin/0` and or `before_commit/0` in
 your migration. A good use case for this is setting migration lock timeouts as
 safeguards (see [next section](#safeguards-in-the-database))
+
+# How to migrate Mix Release projects
+
+So you've assembled your release with `mix release` and you have your
+application uploaded to the target server or in some container. Great! Now what?
+
+Well, it depends on how you're starting the application. Let's ask some
+questions:
+
+1. Does the deployed code rely on the migrations already being ran? If so, then
+   **no you cannot start your application!** It will crash! The code already
+   assumes the database to be in the state after migration. You need to run your
+   migrations first and start the application after.
+
+1. Does it contain migrations that aren't yet utilized? For example, you already
+   have your database created and `profiles` table created, and you _only have a
+   migration_ to add a column to the profiles table. **Yes you can go ahead and
+   start your application** since the code does not yet rely on that column to
+   exist. Then run the migrations at your convenience.
+
+1. Do you use Kubernetes? Then you should consider [Init Containers]. Init
+   containers run to completion _before_ the application containers in the pod.
+   This is a perfect opportunity to start your Ecto Repo and migrate it before
+   starting the rest of your application.
+
+Now that you've determined which order to start the application or run the
+migration, let's start running stuff!
+
+The app can start with `bin/my_app start`
+
+The database can migrate with `bin/my_app eval 'MyApp.ReleaseTasks.migrate()'`
+
+[Init Containers]: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+
+**Hold up sir. What's that ReleaseTasks module?**
+
+Ah, right, the key player in this process.
+
+See also:
+
+- https://hexdocs.pm/ecto_sql/Ecto.Migrator.html
+- https://hexdocs.pm/phoenix/releases.html
+
+# How to inspect locks in a query
+
+Before we dive into safer practices of migrations, we should equip some
+knowledge about how to check if a migration could potentially block your
+application.
+
+```sql
+BEGIN;
+  -- Put your actions in here. For example, validating a constraint
+  ALTER TABLE addresses VALIDATE CONSTRAINT "my_table_locking_constraint";
+
+  -- end your transaction with a SELECT on pg_locks so you can see the locks
+  -- that occurred during the transaction
+  SELECT locktype, relation::regclass, mode, transactionid AS tid, virtualtransaction AS vtid, pid, granted FROM pg_locks;
+COMMIT;
+```
+
 
 
 # Safeguards in the database
