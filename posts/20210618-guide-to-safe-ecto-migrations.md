@@ -12,7 +12,14 @@
 # Table of Contents
 
 - [Anatomy of an Ecto migration](#anatomy-of-an-ecto-migration)
+  - [Inspect SQL](#inspect-sql)
+  - [Migration Options](#migration-options)
 - [How to migrate Mix Release projects](#how-to-migrate-mix-release-projects)
+  - [Create Release module](#create-release-module)
+  - [Assemble the release](#assemble-release)
+  - [Check migration status](#check-migration-status)
+  - [Run the migration](#run-the-migration)
+  - [Rollback migrations](#omg-roll-it-back)
 - [How to check for locks in a query](#how-to-inspect-locks-in-a-query)
 - Safeguards in the database
 - Scenarios
@@ -55,6 +62,9 @@ This guide should help you:
 1. Migrate and rollback the database using Mix releases
 1. Avoid pitfalls during migrations
 
+Note: This guide uses **Postgres** and may differ if you're using a different
+database. I'll note where differences may be.
+
 Ok! Let's go
 
 ![Ready for an adventure](/images/ready-for-an-adventure.gif)
@@ -63,17 +73,21 @@ Ok! Let's go
 [Distillery]: https://hexdocs.pm/distillery
 
 
-
 # Anatomy of an Ecto migration
 
-To generate a migration, we'll use `mix`:
+To generate a migration, we'll use `mix ecto.gen.migration`.
+
+> **Tip** If you're using Phoenix, you might consider `mix phx.gen.schema` which
+> will generate a migration and also allows you to pass in fields and types. See
+> `mix help phx.gen.schema` for more information.
 
 ```shell
 mix ecto.gen.migration create_test_table
 ```
 
 This command will generate file in `priv/repo/migrations` given the repo name of
-`Repo`. If you named it `MyRepo` the file would be in `priv/my_repo/migrations`.
+`Repo`. If you named it `OtherRepo` the file would be in
+`priv/other_repo/migrations`.
 
 Let's look at that file:
 
@@ -87,8 +101,7 @@ defmodule MyApp.Repo.Migrations.CreateTestTable do
 end
 ```
 
-Let's do something with this migration; how about create a table about tracking
-weather?
+Let's make some changes; how about create a table about tracking weather?
 
 ```elixir
 defmodule MyApp.Repo.Migrations.CreateTestTable do
@@ -107,81 +120,93 @@ defmodule MyApp.Repo.Migrations.CreateTestTable do
 end
 ```
 
-Now that we have a migration, let's run it!
+Now that we have a migration, let's run it! Run `mix ecto.migrate`.
 
 ```shell
-❯ mix ecto.migrate                                                                           main
+❯ mix ecto.migrate
 21:26:18.992 [info]  == Running 20210702012346 MyApp.Repo.Migrations.CreateTestTable.change/0 forward
 21:26:18.994 [info]  create table test
 21:26:19.004 [info]  == Migrated 20210702012346 in 0.0s
 ```
 
-Ok! Done right? No, let's zoom on this migration. By default, Ecto will not log
-the raw sql. Let's look at what actually runs. First, I'll rollback, and then
-re-migrate but with an additional flag `--log-sql`.
+## Inspect SQL
+
+Let's zoom in on the migration. By default, Ecto will not log the raw SQL. Let's
+look at what actually runs. First, I'll rollback, and then re-migrate but with
+an additional flag `--log-sql` so we can see what actually runs.
 
 ```shell
 ❯ mix ecto.rollback
-21:29:32.287 [info]  == Running 20210702012346 Petal.Repo.Migrations.CreateTestTable.change/0 backward
+21:29:32.287 [info]  == Running 20210702012346 MyApp.Repo.Migrations.CreateTestTable.change/0 backward
 21:29:32.289 [info]  drop table test
 21:29:32.292 [info]  == Migrated 20210702012346 in 0.0s
 
-❯ mix ecto.migrate --log-sql                                                                 main
-21:29:36.461 [info]  == Running 20210702012346 Petal.Repo.Migrations.CreateTestTable.change/0 forward
+❯ mix ecto.migrate --log-sql
+21:29:36.461 [info]  == Running 20210702012346 MyApp.Repo.Migrations.CreateTestTable.change/0 forward
 21:29:36.462 [info]  create table test
 21:29:36.466 [debug] QUERY OK db=3.2ms
 CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id")) []
 21:29:36.467 [info]  == Migrated 20210702012346 in 0.0s
 ```
 
-Hmmm. Ecto is cheating the logs a bit here; yes, we do see the raw SQL for _our
-own migration_, but we're not seeing the SQL that Ecto is actually running for
-the entire migration.
+Ecto is cheating the logs a bit here; yes, we do see the raw SQL for _our own
+changes_, but we're not seeing the SQL that Ecto is running for the entire
+migration. We're missing the SQL that are specific to the adapter.
 
+**Postgres difference**. Here, Postgres will actually run the migration wrapped
+in a transaction. This part is unlogged, so we'll have to reference the code.
 
-By default, Ecto will run the migration in a transaction:
+When running migrations, Ecto will travel through these functions:
+  - [Ecto.Migrator.run/4](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/migrator.ex#L384)
+  - [Ecto.Migrator.lock_for_migrations/4](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/migrator.ex#L464)
+  - [The adapter's lock_for_migrations implementation](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/adapters/postgres.ex#L207)
+  - [Wrap the migration in a transaction](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/adapters/postgres.ex#L217)
 
+Inside the transaction, the Postgres adapter is also obtaining a `SHARE UPDATE
+EXCLUSIVE` lock of the "schema_migrations" table.
+
+**Why this lock is important**: Elixir excels at distributed deployments, which
+means there could be multiple nodes connected to the same database. These nodes
+may also all try to migrate the database at the same time! Ecto leverages this
+`SHARE UPDATE EXCLUSIVE` lock as a way to ensure that only one node is running a
+migration at a time and only once.
+
+This is what the **migration actually looks like**:
 
 ```sql
-BEGIN
-  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
-  -- my migration
+BEGIN;
+LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
+BEGIN;
+CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"));
+COMMIT;
 COMMIT;
 ```
-
-Since Elixir excels at distributed deployments, where multiple nodes are
-connected to the same database and could try to run migrations at all once, Ecto
-has a way to ensure that only one node is migrating a time.
-
-By default, Ecto will acquire a `SHARE UPDATE EXCLUSIVE` lock on the
-`schema_migrations` table, which means it will allow concurrent reads `SHARE` on
-the table schema, but block writes to it `UPDATE EXCLUSIVE`. This means that
-other concurrent processes cannot mutate the table while the lock is occurring;
-effectively blocking other migrations from committing at the same time.
 
 If the migration fails, the transaction is rolled back and no changes actually
 occur in the database. In most scenarios, these are great defaults.
 
+There's also some options we can set in a given Ecto migration. Let's explore
+some of those options next.
+
 [Ecto.Migration]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html
 
-## Options
+## Migration Options
 
-**`@disable_ddl_transaction`**
-
-By default, Ecto will run migrations in a transaction.
+By default, your migration will have this structure (reminder: this guide is
+using Postgres; different adapters will vary):
 
 ```sql
 BEGIN;
-  -- my migration
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
+  BEGIN;
+    -- after_begin callback
+    -- my changes
+    -- before_commit callback
+  COMMIT;
 COMMIT;
 ```
 
-This helps assure that if failures occur during the migration, it does not leave
-your database in an incomplete and confusing state.
-
-There are some scenarios where you may not want a migration to occur in a
-transaction, such as data migrations or when running a schema migration that can
-work asynchronously.
+`my_changes` refers to the changes you specify in each of your migrations.
 
 **`@disable_migration_lock`**
 
@@ -189,30 +214,64 @@ By default, Ecto will acquire a lock on the "schema_migrations" table during
 migration transaction:
 
 ```sql
-LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+BEGIN;
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+  -- migration
+COMMIT;
 ```
 
-You want this lock for most migrations, because running multiple migrations at
-once concurrently could result in unpredictable results.
+You want this lock for most migrations because running multiple migrations at
+once concurrently could have unpredictable results. To facilitate releasing this
+lock, the command is wrapped in a transaction.
 
-However, for some scenarios, such as `CREATE INDEX CONCURRENTLY` we don't need
-to wait on the index to finish creating because Postgres will do that
-asynchronously, so we can skip the lock for this migration and allow other
-migrations to continue.
+However, there are some scenarios where you don't want a lock, for example if
+you're running data migrations that are kicked-off manually. You can skip this
+lock in Ecto by setting the module attribute `@disable_migration_lock true` in
+your migration. Keep in mind there is another transaction occurring in the
+migration (see next point).
 
-You can skip this lock in Ecto by setting the module attribute
-`@disable_migration_lock true` in your migration. In the context of Ecto
-migrations, we need a way to release the lock. Since Ecto is usually running a
-migration in a transaction, the lock would only be effective during the
-transaction and is unlocked when the transaction is committed or rolled back.
-For this reason, whenever `@disable_migration_lock true` is set, you should also
-set `@disable_ddl_transaction false`, or else your `schema_migrations` table may
-stay locked and prevent future migrations!
+You can also disable this migration lock for all migrations by configuring the
+Repo:
+
+```
+# config/config.exs
+config :my_app, MyApp.Repo, migration_lock: false
+# But this is not recommended.
+```
+
+**`@disable_ddl_transaction`**
+
+By default, Ecto will wrap your changes in a transaction:
+
+```sql
+BEGIN;
+  -- after_begin callback
+  -- my changes
+  -- before_commit callback
+COMMIT;
+```
+
+This helps ensure that if failures occur during the migration, it does not leave
+your database in an incomplete and confusing state.
+
+There are some scenarios where you may not want a migration to occur inside a
+transaction, such as data migrations or commands such as `CREATE INDEX
+CONCURRENTLY` that can work asynchronously on the database side after you issue
+the command.
+
+You can disable this transaction by setting the module attribute
+`@disable_ddl_transaction true` in your migration.
+
+> **Tip** For Postgres, usually when disabling transactions, you'll also want to
+> disable the migration lock since that uses yet another transaction. When
+> running these migrations in a multi-node environment, you'll need a process to
+> ensure these migrations are only kicked-off once since there is no protection
+> against multiple nodes running the same migration at the same exact time.
 
 **Transaction Callbacks**
 
-If the migration is occurring within a transaction, we might appreciate hooks
-before and after our migrations. (This was introduced in Ecto 3.0.3)
+If the migration is occurring within a transaction, you might appreciate hooks
+before and after your changes. (This was introduced in Ecto 3.0.3)
 
 ```sql
 BEGIN;
@@ -222,16 +281,113 @@ BEGIN;
 COMMIT;
 ```
 
-You can use these hooks by defining `after_begin/0` and or `before_commit/0` in
+You can use these hooks by defining `after_begin/0` and `before_commit/0` in
 your migration. A good use case for this is setting migration lock timeouts as
 safeguards (see [next section](#safeguards-in-the-database))
 
+```elixir
+defmodule MyApp.Repo.Migrations.CreateTestTable do
+  use Ecto.Migration
+
+  def change do
+    # ... my potentially long-locking migration
+  end
+
+  def after_begin do
+    execute "SET lock_timeout TO '5s'", "SET lock_timeout TO '10s'"
+  end
+end
+```
+
 # How to migrate Mix Release projects
 
-So you've assembled your release with `mix release` and you have your
-application uploaded to the target server or in some container. Great! Now what?
+In Mix Release projects, we need to give ourselves easy access to commands to
+facilitate migrations. Here's a couple of use cases:
 
-Well, it depends on how you're starting the application. Let's ask some
+1. Check the status of migrations.
+1. Migrate up to x migration. Default to the latest migration.
+1. Rollback to x migration.
+
+The common and documented way to encapsulate these commands is with a
+`MyApp.Release` module.
+
+## Create Release Module
+
+- [Phoenix has examples](https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands)
+- [EctoSQL has examples](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#module-example-running-migrations-in-a-release)
+
+Here is the EctoSQL example:
+
+```elixir
+defmodule MyApp.Release do
+  @app :my_app
+
+  def migrate do
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+    end
+  end
+
+  def rollback(repo, version) do
+    {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
+  end
+
+  defp repos do
+    Application.load(@app)
+    Application.fetch_env!(@app, :ecto_repos)
+  end
+end
+```
+
+Most of the work is happening in `Ecto.Migrator`, which is great because it
+keeps our own code slim and neat. Let's add a little bit to it:
+
+- There isn't a function that prints out the migrations' status. This is helpful
+  for sanity checks. You should know what is the _next_ migration is going to be
+  before you run migrations.
+
+- In most cases you should only deploy one migration at a time. However in some
+  cases, you might have heavy deployment that includes multiple migrations.
+  Deployers may only want to execute one at a time. Currently, the function does
+  not allow us to only run one migration.
+
+**Adding options to `MyApp.Release.migrate`**
+
+Let's adjust the `migrate` function to accept options that we can pass into
+`Ecto.Migrator`.
+
+```diff
+-  def migrate do
++  def migrate(opts \\ [all: true]) do
+    for repo <- repos() do
+-     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
++     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, opts))
+    end
+  end
+```
+
+Now we can pass in options to allow us migrate by 1 step or to specific
+versions. For example, `migrate(step: 1)` or `migrate(to: 20210719021232)`.
+
+[See available options](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#run/4)
+
+**Adding `MyApp.Release.migration_status/0`**
+
+Before I run migrations, I like to check if the application and I both agree
+which migration is up next to execute. Locally, you can run `mix
+ecto.migrations` to check the status of migrations; I want this same experience
+but compatible with deployed releases.
+
+```elixir
+TODO
+```
+
+## Assemble the Release
+
+Now it's time to assemble the release with `mix release` and upload the app to
+the target server. Great! Done! ...now what?
+
+...well, it depends on how you're starting the application. Let's ask some
 questions:
 
 1. Does the deployed code rely on the migrations already being ran? If so, then
@@ -245,28 +401,43 @@ questions:
    start your application** since the code does not yet rely on that column to
    exist. Then run the migrations at your convenience.
 
-1. Do you use Kubernetes? Then you should consider [Init Containers]. Init
+1. Do you use Kubernetes? Then you should **consider [Init Containers]**. Init
    containers run to completion _before_ the application containers in the pod.
    This is a perfect opportunity to start your Ecto Repo and migrate it before
-   starting the rest of your application.
+   starting the rest of your application. Make sure you exclude data migrations
+   from this process however, since those usually will not be safe to
+   automatically run in multi-node environments.
+
+[Init Containers]: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 
 Now that you've determined which order to start the application or run the
 migration, let's start running stuff!
 
-The app can start with `bin/my_app start`
+## Check migration status
 
-The database can migrate with `bin/my_app eval 'MyApp.ReleaseTasks.migrate()'`
+We can inspect the database migration statuses with `bin/my_app eval
+'MyApp.Release.migration_status()'`
 
-[Init Containers]: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+TODO IMAGE
 
-**Hold up sir. What's that ReleaseTasks module?**
+## Run the migration
 
-Ah, right, the key player in this process.
+The database can migrate with `bin/my_app eval 'MyApp.Release.migrate()'`
 
-See also:
+When running `bin/my_app eval`, a separate slim instance of the Erlang VM is
+started. Your app is loaded _but not started_. Only the Repo is started, and
+it's only started with 2 database connections. Since this is a new instance
+booting, this implies that it will also need the same environment variables as
+your running application.
 
-- https://hexdocs.pm/ecto_sql/Ecto.Migrator.html
-- https://hexdocs.pm/phoenix/releases.html
+TODO IMAGE
+
+## OMG ROLL IT BACK
+
+The app can rollback with `bin/my_app eval 'MyApp.Release.rollback(MyApp.Repo,
+20210709121212)'`
+
+TODO IMAGE
 
 # How to inspect locks in a query
 
