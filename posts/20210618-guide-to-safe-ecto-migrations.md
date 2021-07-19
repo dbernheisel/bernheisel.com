@@ -151,7 +151,20 @@ CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "tem
 
 Ecto is cheating the logs a bit here; yes, we do see the raw SQL for _our own
 changes_, but we're not seeing the SQL that Ecto is running for the entire
-migration. We're missing the SQL that are specific to the adapter.
+migration. We're missing the SQL that are specific to the adapter. To get these
+missing logs, I'll tail the Postgres logs and reveal here.
+
+```
+LOG:  statement: BEGIN
+LOG:  execute ecto_642: SELECT s0."version"::bigint FROM "schema_migrations" AS s0 FOR UPDATE
+LOG:  execute ecto_674: SELECT s0."version"::bigint FROM "schema_migrations" AS s0
+LOG:  statement: BEGIN
+LOG:  execute <unnamed>: CREATE TABLE "weather" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"))
+LOG:  execute ecto_insert_schema_migrations: INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2)
+DETAIL:  parameters: $1 = '20210718204657', $2 = '2021-07-18 20:53:49'
+LOG:  statement: COMMIT
+LOG:  statement: COMMIT
+```
 
 **Postgres difference**. Here, Postgres will actually run the migration wrapped
 in a transaction. This part is unlogged, so we'll have to reference the code.
@@ -179,6 +192,7 @@ LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
 BEGIN;
 CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"));
 COMMIT;
+INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ('20210718204657','2021-07-18 20:53:49');
 COMMIT;
 ```
 
@@ -203,6 +217,7 @@ BEGIN;
     -- my changes
     -- before_commit callback
   COMMIT;
+  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
 COMMIT;
 ```
 
@@ -215,8 +230,11 @@ migration transaction:
 
 ```sql
 BEGIN;
-  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
-  -- migration
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE -- THIS LOCK
+  -- BEGIN;
+    -- my changes
+  -- COMMIT;
+  -- INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
 COMMIT;
 ```
 
@@ -233,10 +251,10 @@ migration (see next point).
 You can also disable this migration lock for all migrations by configuring the
 Repo:
 
-```
+```elixir
 # config/config.exs
 config :my_app, MyApp.Repo, migration_lock: false
-# But this is not recommended.
+# But this is not recommended for Postgres users. See next point.
 ```
 
 **`@disable_ddl_transaction`**
@@ -245,9 +263,7 @@ By default, Ecto will wrap your changes in a transaction:
 
 ```sql
 BEGIN;
-  -- after_begin callback
-  -- my changes
-  -- before_commit callback
+  -- my migration
 COMMIT;
 ```
 
@@ -257,13 +273,13 @@ your database in an incomplete and confusing state.
 There are some scenarios where you may not want a migration to occur inside a
 transaction, such as data migrations or commands such as `CREATE INDEX
 CONCURRENTLY` that can work asynchronously on the database side after you issue
-the command.
+the command and cannot be inside a transaction.
 
 You can disable this transaction by setting the module attribute
 `@disable_ddl_transaction true` in your migration.
 
-> **Tip** For Postgres, usually when disabling transactions, you'll also want to
-> disable the migration lock since that uses yet another transaction. When
+> **Tip**: For Postgres, usually when disabling transactions, you'll **also want
+> to disable the migration lock** since that uses yet another transaction. When
 > running these migrations in a multi-node environment, you'll need a process to
 > ensure these migrations are only kicked-off once since there is no protection
 > against multiple nodes running the same migration at the same exact time.
@@ -271,12 +287,12 @@ You can disable this transaction by setting the module attribute
 **Transaction Callbacks**
 
 If the migration is occurring within a transaction, you might appreciate hooks
-before and after your changes. (This was introduced in Ecto 3.0.3)
+before and after your changes.
 
 ```sql
 BEGIN;
   -- after_begin hook
-  -- my migration
+  -- my changes
   -- before_commit hook
 COMMIT;
 ```
@@ -299,19 +315,22 @@ defmodule MyApp.Repo.Migrations.CreateTestTable do
 end
 ```
 
+Be mindful that these callbacks are only called if `@disable_ddl_transaction` is
+not set to `true` since it relies on the transaction being present.
+
 # How to migrate Mix Release projects
 
 In Mix Release projects, we need to give ourselves easy access to commands to
 facilitate migrations. Here's a couple of use cases:
 
 1. Check the status of migrations.
-1. Migrate up to x migration. Default to the latest migration.
-1. Rollback to x migration.
+1. Migrate repos up to x migration. Default to the latest migration.
+1. Rollback to x migration for a specific Repo.
 
 The common and documented way to encapsulate these commands is with a
 `MyApp.Release` module.
 
-## Create Release Module
+## Create `MyApp.Release`
 
 - [Phoenix has examples](https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands)
 - [EctoSQL has examples](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#module-example-running-migrations-in-a-release)
@@ -357,6 +376,10 @@ Let's adjust the `migrate` function to accept options that we can pass into
 `Ecto.Migrator`.
 
 ```diff
++  @doc """
++  Migrate the database. Defaults to migrating to the latest, ie `[all: true]`
++  Also accepts `[step: 1]`, or `[to: 20200118045751]`
++  """
 -  def migrate do
 +  def migrate(opts \\ [all: true]) do
     for repo <- repos() do
@@ -369,6 +392,11 @@ Let's adjust the `migrate` function to accept options that we can pass into
 Now we can pass in options to allow us migrate by 1 step or to specific
 versions. For example, `migrate(step: 1)` or `migrate(to: 20210719021232)`.
 
+For rolling back, it's most likely a terrible scenario where you don't want to
+migrate _all_ possible databases back; therefore you'll want to be more explicit
+in this command. You'll require yourself to pass in the specific repo and
+version to rollback to.
+
 [See available options](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#run/4)
 
 **Adding `MyApp.Release.migration_status/0`**
@@ -378,14 +406,65 @@ which migration is up next to execute. Locally, you can run `mix
 ecto.migrations` to check the status of migrations; I want this same experience
 but compatible with deployed releases.
 
+Let's adapt it for Mix Releases:
+
 ```elixir
-TODO
+@doc """
+Print the migration status for configured Repos' migrations.
+"""
+def migration_status do
+  for repo <- repos(), do: print_migrations_for(repo)
+end
+
+defp print_migrations_for(repo) do
+  paths = repo_migrations_path(repo)
+
+  {:ok, repo_status, _} =
+    Ecto.Migrator.with_repo(repo, &Ecto.Migrator.migrations(&1, paths), mode: :temporary)
+
+  IO.puts(
+    """
+    Repo: #{inspect(repo)}
+      Status    Migration ID    Migration Name
+    --------------------------------------------------
+    """ <>
+      Enum.map_join(repo_status, "\n", fn {status, number, description} ->
+        "  #{pad(status, 10)}#{pad(number, 16)}#{description}"
+      end) <> "\n"
+  )
+end
+
+defp repo_migrations_path(repo) do
+  config = repo.config()
+  priv = config[:priv] || "priv/#{repo |> Module.split() |> List.last() |> Macro.underscore()}"
+  config |> Keyword.fetch!(:otp_app) |> Application.app_dir() |> Path.join(priv)
+end
+
+defp pad(content, pad) do
+  content
+  |> to_string
+  |> String.pad_trailing(pad)
+end
+```
+
+A lot of this code is borrowed from the mix task `mix ecto.migrations`, but
+adapted to not require the `Mix` module.
+
+When you run `bin/my_app eval "MyApp.Release.migration_status()"`, this
+should be the output:
+
+```
+Repo: MyApp.Repo
+  Status    Migration ID    Migration Name
+--------------------------------------------------
+  down      20210718153339  add_test_table1
+  down      20210718153341  add_test_table2
 ```
 
 ## Assemble the Release
 
-Now it's time to assemble the release with `mix release` and upload the app to
-the target server. Great! Done! ...now what?
+Now it's time to assemble the release with `mix release`. Great! Done! ...now
+what?
 
 ...well, it depends on how you're starting the application. Let's ask some
 questions:
@@ -416,34 +495,40 @@ migration, let's start running stuff!
 ## Check migration status
 
 We can inspect the database migration statuses with `bin/my_app eval
-'MyApp.Release.migration_status()'`
+'MyApp.Release.migration_status()'`.
 
-TODO IMAGE
+```
+Repo: MyApp.Repo
+  Status    Migration ID    Migration Name
+--------------------------------------------------
+  down      20210718153339  add_test_table1
+  down      20210718153341  add_test_table2
+```
 
 ## Run the migration
 
-The database can migrate with `bin/my_app eval 'MyApp.Release.migrate()'`
+The database can migrate with `bin/my_app eval 'MyApp.Release.migrate()'`.
 
 When running `bin/my_app eval`, a separate slim instance of the Erlang VM is
 started. Your app is loaded _but not started_. Only the Repo is started, and
 it's only started with 2 database connections. Since this is a new instance
 booting, this implies that it will also need the same environment variables as
-your running application.
-
-TODO IMAGE
+your running application. If you rely on environment variables to know which
+database to connect to and its credentials, ensure they're present when running
+this command.
 
 ## OMG ROLL IT BACK
 
 The app can rollback with `bin/my_app eval 'MyApp.Release.rollback(MyApp.Repo,
 20210709121212)'`
 
-TODO IMAGE
-
 # How to inspect locks in a query
 
 Before we dive into safer practices of migrations, we should equip some
 knowledge about how to check if a migration could potentially block your
-application.
+application. In Postgres, there is a `pg_locks` table that we can query that
+will reveal the locks occurring in the system. Let's query that table alongside
+our migrations.
 
 ```sql
 BEGIN;
@@ -456,32 +541,99 @@ BEGIN;
 COMMIT;
 ```
 
+The result from this SQL command should return to you the locks obtained during
+the operation. Let's see an example.
 
+First, we'll create a table. We'll do it the way that Ecto does it so we're not
+missing anything.
+
+```sql
+BEGIN;
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
+  BEGIN;
+    CREATE UNIQUE INDEX IF NOT EXISTS "weather_city_index" ON "weather" ("city");
+  COMMIT;
+  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ('20210718210952',NOW());
+COMMIT;
+```
+
+Now, we'll add a unique index. We'll create the index naively without
+concurrency so we can see the locks it obtains.
+
+```sql
+BEGIN;
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
+  -- we are going to squash the embedded transaction here for simplicity
+  CREATE UNIQUE INDEX IF NOT EXISTS "weather_city_index" ON "weather" ("city");
+  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ('20210718210952',NOW());
+  SELECT locktype, relation::regclass, mode, transactionid AS tid, virtualtransaction AS vtid, pid, granted FROM pg_locks;
+COMMIT;
+
+--    locktype    |      relation      |           mode           |  tid   | vtid  | pid | granted
+-- ---------------+--------------------+--------------------------+--------+-------+-----+---------
+--  relation      | pg_locks           | AccessShareLock          |        | 2/321 | 253 | t
+--  relation      | schema_migrations  | RowExclusiveLock         |        | 2/321 | 253 | t
+--  virtualxid    |                    | ExclusiveLock            |        | 2/321 | 253 | t
+--  relation      | weather_city_index | AccessExclusiveLock      |        | 2/321 | 253 | t
+--  relation      | schema_migrations  | ShareUpdateExclusiveLock |        | 2/321 | 253 | t
+--  transactionid |                    | ExclusiveLock            | 283863 | 2/321 | 253 | t
+--  relation      | weather            | ShareLock                |        | 2/321 | 253 | t
+-- (7 rows)
+```
+
+Let's go through each of these:
+
+1. `relation | pg_locks | AccessShareLock` - This is us querying the pg_locks
+   table in the transaction so we can see which locks are taken. It has the
+   weakest lock which only conflicts with `Access Exclusive` which should never
+   happen on the internal pg_locks table itself.
+1. `relation | schema_migrations | RowExclusiveLock` - This is because we're
+   inserting a row into the "schema_migrations" table. Reads are still allowed,
+   but mutation on this table is blocked until the transaction is done.
+1. `virtualxid | _ | ExlusiveLock` - Querying `pg_locks` created a virtual
+   transaction on the SELECT query. We can ignore this.
+1. `relation | weather_city_index | AccessExclusiveLock` - We're creating the
+   index, so this new index will be completely locked to any reads and writes
+   until this transaction is complete.
+1. `relation | schema_migrations | ShareUpdateExclusiveLock` - This lock is
+   acquired by Ecto to ensure that only one mutable operation is happening on
+   the table. This is what allows multiple nodes able to run migrations at the
+   same time safely. Other processes can still read the schema_migrations table,
+   but you cannot write to it.
+1. `transactionid | _ | ExclusiveLock` - This lock is on a transaction that is
+   happening; in this case, it has an Exclusive Lock on _itself_; meaning that
+   if another transaction occurring at the same time conflicts with this
+   transaction, the _other_ transaction will acquire a lock on _this_
+   transaction so it knows when it's done. I call this lockception 🙂🤯
+1. `relation | weather | ShareLock` - **Finally**, the reason why we're here.
+   Remember, we're creating a unique index on the "weather" table naively
+   without concurrency. This lock is our red flag 🚩. **You'll see that it is
+   acquiring a ShareLock on the table which means that it will block
+   writes! This won't be good if we deploy this** if we have processes or web
+   requests that regularly write to this table. `UPDATE` `DELETE` and `INSERT`
+   acquire a RowExclusiveLock which conflicts with the ShareLock.
+
+To fix this lock, we'll instead change the command to `CREATE INDEX CONCURRENTLY
+...`; when using `CONCURRENTLY`, it prevents us from using `BEGIN/COMMIT`
+transactions which is unfortunate because now we cannot easily see the locks the
+command obtains. We know this will be safer because `CREATE INDEX CONCURRENTLY`
+acquires a ShareUpdateExclusiveLock which does not conflict with
+RowExclusiveLock.
 
 # Safeguards in the database
 
-TODO
+It's a good idea to add safe guards so no developer on the team accidentally
+locks up the database for too long.
 
-## Statement Timeout
+## Add `lock_timeout` to all migrations
 
-> Abort any statement that takes more than the specified amount of time. If
-> log_min_error_statement is set to ERROR or lower, the statement that timed out
-> will also be logged. If this value is specified without units, it is taken as
-> milliseconds. A value of zero (the default) disables the timeout.
->
-> The timeout is measured from the time a command arrives at the server until it
-> is completed by the server. If multiple SQL statements appear in a single
-> simple-Query message, the timeout is applied to each statement separately.
-> (PostgreSQL versions before 13 usually treated the timeout as applying to the
-> whole query string.) In extended query protocol, the timeout starts running
-> when any query-related message (Parse, Bind, Execute, Describe) arrives, and
-> it is canceled by completion of an Execute or Sync message.
+One safe guard we can add to migrations is a lock timeout. A lock timeout will
+ensure a lock should not last more than n seconds. This way, if an unsafe
+migration does sneak in, it should only lock tables and their subsequent updates
+and writes, and possibly reads for n seconds instead of indefinitely until the
+migration finishes.
 
-```sql
-ALTER ROLE myuser SET statement_timeout = '1h';
-```
-
-## Lock Timeout
+From the Postgres docs:
 
 > Abort any statement that waits longer than the specified amount of time while
 > attempting to acquire a lock on a table, index, row, or other database object.
@@ -497,26 +649,111 @@ ALTER ROLE myuser SET statement_timeout = '1h';
 > always trigger first. If log_min_error_statement is set to ERROR or lower, the
 > statement that timed out will be logged.
 
+There are two ways to apply this lock:
+
+1. localized to the transaction.
+1. globally for the user.
+
+### Transaction `lock_timeout`
+
+In SQL:
+
+```sql
+SET lock_timeout to '5s';
+```
+
+Let's move this to Ecto migration transactions.
+
+In every migration, you'll notice that we `use Ecto.Migration` which inserts
+some code into your migration. Let's use this same idea to inject some
+boilerplate of our own, and leverage an option to set a lock timeout. We'll an
+[`after_begin`](https://hexdocs.pm/ecto_sql/Ecto.Migration.html#c:after_begin/0)
+callback to set the lock_timeout.
+
+```elixir
+defmodule MyApp.Migration do
+  defmacro __using__(opts) do
+    lock_timeout = Keyword.get(opts, :lock_timeout, [up: "5s", down: "10s"])
+
+    quote do
+      use Ecto.Migration
+
+      if unquote(lock_timeout) do
+        def after_begin do
+          execute(
+            "SET lock_timeout TO '#{Keyword.fetch!(unquote(lock_timeout), :up)}'",
+            "SET lock_timeout TO '#{Keyword.fetch!(unquote(lock_timeout), :down)}'"
+          )
+        end
+      end
+    end
+  end
+end
+```
+
+And adjust our migration:
+
+```diff
+defmodule MyApp.Repo.Migrations.CreateTestTable do
+-  use Ecto.Migration
++  use MyApp.Migration
+
+  def change do
+    # my changes
+  end
+end
+```
+
+Now the migrations will only be allowed to acquire locks up to 5 seconds when
+migrating up and 10 seconds when rolling back. Remember, these callbacks are
+only called when `@disable_ddl_transaction` is not set to `true`.
+
+You can override the lock timeout if needed by setting `use MyApp.Migration,
+lock_timeout: false` or change the timeouts `use MyApp.Migration, lock_timeout:
+[up: "10s", down: "20s"]`.
+
+### Role `lock_timeout`
+
+Alternatively, you can set the lock_timeout for the user in all commands:
+
 ```sql
 ALTER ROLE myuser SET lock_timeout = '10s';
 ```
 
-Or, at the migration level, you could use an [Ecto migration transaction
-callback] [`after_begin`](https://hexdocs.pm/ecto_sql/Ecto.Migration.html#c:after_begin/0)
-to specify lock timeouts to protect the application from runaway locks.
+[Ecto migration transaction callbacks]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html#module-transaction-callbacks
 
-```elixir
-def after_begin() do
-  repo().query!(
-    "SET lock_timeout TO '5s'",  # migrate up
-    "SET lock_timeout TO '10s'"  # migrate down
-  )
-end
+## Statement Timeout
+
+Another way to ensure safety is to configure your Postgres database to have
+statement timeouts. These timeouts will apply to all statements, including
+migrations.
+
+From Postgres docs:
+
+> Abort any statement that takes more than the specified amount of time. If
+> log_min_error_statement is set to ERROR or lower, the statement that timed out
+> will also be logged. If this value is specified without units, it is taken as
+> milliseconds. A value of zero (the default) disables the timeout.
+>
+> The timeout is measured from the time a command arrives at the server until it
+> is completed by the server. If multiple SQL statements appear in a single
+> simple-Query message, the timeout is applied to each statement separately.
+> (PostgreSQL versions before 13 usually treated the timeout as applying to the
+> whole query string.) In extended query protocol, the timeout starts running
+> when any query-related message (Parse, Bind, Execute, Describe) arrives, and
+> it is canceled by completion of an Execute or Sync message.
+
+You can specify this configuration for the postgres user. For example:
+
+```sql
+ALTER ROLE myuser SET statement_timeout = '10m';
 ```
 
-Another callback is [`before_commit`](https://hexdocs.pm/ecto_sql/Ecto.Migration.html#c:before_commit/0)
-
-[Ecto migration transaction callbacks]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html#module-transaction-callbacks
+Now any statement will automatically time out if it runs for more than 10
+minutes; opposed to indefinitely running. This could be helpful if you
+accidentally run a query that runs the database CPU hot, slowing everything else
+down; now that unoptimized query will be limited to 10 minutes or else it will
+fail.
 
 # Removing a column
 
