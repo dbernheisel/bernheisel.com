@@ -1,5 +1,5 @@
 %{
-  title: "Guide to safe Ecto Migrations",
+  title: "Guide to safe Ecto Migrations - Postgres Edition",
   tags: ["elixir"],
   description: """
   Not all migrations should be run equally! There are some migrations that may
@@ -21,20 +21,20 @@
   - [Run the migration](#run-the-migration)
   - [Rollback migrations](#omg-roll-it-back)
 - [How to check for locks in a query](#how-to-inspect-locks-in-a-query)
-- Safeguards in the database
-- Scenarios
-  - Removing a column
-  - Adding a column with a default value
-  - Backfilling data
-  - Changing a column type
-  - Renaming a column
-  - Renaming a table
-  - Adding a check constraint
-  - Setting `NOT NULL` on an existing column
-  - (Postgres) Adding an index
-  - (Postgres) Adding a reference or foreign key
-  - (Postgres) Adding a JSON column
-- References
+- [Safeguards in the database](#safeguards-in-the-database)
+- [Scenarios](#scenarios)
+  - [Removing a column](#removing-a-column)
+  - [Adding a column with a default value](#adding-a-column-with-a-default-value)
+  - [Backfilling data](#backfilling-data)
+  - [Changing a column type](#changing-a-column-type)
+  - [Renaming a column](#renaming-a-column)
+  - [Renaming a table](#renaming-a-table)
+  - [Adding a check constraint](#adding-a-check-constraint)
+  - [Setting `NOT NULL` on an existing column](#setting-not-null-on-an-existing-column)
+  - [Adding an index](#adding-an-index)
+  - [Adding a reference or foreign key](#adding-a-reference-or-foreign-key)
+  - [Adding a JSON column](#adding-a-json-column)
+- [References](#references)
 
 ---
 
@@ -63,7 +63,8 @@ This guide should help you:
 1. Avoid pitfalls during migrations
 
 Note: This guide uses **Postgres** and may differ if you're using a different
-database. I'll note where differences may be.
+database. I'll note where differences may be, but I do not go into depth on
+different database systems. This was also written using **Ecto 3.6.x**.
 
 Ok! Let's go
 
@@ -131,9 +132,10 @@ Now that we have a migration, let's run it! Run `mix ecto.migrate`.
 
 ## Inspect SQL
 
-Let's zoom in on the migration. By default, Ecto will not log the raw SQL. Let's
-look at what actually runs. First, I'll rollback, and then re-migrate but with
-an additional flag `--log-sql` so we can see what actually runs.
+We really want to see the SQL that runs though, so let's zoom in on the
+migration. By default, Ecto will not log the raw SQL. First, I'll rollback, and
+then re-migrate but with an additional flag `--log-sql` so we can see what
+actually runs.
 
 ```shell
 ❯ mix ecto.rollback
@@ -152,12 +154,13 @@ CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "tem
 Ecto is cheating the logs a bit here; yes, we do see the raw SQL for _our own
 changes_, but we're not seeing the SQL that Ecto is running for the entire
 migration. We're missing the SQL that are specific to the adapter. To get these
-missing logs, I'll tail the Postgres logs and reveal here.
+missing logs, I'll set Postgres to log everything and then tail the Postgres
+logs:
 
 ```
 LOG:  statement: BEGIN
-LOG:  execute ecto_642: SELECT s0."version"::bigint FROM "schema_migrations" AS s0 FOR UPDATE
-LOG:  execute ecto_674: SELECT s0."version"::bigint FROM "schema_migrations" AS s0
+LOG:  execute <unnamed>: LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+LOG:  execute ecto_3: SELECT s0."version"::bigint FROM "schema_migrations" AS s0
 LOG:  statement: BEGIN
 LOG:  execute <unnamed>: CREATE TABLE "weather" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"))
 LOG:  execute ecto_insert_schema_migrations: INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2)
@@ -166,21 +169,22 @@ LOG:  statement: COMMIT
 LOG:  statement: COMMIT
 ```
 
-**Postgres difference**. Here, Postgres will actually run the migration wrapped
-in a transaction. This part is unlogged, so we'll have to reference the code.
+As you can see, Ecto will actually run the migration wrapped in a transaction in
+Postgres. This part is unlogged by Ecto, so we'll have to reference the code or
+the Postgres logs. Let's trace the code.
 
 When running migrations, Ecto will travel through these functions:
   - [Ecto.Migrator.run/4](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/migrator.ex#L384)
   - [Ecto.Migrator.lock_for_migrations/4](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/migrator.ex#L464)
   - [The adapter's lock_for_migrations implementation](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/adapters/postgres.ex#L207)
-  - [Wrap the migration in a transaction](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/adapters/postgres.ex#L217)
+  - [Wrapped in another transaction](https://github.com/elixir-ecto/ecto_sql/blob/557335f9a2a1e6950c1d761063e84aa5d03cb312/lib/ecto/adapters/postgres.ex#L217)
 
-Inside the transaction, the Postgres adapter is also obtaining a `SHARE UPDATE
-EXCLUSIVE` lock of the "schema_migrations" table.
+Inside the transaction, the Ecto Postgres adapter is also obtaining a `SHARE
+UPDATE EXCLUSIVE` lock of the "schema_migrations" table.
 
 **Why this lock is important**: Elixir excels at distributed deployments, which
 means there could be multiple nodes connected to the same database. These nodes
-may also all try to migrate the database at the same time! Ecto leverages this
+may also try to migrate the database all at the same time! Ecto leverages this
 `SHARE UPDATE EXCLUSIVE` lock as a way to ensure that only one node is running a
 migration at a time and only once.
 
@@ -191,23 +195,23 @@ BEGIN;
 LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
 BEGIN;
 CREATE TABLE "test" ("id" bigserial, "city" varchar(40), "temp_lo" integer, "temp_hi" integer, "prcp" float, "inserted_at" timestamp(0) NOT NULL, "updated_at" timestamp(0) NOT NULL, PRIMARY KEY ("id"));
-COMMIT;
 INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ('20210718204657','2021-07-18 20:53:49');
+COMMIT;
 COMMIT;
 ```
 
 If the migration fails, the transaction is rolled back and no changes actually
 occur in the database. In most scenarios, these are great defaults.
 
-There's also some options we can set in a given Ecto migration. Let's explore
+There are also some options we can set in a given Ecto migration. Let's explore
 some of those options next.
 
 [Ecto.Migration]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html
 
 ## Migration Options
 
-By default, your migration will have this structure (reminder: this guide is
-using Postgres; different adapters will vary):
+Usually your migration will have this structure (reminder: this guide is using
+Postgres; different adapters will vary):
 
 ```sql
 BEGIN;
@@ -216,8 +220,8 @@ BEGIN;
     -- after_begin callback
     -- my changes
     -- before_commit callback
+    INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
   COMMIT;
-  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
 COMMIT;
 ```
 
@@ -230,11 +234,12 @@ migration transaction:
 
 ```sql
 BEGIN;
-  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE -- THIS LOCK
-  -- BEGIN;
+  -- ↓ THIS LOCK ↓
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+  BEGIN;
     -- my changes
-  -- COMMIT;
-  -- INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
+    INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
+  COMMIT;
 COMMIT;
 ```
 
@@ -242,19 +247,17 @@ You want this lock for most migrations because running multiple migrations at
 once concurrently could have unpredictable results. To facilitate releasing this
 lock, the command is wrapped in a transaction.
 
-However, there are some scenarios where you don't want a lock, for example if
-you're running data migrations that are kicked-off manually. You can skip this
+However, there are some scenarios where you don't want a lock. You can skip this
 lock in Ecto by setting the module attribute `@disable_migration_lock true` in
-your migration. Keep in mind there is another transaction occurring in the
-migration (see next point).
+your migration.
 
-You can also disable this migration lock for all migrations by configuring the
-Repo:
+If set to false, the migration will look like this:
 
-```elixir
-# config/config.exs
-config :my_app, MyApp.Repo, migration_lock: false
-# But this is not recommended for Postgres users. See next point.
+```sql
+BEGIN;
+  -- my changes
+  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
+COMMIT;
 ```
 
 **`@disable_ddl_transaction`**
@@ -263,7 +266,13 @@ By default, Ecto will wrap your changes in a transaction:
 
 ```sql
 BEGIN;
-  -- my migration
+  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
+  -- ↓ THIS TRANSACTION ↓
+  BEGIN;
+    -- my migration
+    INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
+  COMMIT;
+  -- ↑ THIS TRANSACTION ↑
 COMMIT;
 ```
 
@@ -271,15 +280,23 @@ This helps ensure that if failures occur during the migration, it does not leave
 your database in an incomplete and confusing state.
 
 There are some scenarios where you may not want a migration to occur inside a
-transaction, such as data migrations or commands such as `CREATE INDEX
+transaction, such as [data migrations] or commands such as `CREATE INDEX
 CONCURRENTLY` that can work asynchronously on the database side after you issue
 the command and cannot be inside a transaction.
 
-You can disable this transaction by setting the module attribute
-`@disable_ddl_transaction true` in your migration.
+[data migrations]: #backfilling-data
 
-> **Tip**: For Postgres, usually when disabling transactions, you'll **also want
-> to disable the migration lock** since that uses yet another transaction. When
+You can disable this transaction by setting the module attribute
+`@disable_ddl_transaction true` in your migration. The migration will look like
+this:
+
+```sql
+-- my migration
+INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
+```
+
+> **Tip**: For Postgres, when disabling transactions, you'll **also want to
+> disable the migration lock** since that uses yet another transaction. When
 > running these migrations in a multi-node environment, you'll need a process to
 > ensure these migrations are only kicked-off once since there is no protection
 > against multiple nodes running the same migration at the same exact time.
@@ -287,13 +304,14 @@ You can disable this transaction by setting the module attribute
 **Transaction Callbacks**
 
 If the migration is occurring within a transaction, you might appreciate hooks
-before and after your changes.
+before and after your changes in the same transaction.
 
 ```sql
 BEGIN;
   -- after_begin hook
   -- my changes
   -- before_commit hook
+  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
 COMMIT;
 ```
 
@@ -330,7 +348,7 @@ facilitate migrations. Here's a couple of use cases:
 The common and documented way to encapsulate these commands is with a
 `MyApp.Release` module.
 
-## Create `MyApp.Release`
+## Create Release Module
 
 - [Phoenix has examples](https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands)
 - [EctoSQL has examples](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#module-example-running-migrations-in-a-release)
@@ -367,8 +385,11 @@ keeps our own code slim and neat. Let's add a little bit to it:
 
 - In most cases you should only deploy one migration at a time. However in some
   cases, you might have heavy deployment that includes multiple migrations.
-  Deployers may only want to execute one at a time. Currently, the function does
-  not allow us to only run one migration.
+  Deployers may only want to execute one at a time so they can monitor them
+  separately. Currently, the function does not allow us to only run one
+  migration.
+
+- You may need a way to run manual data-oriented migrations.
 
 **Adding options to `MyApp.Release.migrate`**
 
@@ -377,7 +398,7 @@ Let's adjust the `migrate` function to accept options that we can pass into
 
 ```diff
 +  @doc """
-+  Migrate the database. Defaults to migrating to the latest, ie `[all: true]`
++  Migrate the database. Defaults to migrating to the latest, `[all: true]`
 +  Also accepts `[step: 1]`, or `[to: 20200118045751]`
 +  """
 -  def migrate do
@@ -394,7 +415,7 @@ versions. For example, `migrate(step: 1)` or `migrate(to: 20210719021232)`.
 
 For rolling back, it's most likely a terrible scenario where you don't want to
 migrate _all_ possible databases back; therefore you'll want to be more explicit
-in this command. You'll require yourself to pass in the specific repo and
+in this command. You'll require deployers to pass in the specific repo and
 version to rollback to.
 
 [See available options](https://hexdocs.pm/ecto_sql/Ecto.Migrator.html#run/4)
@@ -447,7 +468,7 @@ defp pad(content, pad) do
 end
 ```
 
-A lot of this code is borrowed from the mix task `mix ecto.migrations`, but
+A lot of this code is borrowed from the Mix task `mix ecto.migrations`, but
 adapted to not require the `Mix` module.
 
 When you run `bin/my_app eval "MyApp.Release.migration_status()"`, this
@@ -457,9 +478,49 @@ should be the output:
 Repo: MyApp.Repo
   Status    Migration ID    Migration Name
 --------------------------------------------------
-  down      20210718153339  add_test_table1
+  up        20210718153339  add_test_table1
   down      20210718153341  add_test_table2
 ```
+
+**Adding an option for data migrations**
+
+Data migrations need to happen separately and trigger manually to ensure that
+automatic processes don't try to run on multiple nodes. This is a case where a
+singleton in your workflow is necessary 😉. To facilitate data migrations, we're
+going to store these migrations in a different folder. When generating a
+migration with `mix ecto.gen.migration`, you can use the
+`--migrations-path=MY_PATH` flag, eg
+
+```shell
+❯ mix ecto.gen.migration --migrations-path=priv/repo/data_migrations backfill_foo
+* creating priv/repo/data_migrations
+* creating priv/repo/data_migrations/20210811035222_backfill_foo.exs
+```
+
+To run these migrations in a Mix Release, we'll need a new function to look in
+this custom folder of data migrations.
+
+```elixir
+@doc """
+Migrate data in the database. Defaults to migrating to the latest, `[all: true]`
+Also accepts `[step: 1]`, or `[to: 20200118045751]`
+"""
+def migrate_data(opts \\ [all: true]) do
+  for repo <- repos() do
+    path = Ecto.Migrator.migrations_path(repo, "data_migrations")
+    {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, path, :up, opts))
+  end
+end
+```
+
+Now you can manually start data migrations through a Mix Release:
+
+```shell
+bin/my_app eval 'MyApp.Release.migrate_data()'
+```
+
+If you'd like more inspiration, read [Wojtek Mach's Automatic and Manual Ecto
+Migrations](https://dashbit.co/blog/automatic-and-manual-ecto-migrations).
 
 ## Assemble the Release
 
@@ -469,16 +530,17 @@ what?
 ...well, it depends on how you're starting the application. Let's ask some
 questions:
 
-1. Does the deployed code rely on the migrations already being ran? If so, then
-   **no you cannot start your application!** It will crash! The code already
-   assumes the database to be in the state after migration. You need to run your
-   migrations first and start the application after.
+1. Does the deployed _code_ rely on the migrations already being ran? If so,
+   then **no you cannot start your application!** It will crash! The code
+   already assumes the database to be in the state after migration. You need to
+   run your migrations first and start the application after.
 
 1. Does it contain migrations that aren't yet utilized? For example, you already
    have your database created and `profiles` table created, and you _only have a
-   migration_ to add a column to the profiles table. **Yes you can go ahead and
-   start your application** since the code does not yet rely on that column to
-   exist. Then run the migrations at your convenience.
+   migration_ to add a column to the profiles table but your Ecto schema doesn't
+   yet try to load it. **Yes you can go ahead and start your application** since
+   the code does not yet rely on that column to exist. Run the migrations at
+   your convenience.
 
 1. Do you use Kubernetes? Then you should **consider [Init Containers]**. Init
    containers run to completion _before_ the application containers in the pod.
@@ -501,7 +563,7 @@ We can inspect the database migration statuses with `bin/my_app eval
 Repo: MyApp.Repo
   Status    Migration ID    Migration Name
 --------------------------------------------------
-  down      20210718153339  add_test_table1
+  up        20210718153339  add_test_table1
   down      20210718153341  add_test_table2
 ```
 
@@ -516,6 +578,8 @@ booting, this implies that it will also need the same environment variables as
 your running application. If you rely on environment variables to know which
 database to connect to and its credentials, ensure they're present when running
 this command.
+
+To run data migrations, run `bin/my_app eval 'MyApp.Release.migrate_data()'`.
 
 ## OMG ROLL IT BACK
 
@@ -542,23 +606,8 @@ COMMIT;
 ```
 
 The result from this SQL command should return to you the locks obtained during
-the operation. Let's see an example.
-
-First, we'll create a table. We'll do it the way that Ecto does it so we're not
-missing anything.
-
-```sql
-BEGIN;
-  LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE;
-  BEGIN;
-    CREATE UNIQUE INDEX IF NOT EXISTS "weather_city_index" ON "weather" ("city");
-  COMMIT;
-  INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ('20210718210952',NOW());
-COMMIT;
-```
-
-Now, we'll add a unique index. We'll create the index naively without
-concurrency so we can see the locks it obtains.
+the operation. Let's see an example. We'll add a unique index. We'll create the
+index naively without concurrency so we can see the locks it obtains.
 
 ```sql
 BEGIN;
@@ -609,7 +658,7 @@ Let's go through each of these:
    Remember, we're creating a unique index on the "weather" table naively
    without concurrency. This lock is our red flag 🚩. **You'll see that it is
    acquiring a ShareLock on the table which means that it will block
-   writes! This won't be good if we deploy this** if we have processes or web
+   writes! It won't be good if we deploy this** if we have processes or web
    requests that regularly write to this table. `UPDATE` `DELETE` and `INSERT`
    acquire a RowExclusiveLock which conflicts with the ShareLock.
 
@@ -620,17 +669,46 @@ command obtains. We know this will be safer because `CREATE INDEX CONCURRENTLY`
 acquires a ShareUpdateExclusiveLock which does not conflict with
 RowExclusiveLock.
 
+Here's a table of how locks conflict:
+
+|  | **Current Lock →** | | | | | | |
+|---------------------|-------------------|-|-|-|-|-|-|
+| **Requested Lock ↓** | ACCESS SHARE | ROW SHARE | ROW EXCLUSIVE | SHARE UPDATE EXCLUSIVE | SHARE | SHARE ROW EXCLUSIVE | EXCLUSIVE | ACCESS EXCLUSIVE |
+| ACCESS SHARE           |   |   |   |   |   |   |   | X |
+| ROW SHARE              |   |   |   |   |   |   | X | X |
+| ROW EXCLUSIVE          |   |   |   |   | X | X | X | X |
+| SHARE UPDATE EXCLUSIVE |   |   |   | X | X | X | X | X |
+| SHARE                  |   |   | X | X |   | X | X | X |
+| SHARE ROW EXCLUSIVE    |   |   | X | X | X | X | X | X |
+| EXCLUSIVE              |   | X | X | X | X | X | X | X |
+| ACCESS EXCLUSIVE       | X | X | X | X | X | X | X | X |
+
 # Safeguards in the database
 
-It's a good idea to add safe guards so no developer on the team accidentally
-locks up the database for too long.
+It's a good idea to add safeguards so no developer on the team accidentally
+locks up the database for too long. Even if you know all about databases and
+locks, you might have a forgetful day and try to add an index non-concurrently
+and bring down production. Safeguards are good.
 
-## Add `lock_timeout` to all migrations
+We can add one or several safeguards:
 
-One safe guard we can add to migrations is a lock timeout. A lock timeout will
-ensure a lock should not last more than n seconds. This way, if an unsafe
+1. Automatically cancel a statement if its lock is held for too long. There are
+   two ways to apply this:
+  1. Apply to migrations. This can be done with a `lock_timeout` inside a
+     transaction.
+  2. Apply to any statements. This can be done by setting a `lock_timeout` to a
+     Postgres role.
+2. Automatically cancel statements that take too long. This is broader than #1
+   because it includes _any_ statement, not just locks.
+
+Let's dive into these safeguards.
+
+## Add a `lock_timeout`
+
+One safeguard we can add to migrations is a lock timeout. A lock timeout will
+ensure a lock should not last more than `n` seconds. This way, if an unsafe
 migration does sneak in, it should only lock tables and their subsequent updates
-and writes, and possibly reads for n seconds instead of indefinitely until the
+and writes and possibly reads for `n` seconds instead of indefinitely until the
 migration finishes.
 
 From the Postgres docs:
@@ -652,7 +730,7 @@ From the Postgres docs:
 There are two ways to apply this lock:
 
 1. localized to the transaction.
-1. globally for the user.
+1. default for the user/role.
 
 ### Transaction `lock_timeout`
 
@@ -662,13 +740,24 @@ In SQL:
 SET lock_timeout to '5s';
 ```
 
-Let's move this to Ecto migration transactions.
+Let's move that to a [Ecto migration transaction callback](https://hexdocs.pm/ecto_sql/Ecto.Migration.html#module-transaction-callbacks).
+
+You can set a lock timeout in every migration:
+
+```elixir
+def after_begin do
+  execute("SET lock_timeout TO '5s'", "SET lock_timeout TO '10s'")
+end
+```
+
+But this can get tedious, and you'll likely want this for every migration. Let's
+write a little macro to help with this boilerplate code.
 
 In every migration, you'll notice that we `use Ecto.Migration` which inserts
-some code into your migration. Let's use this same idea to inject some
-boilerplate of our own, and leverage an option to set a lock timeout. We'll an
+some code into your migration. Let's use this same idea to inject boilerplate of
+our own and leverage an option to set a lock timeout. We define the
 [`after_begin`](https://hexdocs.pm/ecto_sql/Ecto.Migration.html#c:after_begin/0)
-callback to set the lock_timeout.
+callback to set the lock timeout.
 
 ```elixir
 defmodule MyApp.Migration do
@@ -712,21 +801,25 @@ You can override the lock timeout if needed by setting `use MyApp.Migration,
 lock_timeout: false` or change the timeouts `use MyApp.Migration, lock_timeout:
 [up: "10s", down: "20s"]`.
 
-### Role `lock_timeout`
+### Role-level `lock_timeout`
 
-Alternatively, you can set the lock_timeout for the user in all commands:
+Alternatively, you can set a lock timeout for the user in all commands:
 
 ```sql
 ALTER ROLE myuser SET lock_timeout = '10s';
 ```
 
-[Ecto migration transaction callbacks]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html#module-transaction-callbacks
+If you have a different user that runs migrations, this could be a good option
+for that migration-specific Postgres user. The trade-off is that Elixir
+developers won't see this timeout as they write migrations and explore the call
+stack, versus role settings in the database that developers don't usually
+monitor.
 
 ## Statement Timeout
 
 Another way to ensure safety is to configure your Postgres database to have
 statement timeouts. These timeouts will apply to all statements, including
-migrations.
+migrations and the locks they obtain.
 
 From Postgres docs:
 
@@ -743,7 +836,7 @@ From Postgres docs:
 > when any query-related message (Parse, Bind, Execute, Describe) arrives, and
 > it is canceled by completion of an Execute or Sync message.
 
-You can specify this configuration for the postgres user. For example:
+You can specify this configuration for the Postgres user. For example:
 
 ```sql
 ALTER ROLE myuser SET statement_timeout = '10m';
@@ -753,39 +846,76 @@ Now any statement will automatically time out if it runs for more than 10
 minutes; opposed to indefinitely running. This could be helpful if you
 accidentally run a query that runs the database CPU hot, slowing everything else
 down; now that unoptimized query will be limited to 10 minutes or else it will
-fail.
+fail and be canceled.
 
-# Removing a column
+Setting this `statement_timeout` will require discipline from the team; if there
+are runaway queries that fail at (for example) 10 minutes, an exception will
+likely occur somewhere. You will want to equip your application with sufficient
+logging, tracing, and reporting so you can replicate the query and the
+parameters it took to hit the timeout, and ultimately optimize the query.
+Without this discipline, you will risk gaining a culture that ignores
+exceptions.
 
-If Ecto is still configured to read a column, then queries will fail when
-loading data into your structs.
+# Scenarios
 
-## BAD
+Here is a non-prescriptive guide on common migration scenarios and how to avoid
+trouble.
+
+## Removing a column
+
+If Ecto is still configured to read a column in any running instances of the
+application, then queries will fail when loading data into your structs. This
+can happen in multi-node deployments or if you start the application before
+running migrations.
+
+### BAD
 
 ```elixir
+# Without a code change to the Ecto Schema
+
 def change
   alter table("posts") do
     remove :no_longer_needed_column
+
+    # Obtained an AccessExclusiveLock on the table, which blocks reads and
+    # writes, but was really quick to run.
   end
 end
 ```
 
-## GOOD
+### GOOD
+
+Safety can be assured if the application code is first updated to remove
+references to the column so it's no longer loaded or queried. Then, the column
+can safely be removed from the table.
+
+**Strategy 1:**
 
 1. Deploy change to application to remove field from Ecto schema.
-2. Deploy migration and run it.
+1. Start the application. No instances of the app should remain with code
+   references to the column about to be removed.
+1. Run migration to remove the column from the database.
 
-Deploy 1
+**Strategy 2:**
+
+If your deployment process must run migrations before starting the application,
+this means you need a 2-deploy strategy:
+
+1. Deploy code change to remove references the field.
+1. Deploy migration change to remove the column.
+1. Run the migration to remove the column.
 
 ```diff
+# In the Ecto schema
+
 schema "posts" do
 - column :no_longer_needed_column, :text
 end
 ```
 
-Deploy 2
-
 ```elixir
+# In the migration
+
 def change
   alter table("posts") do
     remove :no_longer_needed_column
@@ -793,54 +923,81 @@ def change
 end
 ```
 
+## Adding a column with a default value
 
-# Adding a column with a default value
-
-Adding a column with a default value to an existing table causes the table to be
-rewritten. During this time, reads and writes are blocked in Postgres, and
+Adding a column with a default value to an existing table may cause the table to
+be rewritten. During this time, reads and writes are blocked in Postgres, and
 writes are blocked in MySQL and MariaDB.
 
-## BAD
+### BAD
 
-Safe in Postgres 11+, MySQL 8.0.12+, MariaDB 10.3.2+
+**Note:** This becomes safe in:
+
+  - [Postgres 11+](https://www.postgresql.org/docs/11/release-11.html),
+  - [MySQL 8.0.12+](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-12.html),
+  - [MariaDB 10.3.2+](https://mariadb.com/kb/en/instant-add-column-for-innodb/)
 
 ```elixir
 def change do
   alter table("comments") do
     add :approved, :boolean, default: false
+    # This took 34 seconds on my machine for 10 million rows with no fkeys,
+    # This took 10 minutes on my machine for 100 million rows with no fkeys,
+
+    # Obtained an AccessExclusiveLock on the table, which blocks reads and
+    # writes.
   end
 end
 ```
 
-## GOOD
+### GOOD
+
+Add the column first, then alter it to include the default.
+
+First migration:
 
 ```elixir
 def change do
   alter table("comments") do
     add :approved, :boolean
-  end
-
-  flush()
-
-  alter table("comments") do
-    modify :approved, :boolean, default: false
+    # This took 0.27 milliseconds for 100 million rows with no fkeys,
   end
 end
 ```
 
+Second migration:
 
-# Backfilling data
+```elixir
+def change do
+  alter table("comments") do
+    modify :approved, :boolean, default: false
+    # This took 0.28 milliseconds for 100 million rows with no fkeys,
+  end
+end
+```
 
-Ecto will create a transaction around each migration, and backfilling in the
-same transaction that alters a table keeps the table locked for the duration of
-the backfill.
+Schema change to read the new column:
 
-Also, running a single query to update data can cause issues for large tables.
+```dif
+schema "comments" do
++ field :approved, :boolean, default: false
+end
+```
 
-See also:
-- https://dashbit.co/blog/automatic-and-manual-ecto-migrations
+## Backfilling data
 
-## BAD
+There are several challenges when backfilling data:
+
+1. Ecto will create a transaction around each migration, and backfilling in the
+   same transaction that alters a table keeps the table locked for the duration
+   of the backfill.
+
+2. Running a single query to update data can cause issues for large tables.
+
+3. Since backfills cannot be inside transactions, you'll need a different and
+   manual mechanism for running of these data migrations.
+
+### BAD
 
 ```elixir
 import Ecto.Query
@@ -860,47 +1017,332 @@ end
 
 The referenced `MySchema` is defined in application code, which may change over
 time. However, migrations are a snapshot of your app at the time it's written.
-In the future, assumptions in query may no longer be true; for example some
-fields may not be present anymore causing the query to fail.
+In the future, assumptions in query may no longer be true; for example
+`new_data` above may not be present anymore in the schema causing the query to
+fail.
 
 Additionally, in your development environment, you might have 10 records to
 migrate; in staging, you might have 100; in production, you might have 10
 billion to migrate. Batching and throttling may be necessary.
 
-## GOOD
+Ultimately, there are several bad practices here:
+
+1. The Ecto schema of the query is subject to change after the given migration.
+
+2. Backfilling data will lock the table since it's occurring in the same
+   transaction as the table alteration.
+
+3. Backfilling data all at once may fail if it's changing a large data set.
+
+4. Backfilling data may spike the database CPU to 100% due to lack
+   of throttling and batching.
+
+### GOOD
 
 There are three keys to backfilling safely:
 
-  1. batching
-  2. throttling
-  3. running it outside a transaction
+  1. running outside a transaction
+  2. batching
+  3. throttling
 
-Here are two options for "snapshotting" your schema at the time of the
-migration:
+Add these options to the migration to disable Ecto wrapping the migration in a
+transaction:
 
-  1. Execute pure SQL that represents the table at that moment.
-  2. Write a small Ecto schema in the migration that only involves what you
-     need, and use that in your data migration.
+```elixir
+@disable_ddl_transaction true
+@disable_migration_lock true
+```
 
-TODO: (example)
+Batching and Throttling in data migrations has several challenges:
 
+* `LIMIT/OFFSET` is an expensive query for large tables, so we must find
+  another way to paginate.
 
-# Changing the type of a column
+* We cannot use a database transactions, otherwise it would lock the updated
+  data for the duration of the data migration. This also implies we cannot
+  leverage cursors since they require a transaction.
 
-Changing the type of a column causes the table to be rewritten. During this
+* This leaves us with keyset pagination, which means the data must be
+  orderable in a some way.
+
+For querying and updating the data, there are two options for "snapshotting"
+your schema at the time of the migration:
+
+1. Execute SQL that represents the table at that moment. Do not reference Ecto
+   schemas.
+
+2. Write a small Ecto schema module inside the migration that only involves what
+   you need, and use that in your data migration. This is helpful if you prefer
+   the Ecto API for querying.
+
+Finally, to manage these data migrations separately, see section [Create Release
+Module](#create-release-module).
+
+### Throttling deterministic set of data
+
+If the data can be queried with a condition that is removed after update, for
+example if a column is currently null and will be updated to not be null, then
+you can repeatedly query the data and update the data until the query result is
+empty.
+
+For example:
+
+```elixir
+defmodule MyApp.Repo.Migrations.BackfillPosts do
+  use Ecto.Migration
+  import Ecto.Query
+
+  @disable_ddl_transaction true
+  @disable_migration_lock true
+  @batch_size 1000
+  @throttle_ms 100
+
+  def up do
+    throttle_change_in_batches(&page_query/1, &do_change/1)
+  end
+
+  def down, do: :ok
+
+  def do_change(batch_of_ids) do
+    {_updated, results} = repo().update_all(
+      from(r in "weather", select: r.id, where: r.id in ^batch_of_ids),
+      [set: [approved: true]],
+      log: :info
+    )
+    not_updated = MapSet.difference(MapSet.new(batch_of_ids), MapSet.new(results)) |> MapSet.to_list()
+    Enum.each(not_updated, &handle_non_update/1)
+    results
+  end
+
+  def page_query(last_id) do
+    from(
+      r in "weather",
+      select: r.id,
+      where: is_nil(r.approved) and r.id > ^last_id,
+      order_by: [asc: r.id],
+      limit: @batch_size
+    )
+  end
+
+  # If you have BigInt IDs, fallback last_pod = 0
+  # If you have UUID IDs, fallback last_pos = "00000000-0000-0000-0000-000000000000"
+  # If you have Int IDs, you should consider updating it to BigInt or UUID :)
+  defp throttle_change_in_batches(query_fun, change_fun, last_pos \\ 0)
+  defp throttle_change_in_batches(_query_fun, _change_fun, nil), do: :ok
+  defp throttle_change_in_batches(query_fun, change_fun, last_pos) do
+    case repo().all(query_fun.(last_pos), [log: :info, timeout: :infinity]) do
+      [] ->
+        :ok
+
+      ids ->
+        results = change_fun.(List.flatten(ids))
+        next_page = results |> Enum.reverse() |> List.first()
+        Process.sleep(@throttle_ms)
+        throttle_change_in_batches(query_fun, change_fun, next_page)
+    end
+  end
+
+  defp handle_non_update(id) do
+    raise "#{inspect(id)} was not updated"
+  end
+end
+```
+
+### Throttling Undeterministic set of data
+
+If the data being updated cannot be queried deterministically after update, for
+example if all a column's values must be incremented by 10, then we need to take
+a snapshot of the current data and store it temporarily, then we can loop over
+that result until it's updated. This would also require that new records going
+forward would not need to be adjusted, so we should query up to a certain point
+in history; in this example, we'll use the `inserted_at` column as our order
+(Let's say that we fixed the bug on a midnight deploy on 2021-08-22).
+
+Instead of pulling IDs into the application during the migration, we're instead
+going to keep the data in the database. We'll manage the migration:
+
+1. Create a "temporary" table. In this example, we're creating a real table that
+   we'll drop at the end of the data migration. In Postgres, there are actual
+   temporary tables that are discarded after the session is over; we're _not_
+   using those because we need additional resiliency in case the data migration
+   encounters an error. The error would cause the session to be over, and
+   therefore we've lost track of our migration progress 🙁.
+1. Populate that temporary table from the IDs of records that need to update.
+1. Ensure there's an index on the temporary table so it's fast to delete IDs
+   from it. I use an index instead of a primary key because it's easier to
+   re-run the migration in case there's an error. There isn't a straight-forward
+   way to `CREATE IF NOT EXIST` on a primary key; but you can do that easily
+   with an index.
+1. Pull batches of IDs from the temporary table. Do this inside a database
+   transaction and lock those records for updates. Each batch should be read and
+   updated within milliseconds, so this should have little consequence on
+   concurrent reads and writes.
+1. For each batch of records, determine the mutations of the data that need to
+   occur. This can happen for each record.
+1. Upsert those changes to the real table. This insert will include the ID of
+   the record that already exists and a list of attributes to change for that
+   record. Since these insertions will conflict with existing records, we'll
+   instruct Postgres to replace certain fields on conflicts.
+1. Delete those IDs from the temporary table since they're updated on the real
+   table. Close the database transaction for that batch.
+1. Throttle so we don't overwhelm the database.
+1. Rinse and repeat until the temporary table is empty.
+1. Finally, drop the temporary table.
+
+The purpose of storing this information in the database instead of application
+memory to avoid memory exhaustion of the application; even if you're only
+holding IDs in memory, 10 billion IDs in memory is still a lot! Since the data
+is already in the database, let's keep it in the database. We only need a
+snapshot of IDs to change, change them in batches, and be done!
+
+Let's see how this can work:
+
+```elixir
+# Both of these modules are in the same migration file
+
+defmodule MyApp.Repo.Migrations.BackfillWeather.MigratingSchema do
+  use Ecto.Schema
+
+  # Copy of the schema at the time of migration
+  schema "weather" do
+    field :temp_lo, :integer
+    field :temp_hi, :integer
+    field :prcp, :float
+    field :city, :string
+
+    timestamps(type: :naive_datetime_usec)
+  end
+end
+
+defmodule MyApp.Repo.Migrations.BackfillWeather do
+  use Ecto.Migration
+  import Ecto.Query
+  alias MyApp.Repo.Migrations.BackfillWeather.MigratingSchema
+
+  @disable_ddl_transaction true
+  @disable_migration_lock true
+  @temp_table_name "records_to_update"
+  @batch_size 1000
+  @throttle_ms 100
+
+  def up do
+    repo().query!("""
+    CREATE TABLE IF NOT EXISTS #{@temp_table_name} AS
+    SELECT id FROM weather WHERE inserted_at < '2021-08-21T00:00:00'
+    """, [], log: :info, timeout: :infinity)
+    flush()
+    create_if_not_exists index(@temp_table_name, [:id])
+    flush()
+    throttle_change_in_batches(&page_query/0, &do_change/1)
+    drop table(@temp_table_name)
+  end
+
+  def down, do: :ok
+
+  def do_change(batch_of_ids) do
+    # Wrap in a transaction to mementarily lock records during read/update
+    repo().transaction(fn ->
+      mutations =
+        from(r in MigratingSchema, where: r.id in ^batch_of_ids, lock: "FOR UPDATE")
+        |> repo().all()
+        |> Enum.map(&mutation/1)
+
+      # Don't be fooled by `insert_all`, this is actually an upsert that
+      # will update existing records when conflicting; they should all conflict
+      # since the ID is included in the update.
+
+      {_updated, results} = repo().insert_all(
+        MigratingSchema,
+        mutations,
+        returning: [:id],
+        # Alternatively, only replace the fields you know you are updating
+        on_conflict: {:replace, [:temp_lo, :updated_at]},
+        conflict_target: [:id],
+        placeholders: %{now: NaiveDateTime.utc_now()},
+        log: :info
+      )
+      results = Enum.map(results, & &1.id)
+
+      not_updated =
+        mutations
+        |> Enum.map(& &1[:id])
+        |> MapSet.new()
+        |> MapSet.difference(MapSet.new(results))
+        |> MapSet.to_list()
+
+      Enum.each(not_updated, &handle_non_update/1)
+      repo().delete_all(from(r in @temp_table_name, where: r.id in ^results))
+
+      results
+    end)
+  end
+
+  def mutation(record, mutations_acc) do
+    # This logic can be whathever you need; we'll just do something simple
+    # here to illustrate
+    if record.temp_hi > 1 do
+      # No updated needed
+      mutations_acc
+    else
+      # Upserts don't update autogenerated fields like timestamps, so be sure
+      # to update them yourself. The inserted_at value should never be used
+      # since all these records are already inserted, and we won't replace
+      # this field on conflicts; we just need it to satisfy table constraints.
+      [%{
+        id: record.id,
+        temp_lo: record.temp_hi - 10,
+        inserted_at: {:placeholder, :now},
+        updated_at: {:placeholder, :now}
+      } | mutations_acc]
+    end
+  end
+
+  def page_query do
+    from(
+      r in @temp_table_name,
+      select: r.id,
+      limit: @batch_size
+    )
+  end
+
+  defp handle_non_update(id) do
+    raise "#{inspect(id)} was not updated"
+  end
+
+  defp throttle_change_in_batches(query_fun, change_fun) do
+    case repo().all(query_fun.(), [log: :info]) do
+      [] ->
+        :ok
+
+      ids ->
+        case change_fun.(List.flatten(ids)) do
+          {:ok, _results} ->
+            Process.sleep(@throttle_ms)
+            throttle_change_in_batches(query_fun, change_fun)
+          error ->
+            raise error
+        end
+    end
+  end
+end
+```
+
+## Changing the type of a column
+
+Changing the type of a column may cause the table to be rewritten. During this
 time, reads and writes are blocked in Postgres, and writes are blocked in MySQL
 and MariaDB.
 
-## BAD
+### BAD
 
 Safe in Postgres:
 
 - increasing length on `varchar` or removing the limit
 - changing `varchar` to `text`
 - changing `text` to `varchar` with no length limit
-- increasing precision of `decimal` or `numeric` columns
-- changing `decimal` or `numeric` to be unconstrained
-- changing `timestamp` to `timestamptz` when session TZ is UTC (Postgres 12+)
+- [Postgres 9.2+](https://www.postgresql.org/docs/9.2/release-9-2.html) - increasing precision (NOTE: not scale) of `decimal` or `numeric` columns. eg, increasing 8,2 to 10,2 is safe. Increasing 8,2 to 8,4 is **not safe**.
+- [Postgres 9.2+](https://www.postgresql.org/docs/9.2/release-9-2.html) - changing `decimal` or `numeric` to be unconstrained
+- [Postgres 12+](https://www.postgresql.org/docs/release/12.0/) - changing `timestamp` to `timestamptz` when session TZ is UTC
 
 Safe in MySQL/MariaDB:
 
@@ -915,36 +1357,9 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
 
 Multi deployment strategy:
-
-1. Create a new column
-2. In application code, write to both columns
-3. Backfill data from old column to new column
-4. In application code, move reads from old column to the new column
-5. In application code, remove old column from Ecto schemas.
-6. Drop the old column.
-
-TODO: (example)
-
-
-# Renaming a column
-
-The time between when application starts and the migration actually runs will
-cause errors in your application. Either the application will think the new name
-is in effect, or the migration will run first and the application will still be
-looking for the old name.
-
-## BAD
-
-```elixir
-def change do
-  rename table("posts"), :title, to: :summary
-end
-```
-
-## GOOD
 
 1. Create a new column
 2. In application code, write to both columns
@@ -953,19 +1368,50 @@ end
 5. In application code, remove old column from Ecto schemas.
 6. Drop the old column.
 
-TODO: (example)
+[Backfill data]: #backfilling-data
+
+## Renaming a column
+
+If Ecto is still configured to read a column in any running instances of the
+application, then queries will fail when loading data into your structs. This
+can happen in multi-node deployments or if you start the application before
+running migrations.
+
+### BAD
+
+```elixir
+## In your schema
+
+schema "posts" do
+  field :summary, :text
+end
+
+## In your migration
+
+def change do
+  rename table("posts"), :title, to: :summary
+end
+```
+
+### GOOD
+
+1. Create a new column
+2. In application code, write to both columns
+3. [Backfill data] from old column to new column
+4. In application code, move reads from old column to the new column
+5. In application code, remove old column from Ecto schemas.
+6. Drop the old column.
 
 [Backfill data]: #backfilling-data
 
+## Renaming a table
 
-# Renaming a table
+If Ecto is still configured to read a table in any running instances of the
+application, then queries will fail when loading data into your structs. This
+can happen in multi-node deployments or if you start the application before
+running migrations.
 
-The time between when application starts and the migration actually runs will
-cause errors in your application. Either the application will think the new name
-is in effect, or the migration will run first and the application will still be
-looking for the old name.
-
-## BAD
+### BAD
 
 ```elixir
 def change do
@@ -973,28 +1419,24 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
 
-1. Create the new table.
-  - This should include creating new constraints (checks and foreign keys) that
-    mimic behavior of the old table.
-2. In application code, write to both tables
+1. Create the new table. This should include creating new constraints (checks
+   and foreign keys) that mimic behavior of the old table.
+2. In application code, write to both tables, continuing to read from old table.
 3. [Backfill data] from old table to new table
 4. In application code, move reads from old table to the new table
 5. In application code, remove old table from Ecto schemas.
 6. Drop the old table.
 
-TODO: (example)
-
 [Backfill data]: #backfilling-data
 
-
-# Adding a check constraint
+## Adding a check constraint
 
 Adding a check constraint blocks reads and writes to the table in Postgres, and
 blocks writes in MySQL/MariaDB while every row is checked.
 
-## BAD
+### BAD
 
 ```elixir
 def change do
@@ -1002,7 +1444,7 @@ def change do
 end
 ```
 
-## GOOD (Postgres)
+### GOOD
 
 In one migration:
 
@@ -1020,13 +1462,15 @@ def change do
 end
 ```
 
+These can be in the same deployment, but just ensure there are 2 separate
+migrations.
 
-# Setting `NOT NULL` on an existing column
+## Setting `NOT NULL` on an existing column
 
 Setting NOT NULL on an existing column blocks reads and writes while every row
 is checked.
 
-## BAD
+### BAD
 
 ```elixir
 def change do
@@ -1036,12 +1480,12 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
 
-Add a check constraint without validating it, then validate it. This is
-functionally equivalent.
+Add a check constraint without validating it, [backfill data] to satiate the
+constraint, then validate it. This will be functionally equivalent.
 
-In one migration:
+In the first migration:
 
 ```elixir
 def change do
@@ -1049,7 +1493,14 @@ def change do
 end
 ```
 
-In next migration:
+This will enforce the constraint in all new rows, but not care about existing
+rows until that row is updated. You'll likely need a [data migration] at this
+point to ensure that the constraint is satisfied.
+
+[data migration]: #backfilling-data
+
+Then, in the next deployment's migration, we'll enforce the constraint on all
+rows:
 
 ```elixir
 def change do
@@ -1058,9 +1509,17 @@ end
 ```
 
 If you're using Postgres 12+, you can add the `NOT NULL` to the column after
-validating the constraint.
+validating the constraint. From the Postgres 12 docs:
+
+> SET NOT NULL may only be applied to a column provided none of the records in
+> the table contain a NULL value for the column. Ordinarily this is checked
+> during the ALTER TABLE by scanning the entire table; however, if a valid CHECK
+> constraint is found which proves no NULL can exist, then the table scan is
+> skipped.
 
 ```elixir
+# **Postgres 12+ only**
+
 def change do
   execute "ALTER TABLE products VALIDATE CONSTRAINT active_not_null", ""
 
@@ -1077,10 +1536,13 @@ cover the gaps in your desired data integrity, then revisit validating the
 constraint.
 
 [backfilling data]: #backfilling-data
+[backfill data]: #backfilling-data
 
-# Adding an index (Postgres)
+## Adding an index
 
-## BAD
+Creating an index will block both reads and writes.
+
+### BAD
 
 ```elixir
 def change do
@@ -1088,7 +1550,10 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
+
+Instead, have Postgres create the index concurrently which does not block reads.
+You will need to disable the migration transactions to use `CONCURRENTLY`.
 
 ```elixir
 @disable_ddl_transaction true
@@ -1099,12 +1564,16 @@ def change do
 end
 ```
 
+The migration may still take a while in Ecto, but reads and updates to rows will
+continue to work. For example, for 100,000,000 rows it took 165 seconds to add
+run the migration, but SELECTS and UPDATES could occur while it was running.
 
-# Adding a reference or foreign key (Postgres)
+
+## Adding a reference or foreign key
 
 Adding a foreign key blocks writes on both tables.
 
-## BAD
+### BAD
 
 ```elixir
 def change do
@@ -1114,7 +1583,7 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
 
 In one migration
 
@@ -1134,12 +1603,12 @@ def change do
 end
 ```
 
-# Adding a JSON column (Postgres)
+## Adding a JSON column
 
-In Postgres, there's no equality operator for the `json` column type, which can
+In Postgres, there is no equality operator for the `json` column type, which can
 cause errors for existing `SELECT DISTINCT` queries in your application.
 
-## BAD
+### BAD
 
 ```elixir
 def change do
@@ -1149,7 +1618,7 @@ def change do
 end
 ```
 
-## GOOD
+### GOOD
 
 Use `jsonb` instead.
 
@@ -1166,7 +1635,7 @@ end
 Before you think this is a completely original article, I want you to know that
 I took a lot of inspiration from Andrew Kane and his library
 [strong_migrations](https://github.com/ankane/strong_migrations). Think of this
-as a port of his guide to Elixir and Ecto.
+article as a port of his and his contributors' guide to Elixir and Ecto.
 
 [PostgreSQL at Scale by James Coleman](https://medium.com/braintree-product-technology/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
 
@@ -1175,3 +1644,5 @@ as a port of his guide to Elixir and Ecto.
 [Adding a NOT NULL CONSTRAINT on PG Faster with Minimal Locking](https://medium.com/doctolib/adding-a-not-null-constraint-on-pg-faster-with-minimal-locking-38b2c00c4d1c)
 
 [Postgres Runtime Configuration](https://www.postgresql.org/docs/current/runtime-config-client.html)
+
+[Wojtek Mach's Automatic and Manual Ecto Migrations](https://dashbit.co/blog/automatic-and-manual-ecto-migrations)
