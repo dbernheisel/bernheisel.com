@@ -1,5 +1,5 @@
 %{
-  title: "Guide to safe Ecto Migrations - Postgres Edition",
+  title: "Guide to safe Ecto Migrations",
   tags: ["elixir"],
   published: false,
   description: """
@@ -20,8 +20,8 @@
   - [Assemble the release](#assemble-release)
   - [Check migration status](#check-migration-status)
   - [Run the migration](#run-the-migration)
-  - [Rollback migrations](#omg-roll-it-back)
-- [How to check for locks in a query](#how-to-inspect-locks-in-a-query)
+  - [Rollback migrations](#rollback-migrations)
+- [How to inspect locks in a query](#how-to-inspect-locks-in-a-query)
 - [Safeguards in the database](#safeguards-in-the-database)
 - [Scenarios](#scenarios)
   - [Removing a column](#removing-a-column)
@@ -75,6 +75,7 @@ Ok! Let's go
 [Distillery]: https://hexdocs.pm/distillery
 
 
+<a name="anatomy-of-an-ecto-migration"></a>
 # Anatomy of an Ecto migration
 
 To generate a migration, we'll use `mix ecto.gen.migration`.
@@ -131,6 +132,7 @@ Now that we have a migration, let's run it! Run `mix ecto.migrate`.
 21:26:19.004 [info]  == Migrated 20210702012346 in 0.0s
 ```
 
+<a name="inspect-sql"></a>
 ## Inspect SQL
 
 We really want to see the SQL that runs though, so let's zoom in on the
@@ -209,6 +211,7 @@ some of those options next.
 
 [Ecto.Migration]: https://hexdocs.pm/ecto_sql/Ecto.Migration.html
 
+<a name="migration-options"></a>
 ## Migration Options
 
 Usually your migration will have this structure (reminder: this guide is using
@@ -337,6 +340,7 @@ end
 Be mindful that these callbacks are only called if `@disable_ddl_transaction` is
 not set to `true` since it relies on the transaction being present.
 
+<a name="how-to-migrate-mix-release-projects"></a>
 # How to migrate Mix Release projects
 
 In Mix Release projects, we need to give ourselves easy access to commands to
@@ -349,6 +353,7 @@ facilitate migrations. Here's a couple of use cases:
 The common and documented way to encapsulate these commands is with a
 `MyApp.Release` module.
 
+<a name="create-release-module"></a>
 ## Create Release Module
 
 - [Phoenix has examples](https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands)
@@ -523,6 +528,7 @@ bin/my_app eval 'MyApp.Release.migrate_data()'
 If you'd like more inspiration, read [Wojtek Mach's Automatic and Manual Ecto
 Migrations](https://dashbit.co/blog/automatic-and-manual-ecto-migrations).
 
+<a name="assemble-the-release"></a>
 ## Assemble the Release
 
 Now it's time to assemble the release with `mix release`. Great! Done! ...now
@@ -555,6 +561,7 @@ questions:
 Now that you've determined which order to start the application or run the
 migration, let's start running stuff!
 
+<a name="check-migration-status"></a>
 ## Check migration status
 
 We can inspect the database migration statuses with `bin/my_app eval
@@ -568,6 +575,7 @@ Repo: MyApp.Repo
   down      20210718153341  add_test_table2
 ```
 
+<a name="run-the-migration"></a>
 ## Run the migration
 
 The database can migrate with `bin/my_app eval 'MyApp.Release.migrate()'`.
@@ -582,11 +590,13 @@ this command.
 
 To run data migrations, run `bin/my_app eval 'MyApp.Release.migrate_data()'`.
 
+<a name="rollback-migrations"></a>
 ## OMG ROLL IT BACK
 
 The app can rollback with `bin/my_app eval 'MyApp.Release.rollback(MyApp.Repo,
 20210709121212)'`
 
+<a name="how-to-inspect-locks-in-a-query"></a>
 # How to inspect locks in a query
 
 Before we dive into safer practices of migrations, we should equip some
@@ -672,7 +682,7 @@ RowExclusiveLock.
 
 Here's a table of how locks conflict:
 
-|  | **Current Lock →** | | | | | | |
+|  | | **Current Lock →** | | | | | |
 |---------------------|-------------------|-|-|-|-|-|-|
 | **Requested Lock ↓** | ACCESS SHARE | ROW SHARE | ROW EXCLUSIVE | SHARE UPDATE EXCLUSIVE | SHARE | SHARE ROW EXCLUSIVE | EXCLUSIVE | ACCESS EXCLUSIVE |
 | ACCESS SHARE           |   |   |   |   |   |   |   | X |
@@ -684,6 +694,7 @@ Here's a table of how locks conflict:
 | EXCLUSIVE              |   | X | X | X | X | X | X | X |
 | ACCESS EXCLUSIVE       | X | X | X | X | X | X | X | X |
 
+<a name="how-to-inspect-locks-in-a-query"></a>
 # Safeguards in the database
 
 It's a good idea to add safeguards so no developer on the team accidentally
@@ -857,11 +868,13 @@ parameters it took to hit the timeout, and ultimately optimize the query.
 Without this discipline, you will risk gaining a culture that ignores
 exceptions.
 
+<a name="scenarios"></a>
 # Scenarios
 
 Here is a non-prescriptive guide on common migration scenarios and how to avoid
 trouble.
 
+<a name="removing-a-column"></a>
 ## Removing a column
 
 If Ecto is still configured to read a column in any running instances of the
@@ -879,7 +892,7 @@ def change
     remove :no_longer_needed_column
 
     # Obtained an AccessExclusiveLock on the table, which blocks reads and
-    # writes, but was really quick to run.
+    # writes, but was instantaneous.
   end
 end
 ```
@@ -909,8 +922,10 @@ this means you need a 2-deploy strategy:
 ```diff
 # In the Ecto schema
 
-schema "posts" do
-- column :no_longer_needed_column, :text
+defmodule MyApp.Post do
+  schema "posts" do
+-   column :no_longer_needed_column, :text
+  end
 end
 ```
 
@@ -924,6 +939,7 @@ def change
 end
 ```
 
+<a name="adding-a-column-with-a-default-value"></a>
 ## Adding a column with a default value
 
 Adding a column with a default value to an existing table may cause the table to
@@ -979,12 +995,13 @@ end
 
 Schema change to read the new column:
 
-```dif
+```diff
 schema "comments" do
 + field :approved, :boolean, default: false
 end
 ```
 
+<a name="backfilling-data"></a>
 ## Backfilling data
 
 There are several challenges when backfilling data:
@@ -1131,7 +1148,7 @@ defmodule MyApp.Repo.Migrations.BackfillPosts do
   defp throttle_change_in_batches(query_fun, change_fun, last_pos \\ 0)
   defp throttle_change_in_batches(_query_fun, _change_fun, nil), do: :ok
   defp throttle_change_in_batches(query_fun, change_fun, last_pos) do
-    case repo().all(query_fun.(last_pos), [log: :info, timeout: :infinity]) do
+    case repo().all(query_fun.(last_pos), [log: :info]) do
       [] ->
         :ok
 
@@ -1160,7 +1177,7 @@ in history; in this example, we'll use the `inserted_at` column as our order
 (Let's say that we fixed the bug on a midnight deploy on 2021-08-22).
 
 Instead of pulling IDs into the application during the migration, we're instead
-going to keep the data in the database. We'll manage the migration:
+going to keep the data in the database. Here's how we'll manage the backfill:
 
 1. Create a "temporary" table. In this example, we're creating a real table that
    we'll drop at the end of the data migration. In Postgres, there are actual
@@ -1228,7 +1245,7 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
 
   def up do
     repo().query!("""
-    CREATE TABLE IF NOT EXISTS #{@temp_table_name} AS
+    CREATE TABLE IF NOT EXISTS "#{@temp_table_name}" AS
     SELECT id FROM weather WHERE inserted_at < '2021-08-21T00:00:00'
     """, [], log: :info, timeout: :infinity)
     flush()
@@ -1328,6 +1345,7 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
 end
 ```
 
+<a name="changing-the-type-of-a-column"></a>
 ## Changing the type of a column
 
 Changing the type of a column may cause the table to be rewritten. During this
@@ -1371,6 +1389,7 @@ Multi deployment strategy:
 
 [Backfill data]: #backfilling-data
 
+<a name="renaming-a-column"></a>
 ## Renaming a column
 
 If Ecto is still configured to read a column in any running instances of the
@@ -1405,6 +1424,7 @@ end
 
 [Backfill data]: #backfilling-data
 
+<a name="renaming-a-table"></a>
 ## Renaming a table
 
 If Ecto is still configured to read a table in any running instances of the
@@ -1432,6 +1452,7 @@ end
 
 [Backfill data]: #backfilling-data
 
+<a name="adding-a-check-constraint"></a>
 ## Adding a check constraint
 
 Adding a check constraint blocks reads and writes to the table in Postgres, and
@@ -1466,6 +1487,7 @@ end
 These can be in the same deployment, but just ensure there are 2 separate
 migrations.
 
+<a name="setting-not-null-on-an-existing-column"></a>
 ## Setting `NOT NULL` on an existing column
 
 Setting NOT NULL on an existing column blocks reads and writes while every row
@@ -1539,6 +1561,7 @@ constraint.
 [backfilling data]: #backfilling-data
 [backfill data]: #backfilling-data
 
+<a name="adding-an-index"></a>
 ## Adding an index
 
 Creating an index will block both reads and writes.
@@ -1570,6 +1593,7 @@ continue to work. For example, for 100,000,000 rows it took 165 seconds to add
 run the migration, but SELECTS and UPDATES could occur while it was running.
 
 
+<a name="adding-a-reference-or-foreign-key"></a>
 ## Adding a reference or foreign key
 
 Adding a foreign key blocks writes on both tables.
@@ -1604,6 +1628,7 @@ def change do
 end
 ```
 
+<a name="adding-a-json-column"></a>
 ## Adding a JSON column
 
 In Postgres, there is no equality operator for the `json` column type, which can
@@ -1631,6 +1656,7 @@ def change do
 end
 ```
 
+<a name="references"></a>
 # References
 
 Before you think this is a completely original article, I want you to know that

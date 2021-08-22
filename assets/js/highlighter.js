@@ -9,6 +9,7 @@ import yaml from 'highlight.js/lib/languages/yaml';
 import json from 'highlight.js/lib/languages/json';
 import diff from 'highlight.js/lib/languages/diff';
 import xml from 'highlight.js/lib/languages/xml';
+import sql from 'highlight.js/lib/languages/sql';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('shell', shell);
@@ -20,6 +21,7 @@ hljs.registerLanguage('yaml', yaml);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('diff', diff);
 hljs.registerLanguage('html', xml);
+hljs.registerLanguage('sql', sql);
 
 window.highlightAll = function(where = document) {
   where.querySelectorAll('pre code').forEach((block) => {
