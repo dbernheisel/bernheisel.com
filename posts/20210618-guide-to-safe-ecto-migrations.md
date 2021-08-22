@@ -1,6 +1,7 @@
 %{
   title: "Guide to safe Ecto Migrations - Postgres Edition",
   tags: ["elixir"],
+  published: false,
   description: """
   Not all migrations should be run equally! There are some migrations that may
   require multiple deployments in order to avoid database and application
