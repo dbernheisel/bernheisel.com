@@ -67,6 +67,8 @@ module.exports = {
             'blockquote': {
               borderLeftColor: theme('colors.purple.500'),
             },
+            'blockquote p:first-of-type::before': null,
+            'blockquote p:last-of-type::after': null,
             'code': {
               color: null,
               fontWeight: null,
