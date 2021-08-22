@@ -1,7 +1,8 @@
 %{
-  title: "Guide to safe Ecto Migrations",
+  title: "Guide to Safe Ecto Migrations",
   tags: ["elixir"],
   published: false,
+  discussion_url: "https://github.com/dbernheisel/bernheisel.com/discussions/11",
   description: """
   Not all migrations should be run equally! There are some migrations that may
   require multiple deployments in order to avoid database and application
