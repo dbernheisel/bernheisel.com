@@ -891,8 +891,11 @@ To run data migrations, run `bin/my_app eval 'MyApp.Release.migrate_data()'`.
 <a name="rollback-migrations"></a>
 ## OMG ROLL IT BACK
 
-The app can rollback with `bin/my_app eval 'MyApp.Release.rollback(MyApp.Repo,
-20210709121212)'`
+Before you roll back, you should consider if there's a safer way to continue
+forward and fix the bug. I have never needed to roll back the database
+
+If necessary, the app can rollback with `bin/my_app eval
+'MyApp.Release.rollback(MyApp.Repo, 20210709121212)'`
 
 ---
 
@@ -1246,6 +1249,8 @@ blocks writes in MySQL/MariaDB while every row is checked.
 ```elixir
 def change do
   create constraint("products", :price_must_be_positive, check: "price > 0")
+  # Creating the constraint with validate: true (the default when unspecified)
+  # will perform a full table scan and acquires a lock preventing updates
 end
 ```
 
@@ -1265,6 +1270,8 @@ In one migration:
 ```elixir
 def change do
   create constraint("products", :price_must_be_positive, check: "price > 0"), validate: false
+  # Setting validate: false will prevent a full table scan, and therefore
+  # commits immediately.
 end
 ```
 
@@ -1273,6 +1280,7 @@ In the next migration:
 ```elixir
 def change do
   execute "ALTER TABLE products VALIDATE CONSTRAINT price_must_be_positive", ""
+  # Acquires SHARE UPDATE EXCLUSIVE lock, which allows updates to continue
 end
 ```
 
@@ -1793,3 +1801,9 @@ Special thanks for these reviewers:
 | SHARE ROW EXCLUSIVE    |   |   | X | X | X | X | X | X |
 | EXCLUSIVE              |   | X | X | X | X | X | X | X |
 | ACCESS EXCLUSIVE       | X | X | X | X | X | X | X | X |
+
+- `SELECT` acquires a `ACCESS SHARE` lock
+- `SELECT FOR UPDATE` acquires a `ROW SHARE` lock
+- `UPDATE`, `DELETE`, and `INSERT` will acquire a `ROW EXCLUSIVE` lock
+- `CREATE INDEX CONCURRENTLY` and `VALIDATE CONSTRAINT` acquires `SHARE UPDATE EXCLUSIVE`
+- `CREATE INDEX` acquires `SHARE` lock
