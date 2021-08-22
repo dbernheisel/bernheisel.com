@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 ARG USER_ID
 ARG GROUP_ID
 
-RUN groupadd --gid $GROUP_ID user && \
+RUN groupadd -o --gid $GROUP_ID user && \
     useradd -m --gid $GROUP_ID --uid $USER_ID user
 
 USER user
