@@ -937,7 +937,7 @@ Creating an index will block both reads and writes. This scenario is used as an
 example in the [How to inspect locks in a query
 section](#how-to-inspect-locks-in-a-query)
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -947,7 +947,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Instead, have Postgres create the index concurrently which does not block reads.
 You will need to disable the migration transactions to use `CONCURRENTLY`.
@@ -972,7 +972,7 @@ run the migration, but SELECTS and UPDATES could occur while it was running.
 
 Adding a foreign key blocks writes on both tables.
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -982,7 +982,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 In one migration
 
@@ -1011,7 +1011,7 @@ Adding a column with a default value to an existing table may cause the table to
 be rewritten. During this time, reads and writes are blocked in Postgres, and
 writes are blocked in MySQL and MariaDB.
 
-### BAD
+### BAD ❌
 
 **Note:** This becomes safe in:
 
@@ -1032,7 +1032,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Add the column first, then alter it to include the default.
 
@@ -1075,7 +1075,7 @@ Changing the type of a column may cause the table to be rewritten. During this
 time, reads and writes are blocked in Postgres, and writes are blocked in MySQL
 and MariaDB.
 
-### BAD
+### BAD ❌
 
 Safe in Postgres:
 
@@ -1099,7 +1099,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Multi deployment strategy:
 
@@ -1122,7 +1122,7 @@ application, then queries will fail when loading data into your structs. This
 can happen in multi-node deployments or if you start the application before
 running migrations.
 
-### BAD
+### BAD ❌
 
 ```elixir
 # Without a code change to the Ecto Schema
@@ -1137,7 +1137,7 @@ def change
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Safety can be assured if the application code is first updated to remove
 references to the column so it's no longer loaded or queried. Then, the column
@@ -1192,7 +1192,7 @@ application, then queries will fail when loading data into your structs. This
 can happen in multi-node deployments or if you start the application before
 running migrations.
 
-### BAD
+### BAD ❌
 
 ```elixir
 # In your schema
@@ -1208,7 +1208,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 1. Create a new column
 2. In application code, write to both columns
@@ -1232,7 +1232,7 @@ application, then queries will fail when loading data into your structs. This
 can happen in multi-node deployments or if you start the application before
 running migrations.
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -1240,7 +1240,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 1. Create the new table. This should include creating new constraints (checks
    and foreign keys) that mimic behavior of the old table.
@@ -1260,7 +1260,7 @@ end
 Adding a check constraint blocks reads and writes to the table in Postgres, and
 blocks writes in MySQL/MariaDB while every row is checked.
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -1270,7 +1270,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 There are two operations that are occurring:
 
@@ -1310,7 +1310,7 @@ These can be in the same deployment, but ensure there are 2 separate migrations.
 Setting NOT NULL on an existing column blocks reads and writes while every row
 is checked.
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -1320,7 +1320,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Add a check constraint without validating it, [backfill data] to satiate the
 constraint and then validate it. This will be functionally equivalent.
@@ -1386,7 +1386,7 @@ constraint.
 In Postgres, there is no equality operator for the `json` column type, which can
 cause errors for existing `SELECT DISTINCT` queries in your application.
 
-### BAD
+### BAD ❌
 
 ```elixir
 def change do
@@ -1396,7 +1396,7 @@ def change do
 end
 ```
 
-### GOOD
+### GOOD ✅
 
 Use `jsonb` instead.
 
@@ -1420,7 +1420,7 @@ end
 > - [Part 3 - Migration Scenarios](#scenarios)
 > - [Part 4 - Backfilling Data](#backfilling-data) (You are here)
 
-### BAD
+### BAD ❌
 
 ```elixir
 defmodule MyApp.Repo.DataMigrations.BackfillPosts do
@@ -1464,7 +1464,7 @@ Ultimately, there are several bad practices here:
 4. Only batching updates may still spike the database CPU to 100%, causing other
    concurrent reads or writes to time out.
 
-### GOOD
+### GOOD ✅
 
 There are three keys to backfilling safely:
 
