@@ -576,9 +576,15 @@ Now the migrations will only be allowed to acquire locks up to 5 seconds when
 migrating up and 10 seconds when rolling back. Remember, these callbacks are
 only called when `@disable_ddl_transaction` is not set to `true`.
 
-You can override the lock timeout if needed by setting `use MyApp.Migration,
-lock_timeout: false` or change the timeouts `use MyApp.Migration, lock_timeout:
-[up: "10s", down: "20s"]`.
+You can override the lock timeout if needed by passing in options:
+
+```elixir
+# diable the lock_timeout
+use MyApp.Migration, lock_timeout: false
+
+# or change the timeouts
+use MyApp.Migration, lock_timeout: [up: "10s", down: "20s"]
+```
 
 ### Role-level `lock_timeout`
 
@@ -591,8 +597,8 @@ ALTER ROLE myuser SET lock_timeout = '10s';
 If you have a different user that runs migrations, this could be a good option
 for that migration-specific Postgres user. The trade-off is that Elixir
 developers won't see this timeout as they write migrations and explore the call
-stack, versus role settings in the database that developers don't usually
-monitor.
+stack since database role settings are in the database which developers don't
+usually monitor.
 
 ## Statement Timeout
 
@@ -856,11 +862,15 @@ questions:
 1. Do you use Kubernetes? Then you should **consider [Init Containers]**. Init
    containers run to completion _before_ the application containers in the pod.
    This is a perfect opportunity to start your Ecto Repo and migrate it before
-   starting the rest of your application. Make sure you exclude data migrations
-   from this process however, since those usually will not be safe to
-   automatically run in multi-node environments.
+   starting the rest of your application. **Combine this with [Kubernetes
+   Jobs]**, and you have a way to run the migration on one node, and Init
+   Containers would simply wait for the job to complete before starting the
+   application. Make sure you exclude data migrations from this process however,
+   since those usually will not be safe to automatically run in multi-node
+   environments.
 
 [Init Containers]: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+[Kubernetes Jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
 
 Now that you've determined which order to start the application or run the
 migration, let's start running stuff!
@@ -898,7 +908,7 @@ To run data migrations, run `bin/my_app eval 'MyApp.Release.migrate_data()'`.
 ## OMG ROLL IT BACK
 
 Before you roll back, you should consider if there's a safer way to continue
-forward and fix the bug. I have never needed to roll back the database
+forward and fix or avoid the bug. I have never needed to roll back the database.
 
 If necessary, the app can rollback with `bin/my_app eval
 'MyApp.Release.rollback(MyApp.Repo, 20210709121212)'`
@@ -1139,7 +1149,7 @@ If your deployment process must run migrations before starting the application,
 this means you need a 2-deploy strategy:
 
 1. Deploy code change to remove references the field.
-1. Deploy migration change to remove the column.
+1. Separately deploy migration change to remove the column.
 1. Run the migration to remove the column.
 
 **Strategy 2:**
@@ -1150,7 +1160,7 @@ this means you need a 2-deploy strategy:
 1. Run migration to remove the column from the database.
 
 ```diff
-# In the Ecto schema
+# First deploy, in the Ecto schema
 
 defmodule MyApp.Post do
   schema "posts" do
@@ -1160,7 +1170,7 @@ end
 ```
 
 ```elixir
-# In the migration
+# Second deploy, in the migration. This can be ran immediately.
 
 def change
   alter table("posts") do
@@ -1268,8 +1278,8 @@ There are two operations that are occurring:
 1. Validating the new constraint
 
 If these commands are happening at the same time, it obtains a lock on the table
-as it validates the entire table. To avoid this lock, we can separate the
-operations.
+as it validates the entire table and fully scans the table. To avoid this lock,
+we can separate the operations.
 
 In one migration:
 
@@ -1290,8 +1300,7 @@ def change do
 end
 ```
 
-These can be in the same deployment, but just ensure there are 2 separate
-migrations.
+These can be in the same deployment, but ensure there are 2 separate migrations.
 
 ---
 
@@ -1314,7 +1323,7 @@ end
 ### GOOD
 
 Add a check constraint without validating it, [backfill data] to satiate the
-constraint, then validate it. This will be functionally equivalent.
+constraint and then validate it. This will be functionally equivalent.
 
 In the first migration:
 
@@ -1414,7 +1423,7 @@ end
 ### BAD
 
 ```elixir
-defmodule MyApp.Repo.Migrations.BackfillPosts do
+defmodule MyApp.Repo.DataMigrations.BackfillPosts do
   use Ecto.Migration
   import Ecto.Query
 
@@ -1656,7 +1665,7 @@ Let's see how this can work:
 ```elixir
 # Both of these modules are in the same migration file
 
-defmodule MyApp.Repo.Migrations.BackfillWeather.MigratingSchema do
+defmodule MyApp.Repo.DataMigrations.BackfillWeather.MigratingSchema do
   use Ecto.Schema
 
   # Copy of the schema at the time of migration
@@ -1670,10 +1679,10 @@ defmodule MyApp.Repo.Migrations.BackfillWeather.MigratingSchema do
   end
 end
 
-defmodule MyApp.Repo.Migrations.BackfillWeather do
+defmodule MyApp.Repo.DataMigrations.BackfillWeather do
   use Ecto.Migration
   import Ecto.Query
-  alias MyApp.Repo.Migrations.BackfillWeather.MigratingSchema
+  alias MyApp.Repo.DataMigrations.BackfillWeather.MigratingSchema
 
   @disable_ddl_transaction true
   @disable_migration_lock true
@@ -1811,11 +1820,14 @@ article as a port of his and his contributors' guide to Elixir and Ecto.
 
 [Postgres Runtime Configuration](https://www.postgresql.org/docs/current/runtime-config-client.html)
 
-[Wojtek Mach's Automatic and Manual Ecto Migrations](https://dashbit.co/blog/automatic-and-manual-ecto-migrations)
+[Automatic and Manual Ecto Migrations by Wojtek Mach](https://dashbit.co/blog/automatic-and-manual-ecto-migrations)
 
 Special thanks for these reviewers:
 
 * Steve Bussey
+* Stephane Robino
+* Dennis Beatty
+* Wojtek Mach
 
 <a name="reference-material"></a>
 # Reference Material
