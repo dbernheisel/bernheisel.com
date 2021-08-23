@@ -36,8 +36,8 @@
   - [Setting `NOT NULL` on an existing column](#setting-not-null-on-an-existing-column)
   - [Adding a JSON column](#adding-a-json-column)
 - [PART 4 - Backfilling data](#backfilling-data)
-  - [Throttling deterministic set of data](#throttling-deterministic-data)
-  - [Throttling arbitrary set of data](#throttling-arbitrary-data)
+  - [Batching deterministic data](#throttling-deterministic-data)
+  - [Batching arbitrary data](#throttling-arbitrary-data)
 - [References](#references)
 - [Reference Material](#reference-material)
 
@@ -471,12 +471,10 @@ We can add one or several safeguards:
 
 1. Automatically cancel a statement if its lock is held for too long. There are
    two ways to apply this:
-
     1. Apply to migrations. This can be done with a `lock_timeout` inside a
        transaction.
     2. Apply to any statements. This can be done by setting a `lock_timeout` to a
        Postgres role.
-
 2. Automatically cancel statements that take too long. This is broader than #1
    because it includes _any_ statement, not just locks.
 
@@ -1104,11 +1102,11 @@ end
 Multi deployment strategy:
 
 1. Create a new column
-2. In application code, write to both columns
-3. [Backfill data] from old column to new column
-4. In application code, move reads from old column to the new column
-5. In application code, remove old column from Ecto schemas.
-6. Drop the old column.
+1. In application code, write to both columns
+1. [Backfill data] from old column to new column
+1. In application code, move reads from old column to the new column
+1. In application code, remove old column from Ecto schemas.
+1. Drop the old column.
 
 [Backfill data]: #backfilling-data
 
@@ -1211,11 +1209,11 @@ end
 ### GOOD ✅
 
 1. Create a new column
-2. In application code, write to both columns
-3. [Backfill data] from old column to new column
-4. In application code, move reads from old column to the new column
-5. In application code, remove old column from Ecto schemas.
-6. Drop the old column.
+1. In application code, write to both columns
+1. [Backfill data] from old column to new column
+1. In application code, move reads from old column to the new column
+1. In application code, remove old column from Ecto schemas.
+1. Drop the old column.
 
 [Backfill data]: #backfilling-data
 
@@ -1244,11 +1242,11 @@ end
 
 1. Create the new table. This should include creating new constraints (checks
    and foreign keys) that mimic behavior of the old table.
-2. In application code, write to both tables, continuing to read from old table.
-3. [Backfill data] from old table to new table
-4. In application code, move reads from old table to the new table
-5. In application code, remove old table from Ecto schemas.
-6. Drop the old table.
+1. In application code, write to both tables, continuing to read from old table.
+1. [Backfill data] from old table to new table
+1. In application code, move reads from old table to the new table
+1. In application code, remove old table from Ecto schemas.
+1. Drop the old table.
 
 [Backfill data]: #backfilling-data
 
@@ -1454,24 +1452,21 @@ billion to migrate. Scaling your approach matters.
 Ultimately, there are several bad practices here:
 
 1. The Ecto schema of the query is subject to change after the given migration.
-
-2. Backfilling data inside a transaction will lock the rows for the duration of
-   the migration
-
-3. If you were to backfilling all the data all at once, it may exhaust the
-   database memory and/or CPU if it's changing a large data set.
-
-4. Only batching updates may still spike the database CPU to 100%, causing other
-   concurrent reads or writes to time out.
+1. If you were to backfill all the data all at once, it may exhaust the database
+   memory and/or CPU if it's changing a large data set.
+1. Backfilling data inside one transaction will lock updated rows for the
+   duration of the migration, even if you're updating in batches.
+1. Disabling a transaction an only batching updates may still spike the database
+   CPU to 100%, causing other concurrent reads or writes to time out.
 
 ### GOOD ✅
 
-There are three keys to backfilling safely:
+There are four keys to backfilling safely:
 
   1. running outside a transaction
-  2. batching
-  3. throttling
-  4. resiliency
+  1. batching
+  1. throttling
+  1. resiliency
 
 As we've learned in this guide, it's straight-forward to disable the migration
 transactions. Add these options to the migration:
@@ -1481,14 +1476,12 @@ transactions. Add these options to the migration:
 @disable_migration_lock true
 ```
 
-Batching and throttling data migrations still has several challenges:
+Batching data migrations still has several challenges:
 
 * `LIMIT/OFFSET` is an expensive query for large tables, so we must find
   another way to paginate.
-
-* Sine we cannot use a database transactions, this also implies we cannot
+* Since we cannot use a database transactions, this also implies we cannot
   leverage cursors since they require a transaction.
-
 * This leaves us with keyset pagination
 
 For querying and updating the data, there are two options for "snapshotting"
@@ -1496,27 +1489,28 @@ your schema at the time of the migration:
 
 1. Execute SQL that represents the table at that moment. Do not reference in-app
    Ecto schemas.
-
-2. Write a small Ecto schema module inside the migration that only involves what
+1. Write a small Ecto schema module inside the migration that only involves what
    you need, and use that in your data migration. This is helpful if you prefer
    the Ecto API for querying.
+
+For throttling, we can simply add a `Process.sleep(@throttle)` for each page.
 
 For resiliency, we need to ensure that we handle errors without losing our
 progress. You don't want to migrate the same data twice! Most data migrations I
 have run ultimately finds _some_ record wasn't what I expected it to be, causing
 the data migration to fail. When the data migration stops, that means I have to
 write a little bit more code to handle that scenario, and re-run the migration.
-Every time the data migration is re-ran, it should pick up where it left off.
+Every time the data migration is re-ran, it should pick up where it left off
+without revisiting already-migrated records.
 
 Finally, to manage these data migrations separately, see section [Create Release
 Module](#create-release-module). Put simply:
 
 1. Store data migrations separately from your normal schema migrations.
-
 1. Run these data migrations manually.
 
 <a name="throttling-deterministic-data"></a>
-### Throttling deterministic set of data
+### Batching Deterministic Data
 
 If the data can be queried with a condition that is removed after update, for
 example if a column is currently null and will be updated to not be null, then
@@ -1526,8 +1520,8 @@ empty.
 Here's how we can manage the backfill:
 
 1. Disable migration transactions.
-1. Use keyset pagination: Order the data, find rows greater than the last mutated
-   row and limit by batch size.
+1. Use keyset pagination: Order the data, find rows greater than the last
+   mutated row and limit by batch size.
 1. For each page, mutate the records.
 1. Check for failed updates and handle it appropriately.
 1. Use the last mutated record's ID as the starting point for the next page.
@@ -1585,7 +1579,7 @@ defmodule MyApp.Repo.Migrations.BackfillPosts do
   defp throttle_change_in_batches(query_fun, change_fun, last_pos \\ 0)
   defp throttle_change_in_batches(_query_fun, _change_fun, nil), do: :ok
   defp throttle_change_in_batches(query_fun, change_fun, last_pos) do
-    case repo().all(query_fun.(last_pos), [log: :info]) do
+    case repo().all(query_fun.(last_pos), [log: :info, timeout: :infinity]) do
       [] ->
         :ok
 
@@ -1606,7 +1600,7 @@ end
 ---
 
 <a name="throttling-arbitrary-data"></a>
-### Throttling Arbitrary set of data
+### Batching Arbitrary Data
 
 If the data being updated cannot indicate it's already been updated, for example
 if all a column's values must be incremented by 10, then we need to take a
@@ -1640,10 +1634,10 @@ Here's how we'll manage the backfill:
    re-run the migration in case there's an error. There isn't a straight-forward
    way to `CREATE IF NOT EXIST` on a primary key; but you can do that easily
    with an index.
-1. Pull batches of IDs from the temporary table. Do this inside a database
-   transaction and lock those records for updates. Each batch should be read and
-   update within milliseconds, so this should have little consequence on
-   concurrent reads and writes.
+1. Use keyset pagination to pull batches of IDs from the temporary table. Do
+   this inside a database transaction and lock records for updates. Each batch
+   should read and update within milliseconds, so this should have little
+   consequence on concurrent reads and writes.
 1. For each batch of records, determine the mutations of the data that need to
    occur. This can happen for each record.
 1. Upsert those changes to the real table. This insert will include the ID of
@@ -1696,8 +1690,10 @@ defmodule MyApp.Repo.DataMigrations.BackfillWeather do
     SELECT id FROM weather WHERE inserted_at < '2021-08-21T00:00:00'
     """, [], log: :info, timeout: :infinity)
     flush()
+
     create_if_not_exists index(@temp_table_name, [:id])
     flush()
+
     throttle_change_in_batches(&page_query/1, &do_change/1)
     drop table(@temp_table_name)
   end
@@ -1714,11 +1710,11 @@ defmodule MyApp.Repo.DataMigrations.BackfillWeather do
           lock: "FOR UPDATE"
         )
         |> repo().all()
-        |> Enum.map(&mutation/1)
+        |> Enum.reduce([], &mutation/2)
 
-      # Don't be fooled by `insert_all`, this is actually an upsert that will
-      # update existing records when conflicting; they should all conflict
-      # since the ID is included in the update.
+      # Don't be fooled by the name `insert_all`, this is actually an upsert
+      # that will update existing records when conflicting; they should all
+      # conflict since the ID is included in the update.
 
       {_updated, results} = repo().insert_all(
         MigratingSchema,
@@ -1786,7 +1782,7 @@ defmodule MyApp.Repo.DataMigrations.BackfillWeather do
   defp throttle_change_in_batches(query_fun, change_fun, last_pos \\ 0)
   defp throttle_change_in_batches(_query_fun, _change_fun, nil), do: :ok
   defp throttle_change_in_batches(query_fun, change_fun, last_pos) do
-    case repo().all(query_fun.(last_pos), [log: :info]) do
+    case repo().all(query_fun.(last_pos), [log: :info, timeout: :infinity]) do
       [] ->
         :ok
 
@@ -1810,7 +1806,8 @@ end
 Before you think this is a completely original article, I want you to know that
 I took a lot of inspiration from Andrew Kane and his library
 [strong_migrations](https://github.com/ankane/strong_migrations). Think of this
-article as a port of his and his contributors' guide to Elixir and Ecto.
+article as a port of his and his contributors' guide to Elixir and
+Ecto and expanded.
 
 [PostgreSQL at Scale by James Coleman](https://medium.com/braintree-product-technology/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
 
