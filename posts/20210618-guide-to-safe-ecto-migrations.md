@@ -255,7 +255,9 @@ BEGIN;
   -- ↓ THIS LOCK ↓
   LOCK TABLE "schema_migrations" IN SHARE UPDATE EXCLUSIVE MODE
   BEGIN;
+    -- after_begin callback
     -- my changes
+    -- before_commit callback
     INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
   COMMIT;
 COMMIT;
@@ -275,7 +277,9 @@ disabled, the migration will look like this:
 
 ```sql
 BEGIN;
+  -- after_begin callback
   -- my changes
+  -- before_commit callback
   INSERT INTO "schema_migrations" ("version","inserted_at") VALUES ($1,$2);
 COMMIT;
 ```
@@ -451,7 +455,7 @@ CONCURRENTLY ...`; when using `CONCURRENTLY`, it prevents us from using
 `BEGIN/COMMIT` transactions which is unfortunate because now we cannot easily
 see the locks the command obtains. We know this will be safer because `CREATE
 INDEX CONCURRENTLY` acquires a ShareUpdateExclusiveLock which does not conflict
-with RowExclusiveLock.
+with RowExclusiveLock (See [Reference Material](#reference-material)).
 
 [This scenario](#adding-an-index) is revisited later in [Part 3 - Scenarios](#scenarios).
 
@@ -467,10 +471,12 @@ We can add one or several safeguards:
 
 1. Automatically cancel a statement if its lock is held for too long. There are
    two ways to apply this:
-  1. Apply to migrations. This can be done with a `lock_timeout` inside a
-     transaction.
-  2. Apply to any statements. This can be done by setting a `lock_timeout` to a
-     Postgres role.
+
+    1. Apply to migrations. This can be done with a `lock_timeout` inside a
+       transaction.
+    2. Apply to any statements. This can be done by setting a `lock_timeout` to a
+       Postgres role.
+
 2. Automatically cancel statements that take too long. This is broader than #1
    because it includes _any_ statement, not just locks.
 
