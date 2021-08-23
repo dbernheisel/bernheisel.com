@@ -1585,7 +1585,7 @@ snapshot of the current data and store it temporarily. Instead of pulling IDs
 into the application during the migration, we're instead going to keep the data
 in the database.
 
-**This requires new records going forward to not need adjustmnet**, so we
+**This requires new records going forward to not need adjustment**, so we
 should query up to a certain point in history. In this example, we'll use
 `inserted_at` as our marker (let's say that we fixed the bug on a midnight
 deploy on 2021-08-22).
@@ -1691,7 +1691,7 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
         MigratingSchema,
         mutations,
         returning: [:id],
-        # Alternatively, {:replace_all_expect, [:id, :inserted_at]}
+        # Alternatively, {:replace_all_except, [:id, :inserted_at]}
         on_conflict: {:replace, [:temp_lo, :updated_at]},
         conflict_target: [:id],
         placeholders: %{now: NaiveDateTime.utc_now()},
