@@ -1066,7 +1066,7 @@ end
 
 ---
 
-<a name="changing-the-type-of-a-column"></a>
+<a name="changing-a-column-type"></a>
 ## Changing the type of a column
 
 Changing the type of a column may cause the table to be rewritten. During this
@@ -1537,7 +1537,7 @@ For example:
 ```
 
 ```elixir
-defmodule MyApp.Repo.Migrations.BackfillPosts do
+defmodule MyApp.Repo.DataMigrations.BackfillPosts do
   use Ecto.Migration
   import Ecto.Query
 
