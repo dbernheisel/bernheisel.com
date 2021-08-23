@@ -1456,6 +1456,7 @@ There are three keys to backfilling safely:
   1. running outside a transaction
   2. batching
   3. throttling
+  4. resiliency
 
 As we've learned in this guide, it's straight-forward to disable the migration
 transactions. Add these options to the migration:
@@ -1485,6 +1486,13 @@ your schema at the time of the migration:
    you need, and use that in your data migration. This is helpful if you prefer
    the Ecto API for querying.
 
+For resiliency, we need to ensure that we handle errors without losing our
+progress. You don't want to migrate the same data twice! Most data migrations I
+have run ultimately finds _some_ record wasn't what I expected it to be, causing
+the data migration to fail. When the data migration stops, that means I have to
+write a little bit more code to handle that scenario, and re-run the migration.
+Every time the data migration is re-ran, it should pick up where it left off.
+
 Finally, to manage these data migrations separately, see section [Create Release
 Module](#create-release-module). Put simply:
 
@@ -1507,11 +1515,17 @@ Here's how we can manage the backfill:
    row and limit by batch size.
 1. For each page, mutate the records.
 1. Check for failed updates and handle it appropriately.
-1. Use the last mutated record's ID as the starting point for the next page
+1. Use the last mutated record's ID as the starting point for the next page.
+   This helps with resiliency and prevents looping on the same record over and
+   over again.
 1. Arbitrarily sleep to throttle and prevent exhausting the database.
 1. Rinse and repeat until there are no more records
 
 For example:
+
+```shell
+❯ mix ecto.gen.migration --migrations-path=priv/repo/data_migrations backfill_posts
+```
 
 ```elixir
 defmodule MyApp.Repo.Migrations.BackfillPosts do
@@ -1629,6 +1643,10 @@ Here's how we'll manage the backfill:
 
 Let's see how this can work:
 
+```shell
+❯ mix ecto.gen.migration --migrations-path=priv/repo/data_migrations backfill_weather
+```
+
 ```elixir
 # Both of these modules are in the same migration file
 
@@ -1665,7 +1683,7 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
     flush()
     create_if_not_exists index(@temp_table_name, [:id])
     flush()
-    throttle_change_in_batches(&page_query/0, &do_change/1)
+    throttle_change_in_batches(&page_query/1, &do_change/1)
     drop table(@temp_table_name)
   end
 
@@ -1733,10 +1751,12 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
     end
   end
 
-  def page_query do
+  def page_query(last_id) do
     from(
       r in @temp_table_name,
       select: r.id,
+      where: r.id > ^last_id,
+      order_by: [asc: r.id],
       limit: @batch_size
     )
   end
@@ -1745,16 +1765,22 @@ defmodule MyApp.Repo.Migrations.BackfillWeather do
     raise "#{inspect(id)} was not updated"
   end
 
-  defp throttle_change_in_batches(query_fun, change_fun) do
-    case repo().all(query_fun.(), [log: :info]) do
+  # If you have BigInt IDs, fallback last_pod = 0
+  # If you have UUID IDs, fallback last_pos = "00000000-0000-0000-0000-000000000000"
+  # If you have Int IDs, you should consider updating it to BigInt or UUID :)
+  defp throttle_change_in_batches(query_fun, change_fun, last_pos \\ 0)
+  defp throttle_change_in_batches(_query_fun, _change_fun, nil), do: :ok
+  defp throttle_change_in_batches(query_fun, change_fun, last_pos) do
+    case repo().all(query_fun.(last_pos), [log: :info]) do
       [] ->
         :ok
 
       ids ->
         case change_fun.(List.flatten(ids)) do
-          {:ok, _results} ->
+          {:ok, results} ->
+            next_page = results |> Enum.reverse() |> List.first()
             Process.sleep(@throttle_ms)
-            throttle_change_in_batches(query_fun, change_fun)
+            throttle_change_in_batches(query_fun, change_fun, next_page)
           error ->
             raise error
         end
