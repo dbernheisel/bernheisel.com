@@ -422,8 +422,8 @@ Let's go through each of these:
 
 1. `relation | pg_locks | AccessShareLock` - This is us querying the pg_locks
    table in the transaction so we can see which locks are taken. It has the
-   weakest lock which only conflicts with `Access Exclusive` which should never
-   happen on the internal pg_locks table itself.
+   weakest lock which only conflicts with `Access Exclusive` which should
+   never happen on the internal pg_locks table itself.
 1. `relation | schema_migrations | RowExclusiveLock` - This is because we're
    inserting a row into the "schema_migrations" table. Reads are still allowed,
    but mutation on this table is blocked until the transaction is done.
@@ -862,7 +862,7 @@ questions:
    This is a perfect opportunity to start your Ecto Repo and migrate it before
    starting the rest of your application. **Combine this with [Kubernetes
    Jobs]**, and you have a way to run the migration on one node, and Init
-   Containers would simply wait for the job to complete before starting the
+   Containers should wait for the job to complete before starting the
    application. Make sure you exclude data migrations from this process however,
    since those usually will not be safe to automatically run in multi-node
    environments.
@@ -947,8 +947,9 @@ end
 
 ### GOOD ✅
 
-Instead, have Postgres create the index concurrently which does not block reads.
-You will need to disable the migration transactions to use `CONCURRENTLY`.
+Instead, have Postgres create the index concurrently which does not block
+reads. You will need to disable the migration transactions to use 
+`CONCURRENTLY`.
 
 ```elixir
 @disable_ddl_transaction true
@@ -959,9 +960,10 @@ def change do
 end
 ```
 
-The migration may still take a while in Ecto, but reads and updates to rows will
-continue to work. For example, for 100,000,000 rows it took 165 seconds to add
-run the migration, but SELECTS and UPDATES could occur while it was running.
+The migration may still take a while to run, but reads and updates to rows
+will continue to work. For example, for 100,000,000 rows it took 165 seconds
+to add run the migration, but SELECTS and UPDATES could occur while it was 
+running.
 
 ---
 
@@ -1005,9 +1007,9 @@ end
 <a name="adding-a-column-with-a-default-value"></a>
 ## Adding a column with a default value
 
-Adding a column with a default value to an existing table may cause the table to
-be rewritten. During this time, reads and writes are blocked in Postgres, and
-writes are blocked in MySQL and MariaDB.
+Adding a column with a default value to an existing table may cause the table
+to be rewritten. During this time, reads and writes are blocked in Postgres,
+and writes are blocked in MySQL and MariaDB.
 
 ### BAD ❌
 
@@ -1070,8 +1072,8 @@ end
 ## Changing the type of a column
 
 Changing the type of a column may cause the table to be rewritten. During this
-time, reads and writes are blocked in Postgres, and writes are blocked in MySQL
-and MariaDB.
+time, reads and writes are blocked in Postgres, and writes are blocked in
+MySQL and MariaDB.
 
 ### BAD ❌
 
@@ -1141,21 +1143,9 @@ Safety can be assured if the application code is first updated to remove
 references to the column so it's no longer loaded or queried. Then, the column
 can safely be removed from the table.
 
-**Strategy 1:**
-
-If your deployment process must run migrations before starting the application,
-this means you need a 2-deploy strategy:
-
 1. Deploy code change to remove references the field.
 1. Separately deploy migration change to remove the column.
 1. Run the migration to remove the column.
-
-**Strategy 2:**
-
-1. Deploy change to application to remove field from Ecto schema.
-1. Start the application. No instances of the app should remain with code
-   references to the column about to be removed.
-1. Run migration to remove the column from the database.
 
 ```diff
 # First deploy, in the Ecto schema
@@ -1182,10 +1172,10 @@ end
 <a name="renaming-a-column"></a>
 ## Renaming a column
 
-Ask yourself: "Do I _really_ need to rename a column?". Probably not, but if you
-must, read on and be aware it requires time and effort.
+Ask yourself: "Do I _really_ need to rename a column?". Probably not, but if
+you must, read on and be aware it requires time and effort.
 
-If Ecto is still configured to read a column in any running instances of the
+If Ecto is configured to read a column in any running instances of the
 application, then queries will fail when loading data into your structs. This
 can happen in multi-node deployments or if you start the application before
 running migrations.
@@ -1207,6 +1197,19 @@ end
 ```
 
 ### GOOD ✅
+
+**Option 1**
+
+In the Ecto schema:
+
+1. Rename the field, and
+2. specify the `source` option on the field pointing to the old name.
+
+No database migration needed. The database column won’t have the same name as your Ecto schema field, but the rest of the application won’t know that.
+
+**Option 2**
+
+Take a phased approach:
 
 1. Create a new column
 1. In application code, write to both columns
