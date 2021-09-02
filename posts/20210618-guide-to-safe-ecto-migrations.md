@@ -948,7 +948,7 @@ end
 ### GOOD ✅
 
 Instead, have Postgres create the index concurrently which does not block
-reads. You will need to disable the migration transactions to use 
+reads. You will need to disable the migration transactions to use
 `CONCURRENTLY`.
 
 ```elixir
@@ -962,7 +962,7 @@ end
 
 The migration may still take a while to run, but reads and updates to rows
 will continue to work. For example, for 100,000,000 rows it took 165 seconds
-to add run the migration, but SELECTS and UPDATES could occur while it was 
+to add run the migration, but SELECTS and UPDATES could occur while it was
 running.
 
 ---
@@ -1180,6 +1180,9 @@ application, then queries will fail when loading data into your structs. This
 can happen in multi-node deployments or if you start the application before
 running migrations.
 
+There is a shortcut: Don't rename the database column, and instead rename the
+schema's field name and configure it to point to the database column.
+
 ### BAD ❌
 
 ```elixir
@@ -1198,16 +1201,36 @@ end
 
 ### GOOD ✅
 
-**Option 1**
+**Strategy 1**
 
-In the Ecto schema:
+Rename the field in the schema only, and configure it to point to the database
+column. Ensure all calling code relying on the old column is also updated to
+reference the new field name.
 
-1. Rename the field, and
-2. specify the `source` option on the field pointing to the old name.
+```elixir
+defmodule MyApp.MySchema do
+  use Ecto.Schema
 
-No database migration needed. The database column won’t have the same name as your Ecto schema field, but the rest of the application won’t know that.
+  # Copy of the schema at the time of migration
+  schema "weather" do
+    field :temp_lo, :integer
+    field :temp_hi, :integer
+    field :precipitation, :float, source: :prcp
+    field :city, :string
 
-**Option 2**
+    timestamps(type: :naive_datetime_usec)
+  end
+end
+```
+
+```diff
+## Update references in other parts of the codebase:
+  my_schema = Repo.get(MySchema, "my_id")
+-  my_schema.prcp
++  my_schema.precipitation
+```
+
+**Strategy 2**
 
 Take a phased approach:
 
