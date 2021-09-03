@@ -1855,7 +1855,7 @@ Special thanks for these reviewers:
 <a name="reference-material"></a>
 # Reference Material
 
-## [Postgres Lock Conflicts](https://www.postgresql.org/docs/12/explicit-locking.html)
+[Postgres Lock Conflicts](https://www.postgresql.org/docs/12/explicit-locking.html)
 
 |  | | **Current Lock →** | | | | | |
 |---------------------|-------------------|-|-|-|-|-|-|
