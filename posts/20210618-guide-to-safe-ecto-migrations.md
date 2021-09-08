@@ -52,24 +52,6 @@
 > - [Part 3 - Migration Scenarios](#scenarios)
 > - [Part 4 - Backfilling Data](#backfilling-data)
 
-Not long ago, deploying and managing Elixir projects was not as straight-forward
-as we can enjoy today; some would say it was downright painful. Thankfully,
-since Elixir 1.9, Mix now ships with tools to help us developers assemble
-applications for deployment. How you get that binary to its destination it still
-entirely up to you, but now it's a simpler and common task!
-
-Before the wider adoption of pre-compiled releases (thanks to [Mix Release] and
-before Mix was [Distillery]), it was more common to install Elixir (and
-therefore mix), copy your code, and use `mix` to start your application _on the
-target servers_. Along with starting your application, another common operation
-is to create and migrate databases. Push your code, run `mix ecto.migrate && mix
-phx.server` and you're done! Just like you would in development and tests.
-
-However, now that it's more common to run compiled Mix releases, which implies
-that your application cannot rely on the `Mix` module being present and no
-longer need the `mix` binary on the target server, developers need another way
-to manage the application's database.
-
 This guide should help you:
 
 1. Understand an Ecto migration
@@ -83,9 +65,6 @@ different database systems. This was also written using **Ecto 3.6.x**.
 Ok! Let's go
 
 ![Ready for an adventure](/images/ready-for-an-adventure.gif)
-
-[Mix Release]: https://hexdocs.pm/mix/1.9.0/Mix.Release.html
-[Distillery]: https://hexdocs.pm/distillery
 
 
 <a name="anatomy-of-an-ecto-migration"></a>
@@ -651,6 +630,24 @@ exceptions.
 > - [Part 3 - Migration Scenarios](#scenarios)
 > - [Part 4 - Backfilling Data](#backfilling-data)
 
+Not long ago, deploying and managing Elixir projects was not as straight-forward
+as we can enjoy today; some would say it was downright painful. Thankfully,
+since Elixir 1.9, Mix now ships with tools to help us developers assemble
+applications for deployment. How you get that binary to its destination it still
+entirely up to you, but now it's a simpler and common task!
+
+Before the wider adoption of pre-compiled releases (thanks to [Mix Release] and
+before Mix was [Distillery]), it was more common to install Elixir (and
+therefore mix), copy your code, and use `mix` to start your application _on the
+target servers_. Along with starting your application, another common operation
+is to create and migrate databases. Push your code, run `mix ecto.migrate && mix
+phx.server` and you're done! Just like you would in development and tests.
+
+However, now that it's more common to run compiled Mix releases, which implies
+that your application cannot rely on the `Mix` module being present and no
+longer need the `mix` binary on the target server, developers need another way
+to manage the application's database.
+
 In Mix Release projects, we need to give ourselves easy access to commands to
 facilitate migrations. Here's a couple of use cases:
 
@@ -660,6 +657,9 @@ facilitate migrations. Here's a couple of use cases:
 
 The common and documented way to encapsulate these commands is with a
 `MyApp.Release` module.
+
+[Mix Release]: https://hexdocs.pm/mix/1.9.0/Mix.Release.html
+[Distillery]: https://hexdocs.pm/distillery
 
 <a name="create-release-module"></a>
 ## Create Release Module
@@ -964,6 +964,9 @@ The migration may still take a while to run, but reads and updates to rows
 will continue to work. For example, for 100,000,000 rows it took 165 seconds
 to add run the migration, but SELECTS and UPDATES could occur while it was
 running.
+
+**Do not have other changes in the same migration**. Only create the index
+concurrently, and have separate migrations for other changes.
 
 ---
 
