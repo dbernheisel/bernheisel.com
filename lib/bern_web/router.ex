@@ -28,11 +28,10 @@ defmodule BernWeb.Router do
   scope "/", BernWeb do
     pipe_through :browser
 
-    live "/", Live.Page, :show
-    live "/blog", Live.BlogIndex, :index, as: :blog
-    live "/blog/:id", Live.BlogShow, :show, as: :blog
-    live "/about", Live.Page, :show, as: :about, session: %{"page" => "about"}
-    live "/projects", Live.Page, :show, as: :projects, session: %{"page" => "projects"}
+    live "/", PageLive, :home
+    live "/blog", BlogLive, :index, as: :blog
+    live "/blog/:id", BlogLive, :show, as: :blog
+    live "/projects", PageLive, :projects
   end
 
   scope "/admin" do

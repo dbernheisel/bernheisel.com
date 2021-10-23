@@ -5,9 +5,9 @@ set -eu -o pipefail
 ID=$1
 TITLE=$2
 
-mkdir ./assets/static/images/blog &>/dev/null || true
+mkdir ./priv/static/images/blog &>/dev/null || true
 
-convert "./assets/static/images/pattern-wide.png" \
+convert "./priv/static/images/pattern-wide.png" \
   \( -background none -fill white -size 320x -font ./assets/static/fonts/FiraCode-SemiBold.ttf \
      label:"bernheisel.com" \
   \) -gravity southeast -geometry +40+20 -compose over -composite \

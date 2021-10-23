@@ -5,9 +5,9 @@ module.exports = {
   mode: 'jit',
   purge: [
     "../lib/bern_web/live/**/*.ex",
-    "../lib/bern_web/live/**/*.leex",
+    "../lib/bern_web/live/**/*.heex",
     "../lib/bern_web/templates/**/*.eex",
-    "../lib/bern_web/templates/**/*.leex",
+    "../lib/bern_web/templates/**/*.heex",
     "../lib/bern_web/views/**/*.ex",
     "../lib/bern_web/components/**/*.ex",
     "./js/**/*.js"

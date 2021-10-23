@@ -1,15 +1,22 @@
-defmodule BernWeb.Live.Page do
+defmodule BernWeb.PageLive do
   use BernWeb, :live_view
 
   @impl true
-  def mount(_params, %{"page" => page}, socket) do
-    {:ok, socket |> assign(page: page) |> assign(:page_title, String.capitalize(page))}
+  def mount(_params, _session, socket) do
+    if socket.assigns.live_action == :home do
+      {:ok, redirect(socket, to: Routes.blog_path(socket, :index))}
+    else
+      title = socket.assigns.live_action |> to_string() |> String.capitalize()
+      {:ok, assign(socket, :page_title, title)}
+    end
   end
-
-  def mount(_params, _, socket), do: {:ok, redirect(socket, to: Routes.blog_path(socket, :index))}
 
   @impl true
   def render(assigns) do
-    BernWeb.PageView.render(assigns.page <> ".html", assigns)
+    if assigns.live_action == :home do
+      ""
+    else
+      BernWeb.PageView.render("#{assigns.live_action}.html", assigns)
+    end
   end
 end

@@ -1,10 +1,12 @@
 defmodule BernWeb.LayoutView do
   use BernWeb, :view
+  alias Phoenix.LiveView.JS
 
-  def seo_tags(%{live_seo: true} = assigns) do
-    {module, _} = assigns.conn.private.phoenix_live_view
-    BernWeb.SEO.meta(assigns.conn, module, assigns)
+
+  def expand_mobile_menu do
+    JS.toggle(to: "#MobileMenuContent")
+    |> JS.toggle(to: "#MobileMenuIconOpen")
+    |> JS.toggle(to: "#MobileMenuIconClose")
   end
 
-  def seo_tags(_assigns), do: nil
 end

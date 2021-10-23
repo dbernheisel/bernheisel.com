@@ -31,7 +31,7 @@ defmodule BernWeb.Rss do
       "<language>#{rss.language}</language>\n",
       "<description>#{cdata(rss.description)}</description>\n",
       "<pubDate>#{post_date(rss.posts)}</pubDate>\n",
-      "<link>#{Routes.page_url(@endpoint, :show)}</link>\n",
+      "<link>#{Routes.page_url(@endpoint, :home)}</link>\n",
       "<copyright>Copyright #{year} #{rss.author}</copyright>\n",
       "<generator>Artisinally Crafted by Yours Truly</generator>\n",
       output

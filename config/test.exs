@@ -6,5 +6,6 @@ config :bern, BernWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :phoenix, :plug_init_mode, :runtime
 # Print only warnings and errors during test
 config :logger, level: :warn

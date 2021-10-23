@@ -1,5 +1,3 @@
-[x-cloak] { display: none }
-
 .link {
   @apply text-brand-700 no-underline transition-colors duration-150 ease-in-out border-accent-500 hover:text-brand-500 hover:border-accent-400;
   border-bottom-width: 1px;

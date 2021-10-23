@@ -11,7 +11,8 @@ ENV LANG=C.UTF-8 \
     REFRESH_AT=20210105
 
 RUN apt-get update && apt-get install -y \
-      git
+      git \
+      nodejs
 
 ARG USER_ID
 ARG GROUP_ID
@@ -30,23 +31,8 @@ COPY --chown=user:user mix.* ./
 COPY --chown=user:user config ./config
 COPY --chown=user:user VERSION .
 RUN mix do deps.get, deps.compile
-
-## FRONTEND
-
-FROM node:14.14.0-alpine AS frontend
-
-RUN mkdir -p /home/user/app
-WORKDIR /home/user/app
-# PurgeCSS needs to see the Elixir stuff
-COPY lib ./lib
-COPY assets/package.json assets/package-lock.json ./assets/
-COPY --from=builder /home/user/app/deps/phoenix ./deps/phoenix
-COPY --from=builder /home/user/app/deps/phoenix_html ./deps/phoenix_html
-COPY --from=builder /home/user/app/deps/phoenix_live_view ./deps/phoenix_live_view
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-
-COPY assets ./assets
-RUN npm --prefix ./assets run deploy
+RUN mix assets.deploy
 
 ## APP
 FROM builder AS app
@@ -54,6 +40,5 @@ USER user
 COPY --from=frontend --chown=user:user /home/user/app/priv/static ./priv/static
 COPY --chown=user:user lib ./lib
 COPY --chown=user:user posts ./posts
-RUN mix phx.digest
 
 CMD ["/bin/bash"]

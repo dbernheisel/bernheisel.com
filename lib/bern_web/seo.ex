@@ -1,33 +1,70 @@
 defmodule BernWeb.SEO do
   @moduledoc "You know, juice."
 
-  use BernWeb, :view
-  alias BernWeb.SEO.{Generic, Breadcrumbs, OpenGraph}
+  use Phoenix.Component
 
-  @default_assigns %{canonical_url: nil, site: %Generic{}, breadcrumbs: nil, og: nil}
+  def meta(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:canonical_url, fn ->
+        "https://bernheisel.com#{Phoenix.Controller.current_path(assigns.conn)}"
+      end)
+      |> assign_new(:site, fn -> %BernWeb.SEO.Generic{} end)
+      |> assign_new(:breadcrumbs, fn -> nil end)
+      |> assign_new(:og, fn -> nil end)
 
-  def meta(conn, BernWeb.Live.BlogShow, %{post: post}) do
-    render(
-      "meta.html",
-      @default_assigns
-      |> put_canonical(conn, post)
-      |> put_opengraph_tags(conn, post)
-      |> put_breadcrumbs(conn, post)
-    )
+    ~H"""
+    <meta name="description" content={@site.description}>
+
+    <%= if @canonical_url do %>
+      <link rel="canonical" href={@canonical_url}>
+    <% end %>
+    <meta property="og:url" content={Phoenix.Controller.current_url(assigns.conn)}>
+
+    <%= if @og do %>
+      <.opengraph og={@og} />
+    <% end %>
+
+    <%= if @breadcrumbs do %>
+      <script type="application/ld+json">
+        <%= Phoenix.HTML.raw(Jason.encode!(@breadcrumbs)) %>
+      </script>
+    <% end %>
+    """
   end
 
-  def meta(conn, _view, _assigns),
-    do: render("meta.html", @default_assigns |> put_canonical(conn, nil))
+  def opengraph(assigns) do
+    ~H"""
+    <meta property="og:site_title" content={@og.site_title}>
+    <meta property="og:type" content={@og.type}>
+    <meta property="og:locale" content={@og.locale}>
+    <meta property="og:article:section" content={@og.article_section}>
 
-  def put_canonical(assigns, _conn, %{original_url: url}) when url not in ["", nil],
-    do: Map.put(assigns, :canonical_url, url)
+    <%= if @og.published_at do %>
+      <meta property="og:article:published_time" content={@og.published_at}>
+      <meta name="twitter:data1" content="Reading Time">
+      <meta name="twitter:label1" content={@og.reading_time}>
+      <meta name="twitter:data2" content="Published">
+      <meta name="twitter:label2" content={@og.published_at}>
+    <% end %>
 
-  def put_canonical(assigns, conn, _post),
-    do: Map.put(assigns, :canonical_url, "https://bernheisel.com#{Phoenix.Controller.current_path(conn)}")
+    <meta property="og:title" content={@og.title}>
+    <meta property="og:description" content={@og.description}>
+    <meta property="twitter:title" content={@og.title}>
+    <meta property="twitter:site" content={@og.site}>
 
-  def put_opengraph_tags(assigns, conn, event),
-    do: Map.put(assigns, :og, OpenGraph.build(conn, event))
+    <%= if @og.image_url do %>
+      <meta name="twitter:card" content="summary_large_image">
+      <meta property="twitter:image:alt" content={@og.image_alt}>
+      <meta property="og:image" content={@og.image_url}>
+      <meta property="og:image:alt" content={@og.image_alt}>
+    <% else %>
+      <meta name="twitter:card" content="summary">
+    <% end %>
 
-  def put_breadcrumbs(assigns, conn, event),
-    do: Map.put(assigns, :breadcrumbs, Breadcrumbs.build(conn, event))
+    <%= if @og.twitter_handle do %>
+      <meta name="twitter:creator" content={@og.twitter_handle}>
+    <% end %>
+    """
+  end
 end

@@ -14,6 +14,7 @@ defmodule BernWeb.SEO.Breadcrumbs do
   """
 
   alias BernWeb.Router.Helpers, as: Routes
+  @endpoint BernWeb.Endpoint
 
   defmodule BreadcrumbList do
     @derive Jason.Encoder
@@ -33,18 +34,18 @@ defmodule BernWeb.SEO.Breadcrumbs do
     ]
   end
 
-  def build(conn, %Bern.Blog.Post{} = post) do
+  def build(%Bern.Blog.Post{} = post) do
     %BreadcrumbList{
       itemListElement: [
         %BreadcrumbItem{
           position: 1,
           name: "Posts",
-          item: Routes.blog_url(conn, :index)
+          item: Routes.blog_url(@endpoint, :index)
         },
         %BreadcrumbItem{
           position: 2,
           name: post.title,
-          item: Routes.blog_url(conn, :show, post.id)
+          item: Routes.blog_url(@endpoint, :show, post.id)
         }
       ]
     }

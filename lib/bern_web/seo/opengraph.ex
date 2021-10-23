@@ -26,7 +26,6 @@ defmodule BernWeb.SEO.OpenGraph do
     :published_at,
     :reading_time,
     :title,
-    :url,
     article_section: "Software Development",
     # site = twitter handle representing the overall site.
     locale: "en_US",
@@ -36,9 +35,8 @@ defmodule BernWeb.SEO.OpenGraph do
     type: "website"
   ]
 
-  def build(conn, %Bern.Blog.Post{} = post) do
+  def build(%Bern.Blog.Post{} = post) do
     %__MODULE__{
-      url: Phoenix.Controller.current_url(conn),
       title: truncate(post.title, 70),
       type: "article",
       published_at: format_date(post.date),
