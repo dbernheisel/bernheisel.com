@@ -1,6 +1,6 @@
 ## SYSTEM
 
-FROM hexpm/elixir:1.11.3-erlang-23.2.4-ubuntu-focal-20201008 AS builder
+FROM hexpm/elixir:1.12.2-erlang-24.1.2-ubuntu-focal-20210325 AS builder
 
 ENV LANG=C.UTF-8 \
     LANGUAGE=C:en \
@@ -12,7 +12,11 @@ ENV LANG=C.UTF-8 \
 
 RUN apt-get update && apt-get install -y \
       git \
-      nodejs
+      curl
+
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs
 
 ARG USER_ID
 ARG GROUP_ID
@@ -31,14 +35,11 @@ COPY --chown=user:user mix.* ./
 COPY --chown=user:user config ./config
 COPY --chown=user:user VERSION .
 RUN mix do deps.get, deps.compile
-RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-RUN mix assets.deploy
-
-## APP
-FROM builder AS app
-USER user
-COPY --from=frontend --chown=user:user /home/user/app/priv/static ./priv/static
 COPY --chown=user:user lib ./lib
 COPY --chown=user:user posts ./posts
+COPY --chown=user:user priv ./priv
+COPY --chown=user:user assets ./assets
+RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
+RUN mix assets.deploy
 
 CMD ["/bin/bash"]
