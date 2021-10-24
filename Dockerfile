@@ -1,46 +1,46 @@
-## SYSTEM
+# BUILD LAYER
 
-FROM hexpm/elixir:1.12.2-erlang-24.1.2-ubuntu-focal-20210325 AS builder
+FROM hexpm/elixir:1.12.2-erlang-24.1.2-alpine-3.14.2 AS build
+RUN apk add --no-cache build-base npm
+WORKDIR /app
 
-ENV LANG=C.UTF-8 \
-    LANGUAGE=C:en \
-    LC_ALL=C.UTF-8 \
-    DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm \
-    MIX_ENV=prod \
-    REFRESH_AT=20210105
+## HEX
+ENV HEX_HTTP_TIMEOUT=20
+RUN mix local.hex --if-missing --force && \
+    mix local.rebar
+ENV MIX_ENV=prod
+ENV SECRET_KEY_BASE=nokeyyet
 
-RUN apt-get update && apt-get install -y \
-      git \
-      curl
+## COMPILE
+COPY mix.exs mix.lock ./
+COPY config/config.exs ./config/config.exs
+COPY config/prod.exs ./config/prod.exs
+COPY VERSION .
+RUN mix do deps.get --only prod, deps.compile
 
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get update && \
-    apt-get install -y nodejs
-
-ARG USER_ID
-ARG GROUP_ID
-
-RUN groupadd -o --gid $GROUP_ID user && \
-    useradd -m --gid $GROUP_ID --uid $USER_ID user
-
-USER user
-RUN mkdir /home/user/app
-WORKDIR /home/user/app
-
-RUN mix local.rebar --force && \
-    mix local.hex --if-missing --force
-
-COPY --chown=user:user mix.* ./
-COPY --chown=user:user config ./config
-COPY --chown=user:user VERSION .
-RUN mix do deps.get, deps.compile
-
-COPY --chown=user:user lib ./lib
-COPY --chown=user:user posts ./posts
-COPY --chown=user:user priv ./priv
-COPY --chown=user:user assets ./assets
+## BUILD RELEASE
+COPY assets ./assets
+COPY lib ./lib
+COPY rel ./rel
+COPY posts ./posts
+COPY priv ./priv
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-RUN mix assets.deploy
+COPY config/runtime.exs ./config/runtime.exs
+RUN mix do assets.deploy, release
 
-CMD ["/bin/bash"]
+# APP LAYER
+
+FROM alpine:3.14.2 AS app
+RUN apk add --no-cache libstdc++ openssl ncurses-libs
+WORKDIR /app
+RUN chown nobody:nobody /app
+USER nobody:nobody
+
+## COPY RELEASE
+COPY --from=build --chown=nobody:nobody app/_build/prod/rel/bern ./
+ENV HOME=/app
+ENV MIX_ENV=prod
+ENV SECRET_KEY_BASE=nokeyyet
+ENV PORT=4000
+
+CMD ["bin/bern", "start"]
