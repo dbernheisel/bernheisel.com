@@ -13,8 +13,6 @@ defmodule Bern.MixProject do
       deps: deps(),
       releases: [
         bern: [
-          steps: [:assemble, :tar],
-          path: "releases/artifacts",
           include_executables_for: [:unix],
           include_erts: true,
           applications: [runtime_tools: :permanent]

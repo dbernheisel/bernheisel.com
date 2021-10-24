@@ -1,2 +1,0 @@
-#!/bin/sh
-AUTH_USER=admin AUTH_PASS=admin PORT=4000 SECRET_KEY_BASE=$(mix phx.gen.secret) ./releases/bin/bern start
