@@ -16,13 +16,14 @@ jobs:
       AUTH_USER: admin
       AUTH_PASS: admin
       CI: "true"
-    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    name: Tests
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
         with:
           otp-version: '24'
           elixir-version: '1.12.2'
-      - run: mix deps.get
+      - run: mix deps.get --only test
+      - run: mix compile --warnings-as-errors
       - run: mix test
       - run: mix validate_urls

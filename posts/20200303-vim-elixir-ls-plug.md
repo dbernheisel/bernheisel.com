@@ -395,7 +395,7 @@ off on its own and try to manage the installation and compilation of ElixirLS.
 Have any vim and Elixir tips of your own? TWEEEEEEEET at me [@bernheisel]
 
 
-[Kassio's Post]: https://kassio.github.io/2019/03/21/elixir-ls-on-coc.nvim.html
+[Kassio's Post]: https://kassioborges.com/2019/03/21/elixir-ls-on-coc.nvim.html
 [asdf]: https://asdf-vm.com
 [vim-plug]: https://github.com/junegunn/vim-plug
 [ElixirLS]: https://github.com/elixir-lsp/elixir-ls

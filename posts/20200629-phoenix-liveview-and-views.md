@@ -75,7 +75,7 @@ need a separate `MyView` for your HTML helpers, you can specify the root
 folder and path to look in when creating your `MyView` by supplying an option:
 `use Phoenix.View, root: "lib/my_app_web/live", path: ""`. This is [explained in the
 `Phoenix.View`
-docs](https://hexdocs.pm/phoenix/Phoenix.View.html#__using__/1-options). This
+docs](https://hexdocs.pm/phoenix/1.5.13/Phoenix.View.html#__using__/1-options). This
 can be wrapped up into a convenience macro though. Read on for more info.
 
 **This totally ignores LiveComponent** as an option. If your LiveView can be
@@ -505,7 +505,7 @@ This bugged me though, I have HTML floating in `./templates` and sometimes in
 `./live` and sometimes inline. Can we consolidate?
 
 Sure we can! `Phoenix.View` [provides an option to look for templates in a
-different folder](https://hexdocs.pm/phoenix/Phoenix.View.html?#__using__/1).
+different folder](https://hexdocs.pm/phoenix/1.5.13/Phoenix.View.html?#__using__/1).
 Let's try it out. We need to supply `root` and `path` with `use Phoenix.View`:
 
 ```elixir

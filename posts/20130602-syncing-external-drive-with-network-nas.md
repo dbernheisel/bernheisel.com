@@ -141,7 +141,7 @@ Now you should have a fully working solution.
 
 I'm not _quite_ finished yet. I wanted to have my lock folder be pretty with an icon, so I went back to my BASH script and added a couple lines to set the folder icon. I found the commands here [Stack Exchange](https://apple.stackexchange.com/questions/6901/how-can-i-change-a-file-or-folder-icon-using-the-terminal).
 
-First, grab an icon you want. I supplied one already, but you might have a different preference. I found mine by googling, and you might find it helpful to google with "filetype:png" so you find an icon with transparency. Then go to https://iconverticons.com and convert it to Mac-compatible .icns.
+First, grab an icon you want. I supplied one already, but you might have a different preference. I found mine by googling, and you might find it helpful to google with "filetype:png" so you find an icon with transparency. Find an icns conerter and convert it to Mac-compatible .icns.
 
 Second, create a new temporary folder. We're going to apply this icon to it so we can grab a file we need from it once it's set. Then, right-click the folder, and drag-and-drop the .icns file to the Icon in the top left.
 

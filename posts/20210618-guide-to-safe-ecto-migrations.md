@@ -659,7 +659,7 @@ The common and documented way to encapsulate these commands is with a
 `MyApp.Release` module.
 
 [Mix Release]: https://hexdocs.pm/mix/1.9.0/Mix.Release.html
-[Distillery]: https://hexdocs.pm/distillery
+[Distillery]: https://hexdocs.pm/distillery/index.html
 
 <a name="create-release-module"></a>
 ## Create Release Module
@@ -1838,7 +1838,7 @@ I took a lot of inspiration from Andrew Kane and his library
 article as a port of his and his contributors' guide to Elixir and
 Ecto and expanded.
 
-[PostgreSQL at Scale by James Coleman](https://medium.com/braintree-product-technology/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
+[PostgreSQL at Scale by James Coleman](https://medium.com/paypal-tech/postgresql-at-scale-database-schema-changes-without-downtime-20d3749ed680)
 
 [Strong Migrations by Andrew Kane](https://github.com/ankane/strong_migrations)
 

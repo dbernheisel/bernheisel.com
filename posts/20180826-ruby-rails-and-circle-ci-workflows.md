@@ -169,7 +169,7 @@ That's OK though, because we can separate them with containers.
 [Dockerfile]: https://github.com/CircleCI-Public/circleci-dockerfiles/blob/16a3d488ce42027c38f6ef5f419e2eaf9df2f35b/ruby/images/2.5.1-stretch/node/Dockerfile#L36
 [Dockerize]: https://github.com/jwilder/dockerize
 [xvfb]: https://packages.debian.org/stretch/xvfb
-[chromedriver]: http://chromedriver.chromium.org/
+[chromedriver]: https://chromedriver.chromium.org/
 [rbenv]: https://github.com/rbenv/rbenv
 [nvm]: https://github.com/nvm-sh/nvm
 [asdf]: https://github.com/asdf-vm/asdf
@@ -332,7 +332,7 @@ Ideally, you could set up two more jobs here:
 But that's up to you.
 
 [Rails 5.1 system specs]: https://guides.rubyonrails.org/v5.1/testing.html#screenshot-helper
-[JUnit]: https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.1.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html
+[JUnit]: https://www.ibm.com/docs/en/adfz/developer-for-zos/14.1.0?topic=formats-junit-xml-format
 [storing artifacts]: https://circleci.com/docs/2.0/artifacts/
 [collecting test metadata]: https://circleci.com/docs/2.0/collect-test-data/
 [capybara-screenshot]: https://github.com/mattheworiordan/capybara-screenshot
