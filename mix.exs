@@ -59,8 +59,15 @@ defmodule Bern.MixProject do
 
   defp aliases do
     [
-      "assets.deploy": ["cmd --cd assets npm run deploy", "esbuild default --minify", "phx.digest"],
-      setup: ["deps.get", "cmd npm --prefix assets install"]
+      "assets.deploy": [
+        "cmd --cd assets npm run deploy",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
+      setup: [
+        "deps.get",
+        "cmd npm --prefix assets install"
+      ]
     ]
   end
 end

@@ -35,6 +35,7 @@ COPY --chown=user:user mix.* ./
 COPY --chown=user:user config ./config
 COPY --chown=user:user VERSION .
 RUN mix do deps.get, deps.compile
+
 COPY --chown=user:user lib ./lib
 COPY --chown=user:user posts ./posts
 COPY --chown=user:user priv ./priv
