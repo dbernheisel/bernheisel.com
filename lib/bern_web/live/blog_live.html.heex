@@ -100,7 +100,7 @@
     <div class="flex flex-wrap mt-4 mb-10 justify-between">
       <%= for relevant_post <- @relevant_posts do %>
         <div class="w-full p-2 lg:w-1/2">
-          <%= live_patch to: Routes.blog_path(@socket, :show, relevant_post.id),
+          <%= live_redirect to: Routes.blog_path(@socket, :show, relevant_post.id),
             class: "text-white no-underline px-3 py-2 dark:bg-gray-600 dark:border-gray-500 dark:hover:bg-gray-500 dark:hover:border-gray-400 bg-brand-500 border-brand-600 rounded shadow duration-100 ease-in-out transition-colors inline-flex items-center flex-1 hover:bg-brand-600 hover:border-brand-700 dark:button-dark" do %>
             <svg viewBox="0 0 20 20" fill="currentColor" class="mr-2 fill-current w-6 h-6"><path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path></svg>
             <span><%= relevant_post.title %></span>
