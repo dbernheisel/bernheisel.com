@@ -36,3 +36,18 @@ window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
     document.documentElement.classList.remove('dark')
   }
 });
+
+const chooser = document.getElementById("themeChooser")
+
+if (chooser) {
+  chooser.onchange = (e) => updateTheme(e.target.value)
+  let { currentTheme, colorThemes } = themeChooser()
+  colorThemes.forEach((colorTheme) => {
+    let option = document.createElement("option")
+    option.value = colorTheme
+    option.textContent = colorTheme
+    option.selected = currentTheme == colorTheme
+    chooser.appendChild(option)
+  })
+  updateTheme(currentTheme)
+}

@@ -24,14 +24,13 @@ bern-*.tar
 
 # If NPM crashes, it generates a log, let's ignore it too.
 npm-debug.log
-/priv/static/cache_manifest.json
-/priv/static/css/app.css
-/priv/static/css/app.css.map
-/priv/static/js/app.js
-/priv/static/js/app.js.map
-/priv/static/js/vendor.js
-/priv/static/js/vendor.js.map
-
+priv/static/cache_manifest.json
+priv/static/assets/app.css
+priv/static/assets/app.css.map
+priv/static/assets/app.js
+priv/static/assets/app.js.map
+priv/static/assets/vendor.js
+priv/static/assets/vendor.js.map
 
 # The directory NPM downloads your dependencies sources to.
 /assets/node_modules/

@@ -1,12 +1,9 @@
-<%# footer.html. eex template %>
+<%# footer.html.heex template %>
 
 <div class="border-t-4 border-brand-500">
   <div class="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
     <div class="flex justify-center md:order-2 print:hidden">
-      <select class="dark:border-gray-800 border-gray-200 focus:ring-gray-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
-              x-data="themeChooser()"
-              x-init="$watch('currentTheme', updateTheme)"
-              x-model="currentTheme">
+      <select id="themeChooser" class="dark:border-gray-800 border-gray-200 focus:ring-gray-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
         <option disabled>Site theme</option>
         <template x-for="theme in colorThemes" :key="theme">
           <option :value="theme" x-text="theme" :selected="currentTheme === theme"></option>
