@@ -332,7 +332,7 @@ Ideally, you could set up two more jobs here:
 But that's up to you.
 
 [Rails 5.1 system specs]: https://guides.rubyonrails.org/v5.1/testing.html#screenshot-helper
-[JUnit]: https://www.ibm.com/docs/en/adfz/developer-for-zos/14.1.0?topic=formats-junit-xml-format
+[JUnit]: https://www.ibm.com/docs/en/developer-for-zos/14.1.0?topic=formats-junit-xml-format
 [storing artifacts]: https://circleci.com/docs/2.0/artifacts/
 [collecting test metadata]: https://circleci.com/docs/2.0/collect-test-data/
 [capybara-screenshot]: https://github.com/mattheworiordan/capybara-screenshot
