@@ -27,7 +27,7 @@ window.highlightAll = function(where = document) {
   where.querySelectorAll('pre code').forEach((block) => {
     const lang = block.getAttribute("class")
     if (lang && lang !== "makeup elixir") {
-      const { value: value } = hljs.highlight(lang, block.innerText);
+      const { value: value } = hljs.highlight(block.innerText, { language: lang });
       block.innerHTML = value;
     }
   });
