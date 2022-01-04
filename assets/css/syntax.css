@@ -1,7 +1,3 @@
-.prose pre {
-  @apply bg-gray-50;
-}
-
 .makeup .hll {background-color: #ffffcc}
 .makeup {
   @apply font-mono;

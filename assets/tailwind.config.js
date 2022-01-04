@@ -2,14 +2,8 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   darkMode: 'class',
-  mode: 'jit',
-  purge: [
-    "../lib/bern_web/live/**/*.ex",
-    "../lib/bern_web/live/**/*.heex",
-    "../lib/bern_web/templates/**/*.eex",
-    "../lib/bern_web/templates/**/*.heex",
-    "../lib/bern_web/views/**/*.ex",
-    "../lib/bern_web/components/**/*.ex",
+  content: [
+    "../lib/bern_web/**/*.*ex",
     "./js/**/*.js"
   ],
   theme: {
@@ -77,7 +71,7 @@ module.exports = {
             'code::after': {content: null},
             'pre': {
               color: null,
-              backgroundColor: null,
+              backgroundColor: theme('colors.gray.50'),
             },
             'pre code': {
               backgroundColor: null,
@@ -92,20 +86,27 @@ module.exports = {
         },
         print: {
           css: {
-            color: theme('colors.black'),
-            h1: { color: theme('colors.black') },
-            h2: { color: theme('colors.black') },
-            h3: { color: theme('colors.black') },
-            h4: { color: theme('colors.black') },
-            h5: { color: theme('colors.black') },
-            h6: { color: theme('colors.black') }
+            '--tw-prose-body': theme('colors.black'),
+            '--tw-prose-headings': theme('colors.black')
           }
         },
-        dark: {
+        invert: {
           css: {
-            'blockquote': {
-              color: theme('colors.gray.400'),
+            'a': {
+              color: theme('colors.brand.700'),
+              textDecoration: 'none',
+              transition: "colors",
+              transitionDuration: "150ms",
+              transitionProperty: "border-color, color",
+              transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+              borderBottomColor: theme('colors.accent.500'),
+              borderBottomWidth: 1,
+              "&:hover": {
+                color: theme('colors.brand.500'),
+                borderBottomColor: theme('colors.accent.400'),
+              }
             },
+            '--tw-prose-quotes': theme('colors.gray.400'),
             'pre': {
               backgroundColor: '#272822',
             },
@@ -116,31 +117,12 @@ module.exports = {
               fontFamily: null,
               lineHeight: null,
             },
-            color: theme('colors.gray.300'),
-            h1: {
-              color: theme('colors.gray.300'),
-            },
-            h2: {
-              color: theme('colors.gray.300'),
-            },
-            h3: {
-              color: theme('colors.gray.300'),
-            },
-            h4: {
-              color: theme('colors.gray.300'),
-            },
-            h5: {
-              color: theme('colors.gray.300'),
-            },
-            h6: {
-              color: theme('colors.gray.300'),
-            },
-            figcaption: {
-              color: theme('colors.gray.500'),
-            },
-            'thead': {
-              color: theme('colors.gray.300')
-            }
+            'pre code::before': {content: ''},
+            'pre code::after': {content: ''},
+            '--tw-prose-body': theme('colors.gray.300'),
+            '--tw-prose-headings': theme('colors.gray.300'),
+            '--tw-prose-captions': theme('colors.gray.500'),
+            '--tw-prose-thead': theme('colors.gray.300')
           }
         },
       }),

@@ -35,7 +35,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :esbuild,
-  version: "0.14.0",
+  version: "0.14.10",
   default: [
     args: ~w[
       js/app.js
