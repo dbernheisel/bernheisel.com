@@ -35,6 +35,7 @@ defmodule Bern.MixProject do
     [
       {:castore, "~> 0.1.5"},
       {:earmark, "1.4.15"},
+      {:earmark_parser, "1.4.16"},
       {:jason, "~> 1.0"},
       {:makeup_elixir, ">= 0.0.0"},
       {:mint, "~> 1.0"},
@@ -48,7 +49,9 @@ defmodule Bern.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:tz, "~> 0.12"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       # Dev / Test
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:floki, ">= 0.0.0", only: [:dev, :test]},
       {:finch, "~> 0.3", only: [:dev, :test]},
       {:phoenix_live_reload, "~> 1.2", only: :dev}
@@ -58,7 +61,7 @@ defmodule Bern.MixProject do
   defp aliases do
     [
       "assets.deploy": [
-        "cmd --cd assets npm run deploy",
+        "tailwind default --minify",
         "esbuild default --minify",
         "phx.digest"
       ],
