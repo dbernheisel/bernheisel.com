@@ -17,11 +17,11 @@ friends who know or are discovering Elixir. We're wanting it to be a good and
 succinct source to catch up on Elixir news and happenings, with some interviews
 with other Elixir folks!
 
-Check it out at https://thinkingelixir.com/the-podcast/ or your favorite source
+Check it out at https://podcast.thinkingelixir.com or your favorite source
 for podcasts (Google, Apple, etc.).
 
 In the first episode, we're introducing ourselves and getting to know each
 other.
 
-[Thinking Elixir]: https://thinkingelixir.com/the-podcast/
+[Thinking Elixir]: https://podcast.thinkingelixir.com
 [@brainlid]: https://twitter.com/brainlid
