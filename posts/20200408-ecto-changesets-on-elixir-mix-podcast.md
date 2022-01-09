@@ -10,8 +10,7 @@
 
 Check it out here:
 
-[https://devchat.tv/elixir-mix/emx-091-managing-change-with-ecto-with-david-bernheisel/](https://devchat.tv/elixir-mix/emx-091-managing-change-with-ecto-with-david-bernheisel/)
-
+[https://elixirmix.com/92](https://elixirmix.com/92)
 
 Coming from ActiveRecord, Ecto and Changesets were a wonderful alternative! They
 cover my [other blog post](https://bernheisel.com/blog/ecto_changeset_tips/)

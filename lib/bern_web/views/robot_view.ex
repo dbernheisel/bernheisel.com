@@ -1,14 +1,7 @@
 defmodule BernWeb.RobotView do
   use BernWeb, :view
-  alias BernWeb.SEO.Generic
-  @generic %Generic{}
 
-  @rss BernWeb.Rss.generate(%BernWeb.Rss{
-         title: @generic.title,
-         author: "David Bernheisel",
-         description: @generic.description,
-         posts: Bern.Blog.published_posts()
-       })
+  @generic %BernWeb.SEO.Generic{}
 
   def render("robots.txt", %{env: :prod}), do: ""
 
@@ -19,5 +12,12 @@ defmodule BernWeb.RobotView do
     """
   end
 
-  def render("rss.xml", %{}), do: @rss
+  def render("rss.xml", %{}) do
+    BernWeb.Rss.generate(%BernWeb.Rss{
+      title: @generic.title,
+      author: "David Bernheisel",
+      description: @generic.description,
+      posts: Bern.Blog.published_posts()
+    })
+  end
 end

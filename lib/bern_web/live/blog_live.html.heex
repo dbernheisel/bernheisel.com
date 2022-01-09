@@ -38,7 +38,7 @@
 <% end %>
 
 <%= if @live_action == :show do %>
-  <%= live_redirect to: Routes.blog_path(@socket, :index), class: "inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md dark:bg-gray-700 dark:text-gray-300 text-gray-700 bg-gray-300 dark:hover:bg-gray-600 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" do %>
+  <%= live_redirect to: Routes.blog_path(@socket, :index), class: "inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md dark:bg-gray-700 dark:text-gray-300 text-gray-700 bg-gray-300 dark:hover:bg-gray-600 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 print:hidden" do %>
     <svg class="-ml-0.5 mr-2 w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
     </svg>
@@ -74,7 +74,7 @@
       <% end %>
     </div>
 
-    <div id={"post-content-#{@post.id}"} phx-hook="Highlight" class="mb-6 print:prose-print dark:prose-dark prose lg:prose-xl" phx-update="ignore">
+    <div id={"post-content-#{@post.id}"} phx-hook="Highlight" class="mb-6 prose dark:prose-invert print:prose-print lg:prose-xl" phx-update="ignore">
       <%= raw(@post.body) %>
     </div>
   </article>

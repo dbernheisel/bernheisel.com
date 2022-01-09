@@ -1,9 +1,7 @@
 defmodule BernWeb.Rss do
   @moduledoc "RSS Generator"
+  alias BernWeb.Endpoint
   alias BernWeb.Router.Helpers, as: Routes
-
-  # This is undocumented, but makes path helpers work at compile-time
-  @endpoint %Plug.Conn{private: %{phoenix_router_url: URI.parse("https://bernheisel.com")}}
 
   defstruct [:title, :author, :description, :posts, language: "en-US"]
 
@@ -25,13 +23,13 @@ defmodule BernWeb.Rss do
       """,
       "<channel>\n",
       """
-      <atom:link href="#{Routes.robot_url(@endpoint, :rss)}" rel="self" type="application/rss+xml" />
+      <atom:link href="#{Routes.robot_url(Endpoint, :rss)}" rel="self" type="application/rss+xml" />
       """,
       "<title>#{cdata(rss.title)}</title>\n",
       "<language>#{rss.language}</language>\n",
       "<description>#{cdata(rss.description)}</description>\n",
       "<pubDate>#{post_date(rss.posts)}</pubDate>\n",
-      "<link>#{Routes.page_url(@endpoint, :home)}</link>\n",
+      "<link>#{Routes.page_url(Endpoint, :home)}</link>\n",
       "<copyright>Copyright #{year} #{rss.author}</copyright>\n",
       "<generator>Artisinally Crafted by Yours Truly</generator>\n",
       output
@@ -63,8 +61,8 @@ defmodule BernWeb.Rss do
       "<title>#{cdata(post.title)}</title>\n",
       "<dc:creator>#{author}</dc:creator>\n",
       "<description>#{cdata(post.description)}</description>\n",
-      "<link>#{Routes.blog_url(@endpoint, :show, post.id)}</link>\n",
-      "<guid isPermaLink=\"true\">#{Routes.blog_url(@endpoint, :show, post.id)}</guid>\n",
+      "<link>#{Routes.blog_url(Endpoint, :show, post.id)}</link>\n",
+      "<guid isPermaLink=\"true\">#{Routes.blog_url(Endpoint, :show, post.id)}</guid>\n",
       "<pubDate>#{post_date(post)}</pubDate>\n",
       "<content:encoded>#{cdata(post.body)}</content:encoded>\n",
       "</item>\n"
