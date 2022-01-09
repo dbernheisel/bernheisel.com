@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter var', 'Inter', ...defaultTheme.fontFamily.sans],
-        mono: ['Fira Code VF', 'Fira Code', ...defaultTheme.fontFamily.mono]
+        sans: ['"Inter var"', 'Inter', ...defaultTheme.fontFamily.sans],
+        mono: ['"Fira Code VF"', '"Fira Code"', ...defaultTheme.fontFamily.mono]
       },
       colors: {
         brand: {
@@ -37,9 +37,6 @@ module.exports = {
           '800': '#05505c',
           '900': '#014451'
         },
-      },
-      screens: {
-        'print': {'raw': 'print'}
       },
       typography: (theme) => ({
         DEFAULT: {
@@ -71,7 +68,7 @@ module.exports = {
             'code::after': {content: null},
             'pre': {
               color: null,
-              backgroundColor: theme('colors.gray.50'),
+              backgroundColor: null,
             },
             'pre code': {
               backgroundColor: null,
@@ -106,7 +103,6 @@ module.exports = {
                 borderBottomColor: theme('colors.accent.400'),
               }
             },
-            '--tw-prose-quotes': theme('colors.gray.400'),
             'pre': {
               backgroundColor: '#272822',
             },
@@ -121,6 +117,7 @@ module.exports = {
             'pre code::after': {content: ''},
             '--tw-prose-body': theme('colors.gray.300'),
             '--tw-prose-headings': theme('colors.gray.300'),
+            '--tw-prose-quotes': theme('colors.gray.400'),
             '--tw-prose-captions': theme('colors.gray.500'),
             '--tw-prose-thead': theme('colors.gray.300')
           }
