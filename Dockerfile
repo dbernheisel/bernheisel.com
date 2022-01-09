@@ -1,7 +1,7 @@
 # BUILD LAYER
 
 FROM hexpm/elixir:1.12.2-erlang-24.1.2-alpine-3.14.2 AS build
-RUN apk add --no-cache build-base npm
+RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
 ## HEX
@@ -25,8 +25,9 @@ COPY rel ./rel
 COPY posts ./posts
 COPY priv ./priv
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
+RUN mix assets.deploy
 COPY config/runtime.exs ./config/runtime.exs
-RUN mix do assets.deploy, release
+RUN mix release
 
 # APP LAYER
 
