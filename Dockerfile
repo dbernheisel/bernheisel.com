@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.12.2-erlang-24.1.2-alpine-3.14.2 AS build
+FROM hexpm/elixir:1.13.3-erlang-24.1.2-alpine-3.14.2 AS build
 RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
