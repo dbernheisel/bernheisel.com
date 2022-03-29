@@ -3,13 +3,13 @@
   "description": " ",
   "license": "MIT",
   "dependencies": {
-    "highlight.js": "^11.x",
+    "highlight.js": "^11.5.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
     "topbar": "^1.x"
   },
   "devDependencies": {
-    "prettier": "^2.4.1"
+    "prettier": "^2.6.1"
   }
 }

@@ -48,13 +48,13 @@ defmodule Bern.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:tz, "~> 0.12"},
-      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       # Dev / Test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:floki, ">= 0.0.0", only: [:dev, :test]},
+      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:finch, "~> 0.3", only: [:dev, :test]},
-      {:phoenix_live_reload, "~> 1.2", only: :dev}
+      {:floki, ">= 0.0.0", only: [:dev, :test]},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 

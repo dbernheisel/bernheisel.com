@@ -63,7 +63,7 @@ software.][containers] CircleCI 2.0 uses containers to manage your code, and
 extends that container configurability to your projects.
 
 [CircleCI]: https://circleci.com/product/
-[containers]: https://www.docker.com/resources/what-container
+[containers]: https://www.docker.com/resources/what-container/
 
 ### How do I configure _my_ container?
 
