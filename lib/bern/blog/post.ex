@@ -40,7 +40,7 @@ defmodule Bern.Blog.Post do
     body
     |> String.split(" ")
     |> Enum.count()
-    |> Kernel./(@avg_wpm)
+    |> then(& &1 / @avg_wpm)
     |> round()
   end
 end

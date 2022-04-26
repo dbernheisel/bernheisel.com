@@ -246,6 +246,17 @@
 .makeup .vi {color: #000000; } /* :name_variable_instance */
 .makeup .vm {color: #000000; } /* :name_variable_magic */
 
+/* Diff */
+.makeup .gd {color: #c91243; } /* :generic_deleted */
+.makeup .ge {font-style: italic; } /* :generic_emph */
+.makeup .gh {color: #2300CE; font-weight: bold; } /* :generic_heading */
+.makeup .gi {color: #50A14F; } /* :generic_inserted */
+.makeup .go {color: #888; } /* :generic_output */
+.makeup .gp {color: #2300CE; font-weight: bold; } /* :generic_prompt */
+.makeup .gr {color: #FF0000; } /* :generic_error */
+.makeup .gs {font-weight: bold; } /* :generic_strong */
+.makeup .gt {color: #4078f2; } /* :generic_traceback */
+.makeup .gu {color: #A90D91; font-weight: bold; } /* :generic_subheading */
 
 /*
 
@@ -422,6 +433,13 @@ hue-6-2: #c18401
 .dark .makeup .vg {color: #f8f8f2; } /* :name_variable_global */
 .dark .makeup .vi {color: #f8f8f2; } /* :name_variable_instance */
 .dark .makeup .vm {color: #f8f8f2; } /* :name_variable_magic */
+
+/* diff */
+.dark .makeup .gh {color: #2300CE; font-weight: bold; } /* :generic_heading */
+.dark .makeup .go {color: #888; } /* :generic_output */
+.dark .makeup .gp {color: #2300CE; font-weight: bold; } /* :generic_prompt */
+.dark .makeup .gr {color: #FF0000; } /* :generic_error */
+.dark .makeup .gt {color: #66d9ef; } /* :generic_traceback */
 
 .dark .hljs {
   @apply font-mono;

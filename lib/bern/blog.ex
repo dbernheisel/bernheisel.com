@@ -5,7 +5,7 @@ defmodule Bern.Blog do
     build: Bern.Blog.Post,
     from: "posts/**/*.md",
     as: :posts,
-    highlighters: [:makeup_elixir]
+    highlighters: [:makeup_elixir, :makeup_diff]
 
   defmodule NotFoundError do
     defexception [:message, plug_status: 404]

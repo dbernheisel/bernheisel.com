@@ -7,7 +7,6 @@ import ruby from 'highlight.js/lib/languages/ruby';
 import vim from 'highlight.js/lib/languages/vim';
 import yaml from 'highlight.js/lib/languages/yaml';
 import json from 'highlight.js/lib/languages/json';
-import diff from 'highlight.js/lib/languages/diff';
 import xml from 'highlight.js/lib/languages/xml';
 import sql from 'highlight.js/lib/languages/sql';
 
@@ -19,7 +18,6 @@ hljs.registerLanguage('ruby', ruby);
 hljs.registerLanguage('vim', vim);
 hljs.registerLanguage('yaml', yaml);
 hljs.registerLanguage('json', json);
-hljs.registerLanguage('diff', diff);
 hljs.registerLanguage('html', xml);
 hljs.registerLanguage('sql', sql);
 
