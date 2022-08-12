@@ -4,6 +4,7 @@ defmodule Mix.Tasks.ValidateUrls do
 
     @shortdoc "Verify that URLs are live"
     def run(_opts) do
+      Application.ensure_started(:telemetry)
       urls_table = :ets.new(:external_links, [:set])
 
       Finch.start_link(
@@ -68,7 +69,7 @@ defmodule Mix.Tasks.ValidateUrls do
         {:ok, %{status: status}} when status >= 200 and status < 300 ->
           {:ok, url}
 
-        {:ok, %{status: status, headers: headers}} when status in 301..302 ->
+        {:ok, %{status: status, headers: headers}} when status in 301..302 or status in 307..308 ->
           to = Enum.find_value(headers, fn {name, value} -> name == "location" && value end)
           {:redirect, [from: url, to: to, posts: blog_ids]}
 

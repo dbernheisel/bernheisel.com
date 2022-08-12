@@ -469,7 +469,7 @@ You'll notice that this doesn't implement all the calls (we're missing the ones
 like `delete` and `head`), nor is it the smartest way to solve the problem. I'll
 leave the gaps to inspire you.
 
-## Or use [Tesla](https://github.com/teamon/tesla)
+## Or use [Tesla]
 Tesla supports decompression out of the box; so if you started on that HTTP
 client, you probably didn't have to worry about any of this :)
 
@@ -479,7 +479,7 @@ client, you probably didn't have to worry about any of this :)
 [Content-Type]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
 [brotli]: https://github.com/google/brotli
 [HTTPoison]: https://github.com/edgurgel/httpoison
-[Tesla]: https://github.com/teamon/tesla
+[Tesla]: https://github.com/elixir-tesla/tesla
 [Mint]: https://github.com/elixir-mint/mint
 [Gun]: https://github.com/ninenines/gun
 [hackney]: https://github.com/benoitc/hackney

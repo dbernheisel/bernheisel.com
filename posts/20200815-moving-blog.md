@@ -23,7 +23,7 @@ What I'm **giving up**:
      highlighter][gatsby-remark-vscode]
      that runs during compilation.
 1. A mature asset-processing pipeline to [optimize
-   images](https://developers.google.com/web/fundamentals/design-and-ux/responsive/images),
+   images](https://web.dev/responsive-images/),
    especially for responsiveness.
 1. Easier scaling if traffic gets out of hand. It's fundamentally easier to
    scale static content using a CDN service. But, given Elixir's web request

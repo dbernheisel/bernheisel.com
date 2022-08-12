@@ -10,7 +10,7 @@
 
 Check it out here:
 
-[https://elixirmix.com/68](https://elixirmix.com/68)
+[https://topenddevs.com/podcasts/elixir-mix/episodes/emx-068-contributing-to-the-elixir-community-with-david-bernheisel-cory-schmitt](https://topenddevs.com/podcasts/elixir-mix/episodes/emx-068-contributing-to-the-elixir-community-with-david-bernheisel-cory-schmitt)
 
 [Cory] and I talk about our adventures in the Elixir community, Meetup.com, and
 how we've contributed. The big contribution in here is the [DateTimeParser] that

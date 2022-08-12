@@ -90,10 +90,10 @@ At this point you you could be done if you're in the same boat as me and need
 to move off of CircleCI 1.0 and onto CircleCI 2.0. But, this isn't really about
 migrating from CircleCI 1.0 to CircleCI 2.0; we're here to learn!
 
-[documentation]: https://circleci.com/docs/2.0/
-[samples]: https://circleci.com/docs/2.0/tutorials/
-[Rails tutorial]: https://circleci.com/docs/2.0/language-ruby/
-[ssh]: https://circleci.com/docs/2.0/add-ssh-key/
+[documentation]: https://circleci.com/docs
+[samples]: https://circleci.com/docs/examples-and-guides-overview
+[Rails tutorial]: https://circleci.com/docs/language-ruby
+[ssh]: https://circleci.com/docs/add-ssh-key
 
 ## Not everything has to be together
 
@@ -135,7 +135,7 @@ Also, what if your ruby tests fail-- wouldn't you also like to know if your
 JavaScript tests fail? Most of the CI scripts I've seen will stop on the first
 failed command which doesn't give you a complete picture.
 
-[workflows]: https://circleci.com/docs/2.0/jobs-steps/#section=getting-started
+[workflows]: https://circleci.com/docs/jobs-steps
 [brew]: https://brew.sh/
 
 ## Gotta keep 'em separated
@@ -165,7 +165,7 @@ because of an older node-based asset pipeline; CircleCI's Ruby image
 [Dockerfile] includes Node 8.x. I can't run `npm install` under Node 8.x.
 That's OK though, because we can separate them with containers.
 
-[CircleCI docker images]: https://circleci.com/docs/2.0/circleci-images/
+[CircleCI docker images]: https://circleci.com/docs/circleci-images
 [Dockerfile]: https://github.com/CircleCI-Public/circleci-dockerfiles/blob/16a3d488ce42027c38f6ef5f419e2eaf9df2f35b/ruby/images/2.5.1-stretch/node/Dockerfile#L36
 [Dockerize]: https://github.com/jwilder/dockerize
 [xvfb]: https://packages.debian.org/stretch/xvfb
@@ -333,8 +333,8 @@ But that's up to you.
 
 [Rails 5.1 system specs]: https://guides.rubyonrails.org/v5.1/testing.html#screenshot-helper
 [JUnit]: https://www.ibm.com/docs/en/developer-for-zos/14.1.0?topic=formats-junit-xml-format
-[storing artifacts]: https://circleci.com/docs/2.0/artifacts/
-[collecting test metadata]: https://circleci.com/docs/2.0/collect-test-data/
+[storing artifacts]: https://circleci.com/docs/artifacts
+[collecting test metadata]: https://circleci.com/docs/collect-test-data
 [capybara-screenshot]: https://github.com/mattheworiordan/capybara-screenshot
 
 Lastly, we need to deploy the app:
@@ -478,7 +478,7 @@ deploy-integration:
 
 Just add a dash of bash to make it work.
 
-[environment variables]: https://circleci.com/docs/2.0/env-vars/
+[environment variables]: https://circleci.com/docs/env-vars
 
 ## Wrapping up
 
@@ -493,8 +493,8 @@ I would consider looking at [Travis CI]; they did a great job simplifying to
 the essentials.
 
 [@bernheisel]: https://twitter.com/bernheisel
-[Travis CI]: https://travis-ci.org/
-[GitLab]: https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/
+[Travis CI]: https://www.travis-ci.com/
+[GitLab]: https://about.gitlab.com/features/continuous-integration/
 [Google Cloud Build]: https://cloud.google.com/build/
 
 ---
@@ -504,7 +504,7 @@ Here's the entire config file for my project. Feel free to modify it for yours!
 ```yaml
 # Ruby CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+# Check https://circleci.com/docs/language-ruby/ for more details
 #
 version: 2
 
