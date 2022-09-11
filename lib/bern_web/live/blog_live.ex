@@ -1,41 +1,43 @@
 defmodule BernWeb.BlogLive do
   use BernWeb, :live_view
 
+  # Show
   def mount(%{"id" => id, "preview" => "true"}, _session, socket) do
-    id
-    |> Bern.Blog.get_post_preview_by_id!()
-    |> show(socket)
+    {:ok, id |> Bern.Blog.get_post_preview_by_id!() |> show(socket),
+     temporary_assigns: [relevant_posts: [], post: nil]}
   end
 
   def mount(%{"id" => id}, _session, socket) do
-    id
-    |> Bern.Blog.get_post_by_id!()
-    |> show(socket)
+    {:ok, id |> Bern.Blog.get_post_by_id!() |> show(socket),
+     temporary_assigns: [relevant_posts: [], post: nil]}
   end
 
+  # Index
   def mount(_params, _session, socket) do
-    posts = Bern.Blog.published_posts()
-
     {:ok,
      socket
-     |> assign(:posts, posts)
+     |> assign(:posts, Bern.Blog.published_posts())
      |> assign(:page_title, "Blog"), temporary_assigns: [posts: []]}
   end
 
-  def handle_params(_params, _session, socket) do
-    {:noreply, socket}
+  # Show
+  def handle_params(%{"id" => id, "preview" => "true"}, _session, socket) do
+    {:noreply, id |> Bern.Blog.get_post_preview_by_id!() |> show(socket)}
+  end
+
+  def handle_params(%{"id" => id}, _session, socket) do
+    {:noreply, id |> Bern.Blog.get_post_by_id!() |> show(socket)}
   end
 
   def show(post, socket) do
-    {:ok,
-     socket
-     |> assign(:post, post)
-     |> maybe_assign_canonical_url(post)
-     |> track_readers(post)
-     |> assign(:relevant_posts, relevant_posts(post))
-     |> assign(:breadcrumbs, BernWeb.SEO.Breadcrumbs.build(post))
-     |> assign(:og, BernWeb.SEO.OpenGraph.build(post))
-     |> assign(:page_title, post.title), temporary_assigns: [relevant_posts: [], post: nil]}
+    socket
+    |> assign(:post, post)
+    |> maybe_assign_canonical_url(post)
+    |> track_readers(post)
+    |> assign(:relevant_posts, relevant_posts(post))
+    |> assign(:breadcrumbs, BernWeb.SEO.Breadcrumbs.build(post))
+    |> assign(:og, BernWeb.SEO.OpenGraph.build(post))
+    |> assign(:page_title, post.title)
   end
 
   defp maybe_assign_canonical_url(socket, %{canonical_url: url}) when url not in ["", nil] do

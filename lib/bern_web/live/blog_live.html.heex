@@ -2,7 +2,7 @@
   <%= for post <- @posts do %>
     <div id={"post-#{post.id}"} class="border-b-2 border-dotted border-gray-300 last:border-b-0 mb-8 pb-2">
       <h1 class="text-3xl leading-relaxed mb-4 font-semibold">
-        <%= live_redirect(post.title,
+        <%= live_patch(post.title,
           to: Routes.blog_path(@socket, :show, post.id),
           class: "transition-colors duration-150 border-transparent border-b-4 focus:border-brand-500 hover:border-accent-500"
         ) %>
@@ -13,7 +13,7 @@
       </p>
 
       <p class="my-4">
-        <%= live_redirect("Read more...",
+        <%= live_patch("Read more...",
           to: Routes.blog_path(@socket, :show, post.id),
           class: "transition-colors duration-150 border-b-4 focus:border-brand-500 hover:border-accent-500"
         ) %>
@@ -102,7 +102,7 @@
       <div class="flex flex-wrap mt-4 mb-10 justify-between">
         <%= for relevant_post <- @relevant_posts do %>
           <div class="w-full p-2 lg:w-1/2">
-            <%= live_redirect to: Routes.blog_path(@socket, :show, relevant_post.id),
+            <%= live_patch to: Routes.blog_path(@socket, :show, relevant_post.id),
             class: "text-white no-underline px-3 py-2 dark:bg-gray-600 dark:border-gray-500 dark:hover:bg-gray-500 dark:hover:border-gray-400 bg-brand-500 border-brand-600 rounded shadow duration-100 ease-in-out transition-colors inline-flex items-center flex-1 hover:bg-brand-600 hover:border-brand-700 dark:button-dark" do %>
               <svg viewBox="0 0 20 20" fill="currentColor" class="mr-2 fill-current w-6 h-6">
                 <path
