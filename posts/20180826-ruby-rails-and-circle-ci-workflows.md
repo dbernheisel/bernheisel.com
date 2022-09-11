@@ -1,7 +1,7 @@
 %{
   title: "Ruby, Rails, and CircleCI 2.0 Workflows",
   tags: ["ruby"],
-  original_url: "https://www.viget.com/articles/ruby-rails-and-circle-ci-2-0/",
+  canonical_url: "https://www.viget.com/articles/ruby-rails-and-circle-ci-2-0/",
   description: "Know your tools -- CircleCI 2.0 Workflows"
 }
 ---

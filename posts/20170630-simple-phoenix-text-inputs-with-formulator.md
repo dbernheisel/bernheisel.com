@@ -1,7 +1,7 @@
 %{
   title: "Simple Phoenix Text Inputs with Formulator",
   tags: ["elixir"],
-  original_url: "https://robots.thoughtbot.com/simple-phoenix-text-inputs-with-formulator",
+  canonical_url: "https://robots.thoughtbot.com/simple-phoenix-text-inputs-with-formulator",
   description: """
   Ugh... three lines for a simple text input for a form in Phoenix? How about
   one with Formulator?

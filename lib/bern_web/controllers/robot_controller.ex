@@ -22,7 +22,7 @@ defmodule BernWeb.RobotController do
       icons:
         for [size: size, density: density] <- @sizes do
           %{
-            src: Routes.static_url(BernWeb.Endpoint, "/images/android-chrome-#{size}.png"),
+            src: Routes.static_url(conn, "/images/android-chrome-#{size}.png"),
             sizes: size,
             density: density,
             type: "image/png"

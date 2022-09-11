@@ -3,7 +3,12 @@ defmodule BernWeb.RobotView do
 
   @generic %BernWeb.SEO.Generic{}
 
-  def render("robots.txt", %{env: :prod}), do: ""
+  def render("robots.txt", %{env: :prod}) do
+    """
+    User-agent: *
+    Disallow: /admin
+    """
+  end
 
   def render("robots.txt", %{env: _}) do
     """

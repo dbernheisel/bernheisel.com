@@ -1,7 +1,7 @@
 %{
   title: "Lessons From Using Phoenix 1.3",
   tags: ["elixir"],
-  original_url: "https://robots.thoughtbot.com/lessons-from-using-phoenix-1-3",
+  canonical_url: "https://robots.thoughtbot.com/lessons-from-using-phoenix-1-3",
   description: """
   Phoenix 1.3 introduces contexts, which has been met with some resistance. I've
   developed an application using it and learned some lessons.

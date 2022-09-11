@@ -5,7 +5,7 @@ defmodule Bern.Blog.Post do
     :title,
     :body,
     :description,
-    :original_url,
+    :canonical_url,
     :reading_time,
     :tags,
     :date,
@@ -40,7 +40,7 @@ defmodule Bern.Blog.Post do
     body
     |> String.split(" ")
     |> Enum.count()
-    |> then(& &1 / @avg_wpm)
+    |> then(&(&1 / @avg_wpm))
     |> round()
   end
 end

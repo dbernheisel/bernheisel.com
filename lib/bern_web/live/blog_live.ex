@@ -38,9 +38,10 @@ defmodule BernWeb.BlogLive do
      |> assign(:page_title, post.title), temporary_assigns: [relevant_posts: [], post: nil]}
   end
 
-  defp maybe_assign_canonical_url(socket, %{original_url: url}) when url not in ["", nil] do
+  defp maybe_assign_canonical_url(socket, %{canonical_url: url}) when url not in ["", nil] do
     assign(socket, :canonical_url, url)
   end
+
   defp maybe_assign_canonical_url(socket, _post), do: socket
 
   defp relevant_posts(post) do

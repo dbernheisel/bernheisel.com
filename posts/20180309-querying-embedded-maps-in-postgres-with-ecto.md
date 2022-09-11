@@ -1,7 +1,7 @@
 %{
   title: "Querying an Embedded Map in PostgreSQL with Ecto",
   tags: ["elixir"],
-  original_url: "https://robots.thoughtbot.com/querying-embedded-maps-in-postgresql-with-ecto",
+  canonical_url: "https://robots.thoughtbot.com/querying-embedded-maps-in-postgresql-with-ecto",
   description: """
   Structs and maps are easy to work with in Elixir, but if they are stored
   in the database as JSON and accessed via an Ecto Schema, it's not as

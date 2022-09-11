@@ -1,7 +1,7 @@
 %{
   title: "Testing Random Data in Emails with Bamboo",
   tags: ["elixir"],
-  original_url: "https://robots.thoughtbot.com/testing-emails-with-bamboo",
+  canonical_url: "https://robots.thoughtbot.com/testing-emails-with-bamboo",
   description: """
   Testing a scenario where an app sends an email is easy, but how do you
   test something random in an email, like a password reset token? When we

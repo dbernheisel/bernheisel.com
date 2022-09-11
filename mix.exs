@@ -34,8 +34,6 @@ defmodule Bern.MixProject do
   defp deps do
     [
       {:castore, "~> 0.1.5"},
-      {:earmark, "1.4.15"},
-      {:earmark_parser, "1.4.16"},
       {:jason, "~> 1.0"},
       {:makeup_elixir, ">= 0.0.0"},
       {:makeup_diff, ">= 0.0.0"},

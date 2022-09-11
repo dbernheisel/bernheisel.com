@@ -1,11 +1,18 @@
-<%# projects.html.heex template %>
-
 <div class="prose dark:prose-invert lg:prose-xl">
+  <article>
+    <h2>Ecto In Production</h2>
+    <div class="space-x-4">
+      <%= outbound_link("ectoinproduction.com", to: "https://www.ectoinproduction.com") %>
+    </div>
+    <p>Education platform for Elixir and Ecto users. Guides and recipes for the common developer for Elixir apps using Ecto in production.</p>
+    <%= img_tag(Routes.static_path(@socket, "/images/ecto-in-production.png"), class: "p-3 rounded-lg", alt: "Ecto In Production") %>
+  </article>
+
   <article>
     <h2>DateTimeParser</h2>
     <div class="space-x-4">
-      <%= outbound_link "GitHub", to: "https://github.com/taxjar/date_time_parser" %>
-      <%= outbound_link "Published on hex.pm", to: "https://hex.pm/packages/date_time_parser" %>
+      <%= outbound_link("GitHub", to: "https://github.com/taxjar/date_time_parser") %>
+      <%= outbound_link("Published on hex.pm", to: "https://hex.pm/packages/date_time_parser") %>
     </div>
     <p>Major functions:</p>
     <ul>
@@ -14,26 +21,28 @@
       <li>Supports major ISO formats</li>
       <li>Supports arbitrary formats, eg "Saturday, Jan-34-04"</li>
     </ul>
-    <%= img_tag Routes.static_path(@socket, "/images/date_time_parser_sample.png"), class: "p-3 rounded-lg bg-gray-900", alt: "DateTimeParser sample usage screenshot" %>
+    <%= img_tag(Routes.static_path(@socket, "/images/date_time_parser_sample.png"), class: "p-3 rounded-lg bg-gray-900", alt: "DateTimeParser sample usage screenshot") %>
   </article>
 
   <article>
     <h2>Elixir Utilities</h2>
     <div class="space-x-4">
-      <%= outbound_link "GitHub", to: "https://github.com/zestcreative/elixir-utilities-web" %>
-      <%= outbound_link "Visit", to: "https://utils.zest.dev" %>
+      <%= outbound_link("GitHub", to: "https://github.com/zestcreative/elixir-utilities-web") %>
+      <%= outbound_link("Visit", to: "https://utils.zest.dev") %>
     </div>
     <p>Major functions:</p>
     <ul>
       <li>LiveView-powered HTTP Sink. Echo out to screen HTTP requests to a specified URL</li>
-      <li>LiveView-powered Regex visualizer.
+      <li>
+        LiveView-powered Regex visualizer.
         <ul>
           <li>See the raw result and the visualized result</li>
           <li>You can permalink regexes to share with others</li>
           <li>Cheatsheet and recipes</li>
         </ul>
       </li>
-      <li>LiveView-powered Generater differ.
+      <li>
+        LiveView-powered Generater differ.
         <ul>
           <li>Stream the git diff between different versions or different flags provided to generators</li>
           <li>If the diff isn't already calculated, then queue the diff in a worker queue</li>
@@ -41,14 +50,14 @@
         </ul>
       </li>
     </ul>
-    <%= img_tag Routes.static_path(@socket, "/images/utilities_sample.png"), class: "p-3 rounded-lg bg-gray-100", alt: "Elixir Utilities sample screenshot" %>
+    <%= img_tag(Routes.static_path(@socket, "/images/utilities_sample.png"), class: "p-3 rounded-lg bg-gray-100", alt: "Elixir Utilities sample screenshot") %>
   </article>
 
   <article>
     <h2>NewTab Notes - Chrome Extension</h2>
     <div class="space-x-4">
-      <%= outbound_link "GitHub", to: "https://github.com/dbernheisel/MarkdownTab" %>
-      <%= outbound_link "Published on the Chrome Web Store", to: "https://chrome.google.com/webstore/detail/newtab-notes/kfbhbipgippofpifimbcnbafehjndccn" %>
+      <%= outbound_link("GitHub", to: "https://github.com/dbernheisel/MarkdownTab") %>
+      <%= outbound_link("Published on the Chrome Web Store", to: "https://chrome.google.com/webstore/detail/newtab-notes/kfbhbipgippofpifimbcnbafehjndccn") %>
     </div>
     <p>Major functions:</p>
     <ul>
@@ -57,6 +66,6 @@
       <li>Built with VueJS and Tailwind CSS</li>
       <li>Built purely for my own use.</li>
     </ul>
-    <%= img_tag Routes.static_path(@socket, "/images/markdowntab_sample.png"), class: "p-3 rounded-lg bg-gray-100", alt: "NewTab Notes sample screenshot" %>
+    <%= img_tag(Routes.static_path(@socket, "/images/markdowntab_sample.png"), class: "p-3 rounded-lg bg-gray-100", alt: "NewTab Notes sample screenshot") %>
   </article>
 </div>

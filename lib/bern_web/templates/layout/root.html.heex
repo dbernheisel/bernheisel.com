@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=no"/>
-    <meta name="color-scheme" content="dark light">
-    <%= render "_icons.html", assigns %>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=no" />
+    <meta name="color-scheme" content="dark light" />
+    <%= render("_icons.html", assigns) %>
     <%= csrf_meta_tag() %>
     <%= BernWeb.SEO.meta(assigns) %>
-    <%= live_title_tag assigns[:page_title] || "Home", suffix: " · Bernheisel" %>
+    <%= live_title_tag(assigns[:page_title] || "Home", suffix: " · Bernheisel") %>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
-    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
-    <script async defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/vendor.js")}></script>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
+    </script>
+    <script async defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/vendor.js")}>
+    </script>
     <%= if Application.get_env(:bern, :app_env) == :prod do %>
-      <script async defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/plausible.exclusions.js"></script>
+      <script async defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/plausible.exclusions.js">
+      </script>
       <link rel="dns-prefetch" href="https://plausible.bernheisel.com" />
     <% end %>
     <script>
@@ -26,6 +29,6 @@
   </head>
   <body class="antialiased leading-tight bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
     <%= @inner_content %>
-    <%= render "footer.html", assigns %>
+    <%= render("footer.html", assigns) %>
   </body>
 </html>
