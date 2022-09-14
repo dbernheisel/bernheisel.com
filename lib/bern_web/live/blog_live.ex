@@ -29,6 +29,11 @@ defmodule BernWeb.BlogLive do
     {:noreply, id |> Bern.Blog.get_post_by_id!() |> show(socket)}
   end
 
+  # Index
+  def handle_params(_params, _session, socket) do
+    {:noreply, socket}
+  end
+
   def show(post, socket) do
     socket
     |> assign(:post, post)
