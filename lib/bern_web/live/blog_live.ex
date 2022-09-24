@@ -40,8 +40,8 @@ defmodule BernWeb.BlogLive do
     |> maybe_assign_canonical_url(post)
     |> track_readers(post)
     |> assign(:relevant_posts, relevant_posts(post))
-    |> assign(:breadcrumbs, BernWeb.SEO.Breadcrumbs.build(post))
-    |> assign(:og, BernWeb.SEO.OpenGraph.build(post))
+    |> assign(:breadcrumbs, SEO.Build.to_breadcrumb_list(post))
+    |> assign(:og, SEO.Build.to_open_graph(post))
     |> assign(:page_title, post.title)
   end
 

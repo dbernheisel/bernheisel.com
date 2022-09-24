@@ -1,8 +1,6 @@
 defmodule BernWeb.RobotView do
   use BernWeb, :view
 
-  @generic %BernWeb.SEO.Generic{}
-
   def render("robots.txt", %{env: :prod}) do
     """
     User-agent: *
@@ -18,10 +16,11 @@ defmodule BernWeb.RobotView do
   end
 
   def render("rss.xml", %{}) do
+    site = SEO.Generic.new()
     BernWeb.Rss.generate(%BernWeb.Rss{
-      title: @generic.title,
+      title: site.site_title,
       author: "David Bernheisel",
-      description: @generic.description,
+      description: site.site_description,
       posts: Bern.Blog.published_posts()
     })
   end

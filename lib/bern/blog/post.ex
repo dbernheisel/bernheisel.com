@@ -1,5 +1,6 @@
 defmodule Bern.Blog.Post do
   @enforce_keys [:id, :title, :body, :description, :reading_time, :tags, :date]
+
   defstruct [
     :id,
     :title,
@@ -42,5 +43,52 @@ defmodule Bern.Blog.Post do
     |> Enum.count()
     |> then(&(&1 / @avg_wpm))
     |> round()
+  end
+end
+
+defimpl SEO.Build, for: Bern.Blog.Post do
+  alias BernWeb.Router.Helpers, as: Routes
+  @endpoint BernWeb.Endpoint
+
+  def to_breadcrumb_list(post) do
+    SEO.Breadcrumb.List.new([
+      SEO.Breadcrumb.Item.new(
+        name: "Posts",
+        "@id": Routes.blog_url(@endpoint, :index)
+      ),
+      SEO.Breadcrumb.Item.new(
+        name: post.title,
+        "@id": Routes.blog_url(@endpoint, :show, post.id)
+      )
+    ])
+  end
+
+  def to_open_graph(post) do
+    %{
+      title: SEO.Utils.truncate(post.title, 70),
+      type: :article,
+      published_at: SEO.format_date(post.date),
+      reading_time: "#{post.reading_time} minutes",
+      description: SEO.Utils.truncate(post.description, 200)
+    }
+    |> put_image(post)
+    |> SEO.OpenGraph.new()
+  end
+
+  defp put_image(og, post) do
+    file = "/images/blog/#{post.id}.png"
+
+    exists? =
+      [Application.app_dir(:bern), "/priv/static", file]
+      |> Path.join()
+      |> File.exists?()
+
+    if exists? do
+      og
+      |> Map.put(:image_url, Routes.static_url(@endpoint, file))
+      |> Map.put(:image_alt, post.title)
+    else
+      og
+    end
   end
 end

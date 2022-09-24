@@ -50,6 +50,15 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
+config :seo,
+  site_description: "A blog about development",
+  site_title: "David Bernheisel's Blog",
+  site: "@bernheisel",
+  twitter_handle: "@bernheisel",
+  type: "website",
+  article_section: "Software Development",
+  locale: "en_US"
+
 config :tailwind,
   version: "3.0.11",
   default: [
