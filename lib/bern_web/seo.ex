@@ -40,10 +40,10 @@ defmodule BernWeb.SEO do
 
     <%= if @og.published_at do %>
       <meta property="og:article:published_time" content={@og.published_at} />
-      <meta name="twitter:data1" content="Reading Time" />
-      <meta name="twitter:label1" content={@og.reading_time} />
-      <meta name="twitter:data2" content="Published" />
-      <meta name="twitter:label2" content={@og.published_at} />
+      <meta name="twitter:label1" content="Reading Time" />
+      <meta name="twitter:data1" content={@og.reading_time} />
+      <meta name="twitter:label2" content="Published" />
+      <meta name="twitter:data2" content={@og.published_at} />
     <% end %>
 
     <meta property="og:title" content={@og.title} />
