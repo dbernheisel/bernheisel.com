@@ -42,6 +42,7 @@ defmodule Bern.MixProject do
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.2"},
       {:phoenix_live_view, "~> 0.17"},
+      {:phoenix_seo, "~> 0.1"},
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},

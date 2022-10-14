@@ -1,9 +1,3 @@
-<meta name="msapplication-TileColor" content="#663399">
-<meta name="theme-color" content="#663399">
-<link rel="mask-icon" href="<%= Routes.static_path(@conn, "/images/safari-pinned-tab.svg") %>" color="#663399">
-
-<link rel="manifest" href="<%= Routes.robot_path(@conn, :site_webmanifest) %>" %>
-
 <link rel="apple-touch-icon" type="image/png" href="<%= Routes.static_path(@conn, "/images/apple-touch-icon.png") %>">
 <link rel="apple-touch-icon" sizes="180x180" type="image/png" href="<%= Routes.static_path(@conn, "/images/apple-touch-icon-180x180.png") %>">
 

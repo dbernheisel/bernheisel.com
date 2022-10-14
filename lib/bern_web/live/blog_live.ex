@@ -4,12 +4,12 @@ defmodule BernWeb.BlogLive do
   # Show
   def mount(%{"id" => id, "preview" => "true"}, _session, socket) do
     {:ok, id |> Bern.Blog.get_post_preview_by_id!() |> show(socket),
-     temporary_assigns: [relevant_posts: [], post: nil]}
+     temporary_assigns: [{SEO.key(), nil}, relevant_posts: [], post: nil]}
   end
 
   def mount(%{"id" => id}, _session, socket) do
     {:ok, id |> Bern.Blog.get_post_by_id!() |> show(socket),
-     temporary_assigns: [relevant_posts: [], post: nil]}
+     temporary_assigns: [{SEO.key(), nil}, relevant_posts: [], post: nil]}
   end
 
   # Index
@@ -37,19 +37,10 @@ defmodule BernWeb.BlogLive do
   def show(post, socket) do
     socket
     |> assign(:post, post)
-    |> maybe_assign_canonical_url(post)
     |> track_readers(post)
     |> assign(:relevant_posts, relevant_posts(post))
-    |> assign(:breadcrumbs, BernWeb.SEO.Breadcrumbs.build(post))
-    |> assign(:og, BernWeb.SEO.OpenGraph.build(post))
-    |> assign(:page_title, post.title)
+    |> SEO.assign(post)
   end
-
-  defp maybe_assign_canonical_url(socket, %{canonical_url: url}) when url not in ["", nil] do
-    assign(socket, :canonical_url, url)
-  end
-
-  defp maybe_assign_canonical_url(socket, _post), do: socket
 
   defp relevant_posts(post) do
     post.tags

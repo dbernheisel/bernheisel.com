@@ -3,9 +3,6 @@
     <div class="flex justify-center md:order-2 print:hidden">
       <select id="themeChooser" class="dark:border-gray-800 border-gray-200 focus:ring-gray-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
         <option disabled>Site theme</option>
-        <template x-for="theme in colorThemes" :key="theme">
-          <option :value="theme" x-text="theme" :selected="currentTheme === theme"></option>
-        </template>
       </select>
 
       <%= outbound_link to: "https://twitter.com/bernheisel", title: "Twitter", class: "ml-6 text-gray-400 hover:text-gray-500" do %>

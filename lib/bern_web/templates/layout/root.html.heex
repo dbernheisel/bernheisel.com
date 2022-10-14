@@ -7,8 +7,11 @@
     <meta name="color-scheme" content="dark light" />
     <%= render("_icons.html", assigns) %>
     <%= csrf_meta_tag() %>
-    <%= BernWeb.SEO.meta(assigns) %>
-    <%= live_title_tag(assigns[:page_title] || "Home", suffix: " · Bernheisel") %>
+    <SEO.juice
+      config={put_urls(BernWeb.SEO.config())}
+      item={SEO.item(@conn)}
+      page_title={assigns[:page_title]}
+    />
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
     </script>

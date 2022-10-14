@@ -1,7 +1,7 @@
 defmodule BernWeb.RobotView do
   use BernWeb, :view
 
-  @generic %BernWeb.SEO.Generic{}
+  @generic BernWeb.SEO.config(:site)
 
   def render("robots.txt", %{env: :prod}) do
     """

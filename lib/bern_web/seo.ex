@@ -1,68 +1,103 @@
 defmodule BernWeb.SEO do
   @moduledoc "You know, juice."
 
-  use Phoenix.Component
+  use SEO, [
+    site: SEO.Site.build(
+      title_suffix: " · Bernheisel",
+      default_title: "David Bernheisel's Blog",
+      description: "A blog about development",
+      theme_color: "#663399",
+      windows_tile_color: "#663399",
+      mask_icon_color: "#663399"
+    ),
+    open_graph: SEO.OpenGraph.build(
+      locale: "en_US"
+    ),
+    twitter: SEO.Twitter.build(
+      site: "@bernheisel",
+      creator: "@bernheisel"
+    )
+  ]
+end
 
-  def meta(assigns) do
-    assigns =
-      assigns
-      |> assign_new(:canonical_url, fn -> false end)
-      |> assign_new(:site, fn -> %BernWeb.SEO.Generic{} end)
-      |> assign_new(:breadcrumbs, fn -> nil end)
-      |> assign_new(:og, fn -> nil end)
+defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
+  @endpoint BernWeb.Endpoint
+  alias BernWeb.Router.Helpers, as: Routes
 
-    ~H"""
-    <meta name="description" content={@site.description} />
-
-    <%= if @canonical_url do %>
-      <link rel="canonical" href={@canonical_url} />
-    <% end %>
-    <meta property="og:url" content={Phoenix.Controller.current_url(assigns.conn)} />
-
-    <%= if @og do %>
-      <.opengraph og={@og} />
-    <% end %>
-
-    <%= if @breadcrumbs do %>
-      <script type="application/ld+json">
-        <%= Phoenix.HTML.raw(Jason.encode!(@breadcrumbs)) %>
-      </script>
-    <% end %>
-    """
+  def build(post) do
+    SEO.OpenGraph.build(
+      title: SEO.Utils.truncate(post.title, 70),
+      description: post.description,
+      type: :article,
+      type_detail: SEO.OpenGraph.Article.build(
+        published_time: post.published && post.date,
+        author: "David Bernheisel",
+        tag: post.tags
+      ),
+      url: Routes.blog_url(@endpoint, :show, post.id)
+    ) |> put_image(post)
   end
 
-  def opengraph(assigns) do
-    ~H"""
-    <meta property="og:site_title" content={@og.site_title} />
-    <meta property="og:type" content={@og.type} />
-    <meta property="og:locale" content={@og.locale} />
-    <meta property="og:article:section" content={@og.article_section} />
+  defp put_image(og, post) do
+    file = "/images/blog/#{post.id}.png"
 
-    <%= if @og.published_at do %>
-      <meta property="og:article:published_time" content={@og.published_at} />
-      <meta name="twitter:label1" content="Reading Time" />
-      <meta name="twitter:data1" content={@og.reading_time} />
-      <meta name="twitter:label2" content="Published" />
-      <meta name="twitter:data2" content={@og.published_at} />
-    <% end %>
+    exists? =
+      [Application.app_dir(:bern), "/priv/static", file]
+      |> Path.join()
+      |> File.exists?()
 
-    <meta property="og:title" content={@og.title} />
-    <meta property="og:description" content={@og.description} />
-    <meta property="twitter:title" content={@og.title} />
-    <meta property="twitter:site" content={@og.site} />
-
-    <%= if @og.image_url do %>
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta property="twitter:image:alt" content={@og.image_alt} />
-      <meta property="og:image" content={@og.image_url} />
-      <meta property="og:image:alt" content={@og.image_alt} />
-    <% else %>
-      <meta name="twitter:card" content="summary" />
-    <% end %>
-
-    <%= if @og.twitter_handle do %>
-      <meta name="twitter:creator" content={@og.twitter_handle} />
-    <% end %>
-    """
+    if exists? do
+      %{og |
+        image: SEO.OpenGraph.Image.build(
+          url: Routes.static_url(@endpoint, file),
+          alt: post.title
+        )
+      }
+    else
+      og
+    end
   end
+end
+
+defimpl SEO.Breadcrumb.Build, for: Bern.Blog.Post do
+  @endpoint BernWeb.Endpoint
+  alias BernWeb.Router.Helpers, as: Routes
+
+  def build(post) do
+    SEO.Breadcrumb.List.build([
+      %{name: "Posts", item: Routes.blog_url(@endpoint, :index)},
+      %{name: post.title, item: Routes.blog_url(@endpoint, :show, post.id)}
+    ])
+  end
+end
+
+defimpl SEO.Twitter.Build, for: Bern.Blog.Post do
+  def build(_post) do
+    SEO.Twitter.build(card: :summary_large_image)
+  end
+end
+
+defimpl SEO.Site.Build, for: Bern.Blog.Post do
+  def build(post) do
+    SEO.Site.build(
+      title: SEO.Utils.truncate(post.title, 70),
+      description: post.description,
+      canonical_url: post.canonical_url
+    )
+  end
+end
+
+defimpl SEO.Unfurl.Build, for: Bern.Blog.Post do
+  def build(post) do
+    if post.published do
+      SEO.Unfurl.build(
+        label1: "Reading Time",
+        data1: format_time(post.reading_time),
+        label2: "Published",
+        data2: Date.to_iso8601(post.date)
+      )
+    end
+  end
+
+  defp format_time(length), do: "#{length} minutes"
 end
