@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.13.4-erlang-25.0.4-alpine-3.15.4 AS build
+FROM hexpm/elixir:1.14.1-erlang-25.1.1-alpine-3.15.6 AS build
 RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
@@ -31,7 +31,7 @@ RUN mix release
 
 # APP LAYER
 
-FROM alpine:3.14.2 AS app
+FROM alpine:3.15.6 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs
 WORKDIR /app
 RUN chown nobody:nobody /app
