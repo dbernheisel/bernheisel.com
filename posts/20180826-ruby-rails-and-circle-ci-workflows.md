@@ -69,9 +69,9 @@ extends that container configurability to your projects.
 
 This is the "know your tools" part. Thankfully, CircleCI provides a lot of
 great [documentation] and [samples]. Since this is an article about Ruby and
-Rails, using their [Rails tutorial] will be enough to get you going.
+Rails, using their Rails tutorial will be enough to get you going.
 
-In their [Rails tutorial], they are using one container to build your project
+In their Rails tutorial, they are using one container to build your project
 and test your code. I could modify it to also deploy my project; it's simple to
 add another step:
 
@@ -90,10 +90,9 @@ At this point you you could be done if you're in the same boat as me and need
 to move off of CircleCI 1.0 and onto CircleCI 2.0. But, this isn't really about
 migrating from CircleCI 1.0 to CircleCI 2.0; we're here to learn!
 
-[documentation]: https://circleci.com/docs
-[samples]: https://circleci.com/docs/examples-and-guides-overview
-[Rails tutorial]: https://circleci.com/docs/language-ruby
-[ssh]: https://circleci.com/docs/add-ssh-key
+[documentation]: https://circleci.com/docs/
+[samples]: https://circleci.com/docs/examples-and-guides-overview/
+[ssh]: https://circleci.com/docs/add-ssh-key/
 
 ## Not everything has to be together
 
@@ -135,7 +134,7 @@ Also, what if your ruby tests fail-- wouldn't you also like to know if your
 JavaScript tests fail? Most of the CI scripts I've seen will stop on the first
 failed command which doesn't give you a complete picture.
 
-[workflows]: https://circleci.com/docs/jobs-steps
+[workflows]: https://circleci.com/docs/jobs-steps/
 [brew]: https://brew.sh/
 
 ## Gotta keep 'em separated
@@ -165,7 +164,7 @@ because of an older node-based asset pipeline; CircleCI's Ruby image
 [Dockerfile] includes Node 8.x. I can't run `npm install` under Node 8.x.
 That's OK though, because we can separate them with containers.
 
-[CircleCI docker images]: https://circleci.com/docs/circleci-images
+[CircleCI docker images]: https://circleci.com/docs/circleci-images/
 [Dockerfile]: https://github.com/CircleCI-Public/circleci-dockerfiles/blob/16a3d488ce42027c38f6ef5f419e2eaf9df2f35b/ruby/images/2.5.1-stretch/node/Dockerfile#L36
 [Dockerize]: https://github.com/jwilder/dockerize
 [xvfb]: https://packages.debian.org/stretch/xvfb
@@ -333,8 +332,8 @@ But that's up to you.
 
 [Rails 5.1 system specs]: https://guides.rubyonrails.org/v5.1/testing.html#screenshot-helper
 [JUnit]: https://www.ibm.com/docs/en/developer-for-zos/14.1.0?topic=formats-junit-xml-format
-[storing artifacts]: https://circleci.com/docs/artifacts
-[collecting test metadata]: https://circleci.com/docs/collect-test-data
+[storing artifacts]: https://circleci.com/docs/artifacts/
+[collecting test metadata]: https://circleci.com/docs/collect-test-data/
 [capybara-screenshot]: https://github.com/mattheworiordan/capybara-screenshot
 
 Lastly, we need to deploy the app:
@@ -478,7 +477,7 @@ deploy-integration:
 
 Just add a dash of bash to make it work.
 
-[environment variables]: https://circleci.com/docs/env-vars
+[environment variables]: https://circleci.com/docs/env-vars/
 
 ## Wrapping up
 
