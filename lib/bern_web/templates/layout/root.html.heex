@@ -8,7 +8,8 @@
     <%= render("_icons.html", assigns) %>
     <%= csrf_meta_tag() %>
     <SEO.juice
-      config={put_urls(BernWeb.SEO.config())}
+      conn={@conn}
+      config={BernWeb.SEO}
       item={SEO.item(@conn)}
       page_title={assigns[:page_title]}
     />
