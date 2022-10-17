@@ -40,11 +40,12 @@ defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
         author: "David Bernheisel",
         tag: post.tags
       ),
-      url: Routes.blog_url(conn, :show, post.id)
-    ) |> put_image(post, conn)
+      url: Routes.blog_url(conn, :show, post.id),
+      image: image(post, conn)
+    )
   end
 
-  defp put_image(og, post, conn) do
+  defp image(post, conn) do
     file = "/images/blog/#{post.id}.png"
 
     exists? =
@@ -53,14 +54,10 @@ defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
       |> File.exists?()
 
     if exists? do
-      %{og |
-        image: SEO.OpenGraph.Image.build(
-          url: Routes.static_url(conn, file),
-          alt: post.title
-        )
-      }
-    else
-      og
+      SEO.OpenGraph.Image.build(
+        url: Routes.static_url(conn, file),
+        alt: post.title
+      )
     end
   end
 end
