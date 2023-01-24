@@ -43,7 +43,7 @@ defmodule BernWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView, layout: {BernWeb.LayoutView, "live.html"}
+      use Phoenix.LiveView, layout: {BernWeb.LayoutView, :live}
 
       unquote(view_helpers())
     end

@@ -33,7 +33,7 @@ defmodule Bern.MixProject do
 
   defp deps do
     [
-      {:castore, "~> 0.1.5"},
+      {:castore, "~> 1.0", override: true},
       {:jason, "~> 1.0"},
       {:makeup_elixir, ">= 0.0.0"},
       {:makeup_diff, ">= 0.0.0"},
