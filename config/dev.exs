@@ -8,7 +8,7 @@ import Config
 # with webpack to recompile .js and .css sources.
 config :bern, BernWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4000],
-  debug_errors: false,
+  debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: [
