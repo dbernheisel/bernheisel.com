@@ -19,9 +19,8 @@
     <script async defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/vendor.js")}>
     </script>
     <%= if Application.get_env(:bern, :app_env) == :prod do %>
-      <script async defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.bernheisel.com/js/plausible.exclusions.js">
+      <script defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.io/js/script.js">
       </script>
-      <link rel="dns-prefetch" href="https://plausible.bernheisel.com" />
     <% end %>
     <script>
       if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
