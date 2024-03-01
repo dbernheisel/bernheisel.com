@@ -68,7 +68,7 @@ defmodule BernWeb do
     end
   end
 
-  def static_paths, do: ~w[assets fonts images favicon.ico audio video]
+  def static_paths, do: ~w[assets fonts images favicon.ico audio video up.txt]
 
   def router do
     quote do
