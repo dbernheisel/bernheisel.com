@@ -13,11 +13,7 @@ if config_env() == :prod do
       """
 
   config :bern, BernWeb.Endpoint,
-    http: [
-      port: System.get_env("PORT"),
-      compress: true,
-      transport_options: [socket_opts: [:inet6]]
-    ],
+    http: [port: System.get_env("PORT")],
     url: [scheme: "https", host: System.get_env("HOST"), port: 443],
     secret_key_base: secret_key_base
 end
