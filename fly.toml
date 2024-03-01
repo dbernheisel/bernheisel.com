@@ -35,5 +35,5 @@ kill_timeout = "5s"
     path = "/up.txt"
     protocol = "http"
     restart_limit = 6
-  [[services.http_checks.headers]]
-    X-Forwarded-Proto = "https"
+    [services.http_checks.headers]
+      X-Forwarded-Proto = "https"
