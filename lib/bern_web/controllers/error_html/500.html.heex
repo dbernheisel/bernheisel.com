@@ -1,27 +1,15 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=no" />
     <meta name="color-scheme" content="dark light" />
-    <%= render("_icons.html", assigns) %>
-    <%= csrf_meta_tag() %>
-    <SEO.juice
-      conn={@conn}
-      config={BernWeb.SEO}
-      item={SEO.item(@conn)}
-      page_title={assigns[:page_title]}
-    />
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
-    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
+    <BernWeb.Layouts.icons conn={@conn} />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <SEO.juice conn={@conn} config={BernWeb.SEO} item={SEO.item(@conn)} page_title="Internal Server Error" />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
-    <script async defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/vendor.js")}>
-    </script>
-    <%= if Application.get_env(:bern, :app_env) == :prod do %>
-      <script defer data-exclude="/admin/*" data-domain="bernheisel.com" src="https://plausible.io/js/script.js">
-      </script>
-    <% end %>
     <script>
       if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
         document.documentElement.classList.add("dark")
@@ -32,8 +20,20 @@
       }
     </script>
   </head>
+
   <body class="antialiased leading-tight bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-    <%= @inner_content %>
-    <%= render("footer.html", assigns) %>
+    <BernWeb.Layouts.nav />
+    <div class="container max-w-7xl mt-6 mx-auto px-4 sm:px-6 lg:px-8">
+      <main class="pb-6" role="main">
+        <div class="container mt-6 mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-center">
+            <div class="bg-brand-500 shadow animate-pulse text-white font-bold rounded-lg shadow-lg p-20">
+              <img alt="500 Uhoh" src="https://http.cat/500" />
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <BernWeb.Layouts.footer />
   </body>
 </html>

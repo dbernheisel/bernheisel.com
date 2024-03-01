@@ -20,9 +20,13 @@ config :tz, reject_periods_before_year: 2000
 
 # Configures the endpoint
 config :bern, BernWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   secret_key_base: "na+Mru8FGRc3ZJqrkXDJPqTs7RKeIynpJBteUKicIm498dIxe+Nn7G4THVH7W2fc",
-  render_errors: [view: BernWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    formats: [html: BernWeb.ErrorHTML, json: BernWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: Bern.PubSub,
   live_view: [signing_salt: "KtGkqxBX"]
 
@@ -35,7 +39,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :esbuild,
-  version: "0.14.10",
+  version: "0.17.11",
   default: [
     args: ~w[
       js/app.js
@@ -51,7 +55,7 @@ config :esbuild,
   ]
 
 config :tailwind,
-  version: "3.0.11",
+  version: "3.4.0",
   default: [
     args: ~w[
       --config=tailwind.config.js

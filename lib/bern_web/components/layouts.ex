@@ -1,6 +1,6 @@
-defmodule BernWeb.LayoutView do
-  use BernWeb, :view
-  alias Phoenix.LiveView.JS
+defmodule BernWeb.Layouts do
+  use BernWeb, :html
+  embed_templates "layouts/*"
 
   def expand_mobile_menu do
     JS.toggle(to: "#MobileMenuContent")

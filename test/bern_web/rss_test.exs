@@ -1,6 +1,6 @@
-defmodule BernWeb.RssTest do
+defmodule BernWeb.RSSTest do
   use ExUnit.Case
-  alias BernWeb.Rss
+  alias BernWeb.RSS
 
   describe "generate/1" do
     test "output should be valid rss" do
@@ -25,14 +25,14 @@ defmodule BernWeb.RssTest do
         }
       ]
 
-      rss = %Rss{
+      rss = %RSS{
         title: "My Blog",
         description: "Bloggin the blog stuff",
         author: "FooBear",
         posts: posts
       }
 
-      assert rss |> Rss.generate(todayer: fn -> %{year: 2020} end) |> IO.iodata_to_binary() == """
+      assert rss |> RSS.generate(todayer: fn -> %{year: 2020} end) |> IO.iodata_to_binary() == """
              <?xml version="1.0" encoding="UTF-8"?>
              <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
              <channel>

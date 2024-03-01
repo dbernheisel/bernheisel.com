@@ -19,15 +19,15 @@ defmodule BernWeb.ConnCase do
 
   using do
     quote do
+      # The default endpoint for testing
+      @endpoint BernWeb.Endpoint
+
+      use BernWeb, :verified_routes
+
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import BernWeb.ConnCase
-
-      alias BernWeb.Router.Helpers, as: Routes
-
-      # The default endpoint for testing
-      @endpoint BernWeb.Endpoint
     end
   end
 

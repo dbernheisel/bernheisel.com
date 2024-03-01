@@ -5,9 +5,8 @@ defmodule Bern.MixProject do
     [
       app: :bern,
       version: File.read!("VERSION") |> String.trim(),
-      elixir: "~> 1.12",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -33,17 +32,15 @@ defmodule Bern.MixProject do
 
   defp deps do
     [
-      {:castore, "~> 1.0", override: true},
+      {:bandit, "~> 1.2"},
       {:jason, "~> 1.0"},
-      {:makeup_elixir, ">= 0.0.0"},
       {:makeup_diff, ">= 0.0.0"},
-      {:nimble_publisher, "~> 0.1.0"},
-      {:phoenix, "~> 1.6"},
-      {:phoenix_html, "~> 3.0"},
+      {:makeup_elixir, ">= 0.0.0"},
+      {:nimble_publisher, "~> 1.1.0"},
+      {:phoenix, "~> 1.7.11"},
       {:phoenix_live_dashboard, "~> 0.2"},
-      {:phoenix_live_view, "~> 0.17"},
+      {:phoenix_live_view, "~> 0.20"},
       {:phoenix_seo, "~> 0.1"},
-      {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:tz, "~> 0.12"},

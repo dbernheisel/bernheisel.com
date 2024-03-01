@@ -35,6 +35,8 @@ priv/static/assets/vendor.js.map
 # The directory NPM downloads your dependencies sources to.
 /assets/node_modules/
 
+/tmp/
+
 /releases
 
 # We use npm

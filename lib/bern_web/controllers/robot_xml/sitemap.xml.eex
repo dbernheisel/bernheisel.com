@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc><%= Routes.blog_url(@conn, :index) %></loc>
+        <loc><%= url(@conn, ~p"/blog") %></loc>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc><%= Routes.page_url(@conn, :projects) %></loc>
+        <loc><%= url(@conn, ~p"/projects") %></loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
 
     <%= for post <- @posts do %>
     <url>
-        <loc><%= Routes.blog_url(@conn, :show, post.id) %></loc>
+        <loc><%= url(@conn, ~p"/blog/#{post}") %></loc>
         <lastmod><%= post.date %></lastmod>
         <changefreq>monthly</changefreq>
         <priority>1</priority>

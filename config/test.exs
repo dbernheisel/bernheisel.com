@@ -8,4 +8,4 @@ config :bern, BernWeb.Endpoint,
 
 config :phoenix, :plug_init_mode, :runtime
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning

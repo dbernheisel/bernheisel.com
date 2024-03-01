@@ -1,8 +1,7 @@
-defmodule BernWeb.ErrorView do
-  use BernWeb, :view
+defmodule BernWeb.ErrorHTML do
+  use BernWeb, :html
 
-  # If you want to customize a particular status code
-  # for a certain format, you may uncomment below.
+  embed_templates "error_html/*"
 
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.html" becomes

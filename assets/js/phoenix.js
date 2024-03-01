@@ -9,9 +9,8 @@ const csrfToken = document
 
 window.liveSocket = new LiveSocket("/live", Socket, {
   hooks,
-  params: {
-    _csrf_token: csrfToken
-  }
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken }
 });
 
 window.liveSocket.connect();

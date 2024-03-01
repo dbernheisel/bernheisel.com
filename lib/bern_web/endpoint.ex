@@ -10,7 +10,9 @@ defmodule BernWeb.Endpoint do
     signing_salt: "1Vs0N70D"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [session: @session_options]],
+    longpoll: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -21,7 +23,7 @@ defmodule BernWeb.Endpoint do
     from: :bern,
     gzip: true,
     brotli: true,
-    only: ~w[assets fonts images favicon.ico audio video]
+    only: BernWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

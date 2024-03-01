@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.14.1-erlang-25.1.1-alpine-3.15.6 AS build
+FROM hexpm/elixir:1.16.1-erlang-26.2.2-alpine-3.18.6 AS build
 RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
@@ -14,9 +14,11 @@ ENV SECRET_KEY_BASE=nokeyyet
 ## COMPILE
 COPY mix.exs mix.lock ./
 COPY config/config.exs ./config/config.exs
-COPY config/prod.exs ./config/prod.exs
 COPY VERSION .
-RUN mix do deps.get --only prod, deps.compile
+COPY config/prod.exs ./config/prod.exs
+RUN mix deps.get --only prod
+RUN mix do tailwind.install, esbuild.install
+RUN mix deps.compile
 
 ## BUILD RELEASE
 COPY assets ./assets
@@ -31,7 +33,7 @@ RUN mix release
 
 # APP LAYER
 
-FROM alpine:3.15.6 AS app
+FROM alpine:3.18.6 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs
 WORKDIR /app
 RUN chown nobody:nobody /app

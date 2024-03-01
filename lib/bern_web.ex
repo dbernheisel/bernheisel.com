@@ -1,51 +1,59 @@
 defmodule BernWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
-  as controllers, views, channels and so on.
+  as controllers, components, channels and so on.
 
   This can be used in your application as:
 
       use BernWeb, :controller
-      use BernWeb, :view
+      use BernWeb, :html
 
-  The definitions below will be executed for every view,
-  controller, etc, so keep them short and clean, focused
+  The definitions below will be executed for every controller,
+  component, etc, so keep them short and clean, focused
   on imports, uses and aliases.
 
   Do NOT define functions inside the quoted expressions
-  below. Instead, define any helper function in modules
-  and import those modules here.
+  below. Instead, define additional modules and import
+  those modules here.
   """
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: BernWeb
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: BernWeb.Layouts]
 
       import Plug.Conn
-      alias BernWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
     end
   end
 
-  def view do
+  def html do
     quote do
-      use Phoenix.View,
-        root: "lib/bern_web/templates",
-        namespace: BernWeb
+      use Phoenix.Component
 
-      # Import convenience functions from controllers
       import Phoenix.Controller,
-        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
 
-      # Include shared imports and aliases for views
-      unquote(view_helpers())
+      unquote(html_helpers())
+    end
+  end
+
+  def html_helpers do
+    quote do
+      import Phoenix.HTML
+      import BernWeb.CoreComponents
+      alias Phoenix.LiveView.JS
+
+      unquote(verified_routes())
     end
   end
 
   def live_view do
     quote do
-      use Phoenix.LiveView, layout: {BernWeb.LayoutView, :live}
+      use Phoenix.LiveView, layout: {BernWeb.Layouts, :app}
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
@@ -53,13 +61,18 @@ defmodule BernWeb do
     quote do
       use Phoenix.LiveComponent
 
-      unquote(view_helpers())
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      unquote(html_helpers())
     end
   end
 
+  def static_paths, do: ~w[assets fonts images favicon.ico audio video]
+
   def router do
     quote do
-      use Phoenix.Router
+      use Phoenix.Router, helpers: false
 
       import Plug.Conn
       import Phoenix.Controller
@@ -67,26 +80,14 @@ defmodule BernWeb do
     end
   end
 
-  def channel do
+  def verified_routes do
     quote do
-      use Phoenix.Channel
-    end
-  end
+      use Phoenix.VerifiedRoutes,
+        endpoint: BernWeb.Endpoint,
+        router: BernWeb.Router,
+        statics: BernWeb.static_paths()
 
-  defp view_helpers do
-    quote do
-      # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-
-      # Import LiveView helpers (live_render, live_component, live_patch, etc)
-      import Phoenix.LiveView.Helpers
-
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-
-      import BernWeb.ErrorHelpers
-      import BernWeb.LinkHelpers
-      alias BernWeb.Router.Helpers, as: Routes
+      @endpoint BernWeb.Endpoint
     end
   end
 

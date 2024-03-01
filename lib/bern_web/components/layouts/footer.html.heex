@@ -5,13 +5,13 @@
         <option disabled>Site theme</option>
       </select>
 
-      <%= outbound_link to: "https://twitter.com/bernheisel", title: "Twitter", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+      <.outbound_link title="Twitter" class="ml-6 text-gray-400 hover:text-gray-500" to="https://twitter.com/bernheisel">
         <span class="sr-only">Twitter</span>
         <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
         </svg>
-      <% end %>
-      <%= outbound_link to: "https://github.com/dbernheisel", title: "GitHub", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+      </.outbound_link>
+      <.outbound_link title="GitHub" class="ml-6 text-gray-400 hover:text-gray-500" to="https://github.com/dbernheisel">
         <span class="sr-only">GitHub</span>
         <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
           <path
@@ -20,15 +20,15 @@
             clip-rule="evenodd"
           />
         </svg>
-      <% end %>
-      <%= link to: Routes.robot_path(@conn, :rss), title: "RSS Feed", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+      </.outbound_link>
+      <.link href={~p"/rss.xml"} title="RSS Feed" class="ml-6 text-gray-400 hover:text-gray-500">
         <span class="sr-only">RSS Feed</span>
         <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z"></path>
           <path d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1zM3 15a2 2 0 114 0 2 2 0 01-4 0z"></path>
         </svg>
-      <% end %>
-      <%= outbound_link to: "https://plausible.io/bernheisel.com", title: "Plausible", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+      </.link>
+      <.outbound_link title="Plausible" class="ml-6 text-gray-400 hover:text-gray-500" to="https://plausible.io/bernheisel.com">
         <span class="sr-only">Analytics</span>
         <svg viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
           <path
@@ -38,7 +38,7 @@
           >
           </path>
         </svg>
-      <% end %>
+      </.outbound_link>
     </div>
 
     <div class="mt-8 md:mt-0 md:order-1">

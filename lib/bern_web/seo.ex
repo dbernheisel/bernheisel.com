@@ -1,19 +1,17 @@
 defmodule BernWeb.SEO do
   @moduledoc "You know, juice."
-  alias BernWeb.Router.Helpers, as: Routes
+  use BernWeb, :verified_routes
 
-  use SEO, [
+  use SEO,
     site: &__MODULE__.site_config/1,
-    open_graph: SEO.OpenGraph.build(
-      locale: "en_US"
-    ),
-    twitter: SEO.Twitter.build(
-      site: "@bernheisel",
-      creator: "@bernheisel"
-    )
-  ]
+    open_graph: SEO.OpenGraph.build(locale: "en_US"),
+    twitter:
+      SEO.Twitter.build(
+        site: "@bernheisel",
+        creator: "@bernheisel"
+      )
 
-  def site_config(conn) do
+  def site_config(_conn) do
     SEO.Site.build(
       title_suffix: " · Bernheisel",
       default_title: "David Bernheisel's Blog",
@@ -21,26 +19,27 @@ defmodule BernWeb.SEO do
       theme_color: "#663399",
       windows_tile_color: "#663399",
       mask_icon_color: "#663399",
-      mask_icon_url: Routes.static_path(conn, "/images/safari-pinned-tab.svg"),
-      manifest_url: Routes.robot_path(conn, :site_webmanifest)
+      mask_icon_url: static_url(@endpoint, "/images/safari-pinned-tab.svg"),
+      manifest_url: url(@endpoint, ~p"/site.webmanifest")
     )
   end
 end
 
 defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
-  alias BernWeb.Router.Helpers, as: Routes
+  use BernWeb, :verified_routes
 
   def build(post, conn) do
     SEO.OpenGraph.build(
       title: SEO.Utils.truncate(post.title, 70),
       description: post.description,
       type: :article,
-      type_detail: SEO.OpenGraph.Article.build(
-        published_time: post.published && post.date,
-        author: "David Bernheisel",
-        tag: post.tags
-      ),
-      url: Routes.blog_url(conn, :show, post.id),
+      type_detail:
+        SEO.OpenGraph.Article.build(
+          published_time: post.published && post.date,
+          author: "David Bernheisel",
+          tag: post.tags
+        ),
+      url: url(conn, ~p"/blog/#{post}"),
       image: image(post, conn)
     )
   end
@@ -49,13 +48,13 @@ defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
     file = "/images/blog/#{post.id}.png"
 
     exists? =
-      [Application.app_dir(:bern), "/priv/static", file]
+      [:code.priv_dir(:bern), "static", file]
       |> Path.join()
       |> File.exists?()
 
     if exists? do
       SEO.OpenGraph.Image.build(
-        url: Routes.static_url(conn, file),
+        url: static_url(conn, file),
         alt: post.title
       )
     end
@@ -63,12 +62,12 @@ defimpl SEO.OpenGraph.Build, for: Bern.Blog.Post do
 end
 
 defimpl SEO.Breadcrumb.Build, for: Bern.Blog.Post do
-  alias BernWeb.Router.Helpers, as: Routes
+  use BernWeb, :verified_routes
 
   def build(post, conn) do
     SEO.Breadcrumb.List.build([
-      %{name: "Posts", item: Routes.blog_url(conn, :index)},
-      %{name: post.title, item: Routes.blog_url(conn, :show, post.id)}
+      %{name: "Posts", item: url(conn, ~p"/blog")},
+      %{name: post.title, item: url(conn, ~p"/blog/#{post}")}
     ])
   end
 end

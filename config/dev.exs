@@ -8,7 +8,7 @@ import Config
 # with webpack to recompile .js and .css sources.
 config :bern, BernWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4000],
-  debug_errors: true,
+  debug_errors: false,
   code_reloader: true,
   check_origin: false,
   watchers: [
@@ -45,9 +45,9 @@ config :bern, BernWeb.Endpoint,
   live_reload: [
     iframe_attrs: [class: "hidden"],
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/bern_web/(live|views)/.*(ex)$",
-      ~r"lib/bern_web/templates/.*(eex)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"lib/bern_web/(controllers|live|views)/.*(heex|ex)$",
+      ~r"lib/bern_web/templates/.*(h?eex)$",
       ~r"posts/*/.*(md)$"
     ]
   ]
@@ -61,3 +61,5 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view, :debug_heex_annotations, true
