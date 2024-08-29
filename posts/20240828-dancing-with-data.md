@@ -18,6 +18,7 @@ In the meantime, here are some supporting videos and slides:
 - PPTX slides: https://docs.google.com/presentation/d/17ZH-qTsZlWqPjqv2rrOZHxDOVnFXE3nW/edit?usp=drive_link&ouid=110353084444571868371&rtpof=true&sd=true
 - music slide: https://drive.google.com/file/d/16jw30i53bTL7VuaH0RNTq2qrOe65HNMd/view?usp=drive_link
 - architectural time: https://drive.google.com/file/d/11Rk3rXdWWYGSJ1FfQt7tvoSr8hCkjuvz/view?usp=drive_link
+- Code used in slides: https://github.com/dbernheisel/elixir_conf_2024_dancing_with_data
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gijJ2ti1DUw?si=jyE7115cq7RDxCUc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
